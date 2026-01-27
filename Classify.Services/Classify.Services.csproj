@@ -6,4 +6,12 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Classify.Core\Classify.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="K4os.Hash.xxHash" Version="1.0.8" />
+    </ItemGroup>
+
 </Project>

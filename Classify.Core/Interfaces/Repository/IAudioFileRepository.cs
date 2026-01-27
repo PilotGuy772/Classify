@@ -9,7 +9,7 @@ public interface IAudioFileRepository : IRepository<AudioFile>
     /// </summary>
     /// <param name="id">Recording ID</param>
     /// <returns>All Audio Files from this Recording, each associated with a single Movement.</returns>
-    public Task<IEnumerable<AudioFile>> GetAudioFilesByRecordingIdAsync(int id);
-    public Task<IEnumerable<AudioFile>> GetAudioFilesByMovementIdAsync(int id);
-
+    // public Task<IEnumerable<AudioFile>> GetAudioFilesByRecordingIdAsync(int id);
+    // public Task<IEnumerable<AudioFile>> GetAudioFilesByMovementIdAsync(int id);
+    public Task<AudioFile?> GetAudioFileByPath(string path);
 }

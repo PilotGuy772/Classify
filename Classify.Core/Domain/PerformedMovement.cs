@@ -8,5 +8,6 @@ public class PerformedMovement
     public int Id { get; set; }
     public int RecordingId { get; set; }
     public int MovementId { get; set; }
+    public int AudioFileId { get; set; }
     public int Order { get; set; }
 }

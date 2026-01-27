@@ -19,12 +19,12 @@ public class AudioFileConfiguration : IEntityTypeConfiguration<AudioFile>
         builder.Property(a => a.Status)
             .IsRequired();
 
-        builder.HasOne<Recording>()
-            .WithMany()
-            .HasForeignKey(a => a.RecordingId);
-
-        builder.HasOne<Movement>()
-            .WithMany()
-            .HasForeignKey(a => a.MovementId);
+        // builder.HasOne<Recording>()
+        //     .WithMany()
+        //     .HasForeignKey(a => a.RecordingId);
+        //
+        // builder.HasOne<Movement>()
+        //     .WithMany()
+        //     .HasForeignKey(a => a.MovementId);
     }
 }
