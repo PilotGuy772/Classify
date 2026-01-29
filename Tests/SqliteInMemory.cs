@@ -1,4 +1,5 @@
 using Classify.Core.Interfaces;
+using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Repository;
 using Classify.Core.Interfaces.Service;
 using Classify.Data;

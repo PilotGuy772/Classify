@@ -1,5 +1,6 @@
 using Classify.Core.Domain;
 using Classify.Core.Interfaces;
+using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Service;
 
 namespace Classify.Services.Ingestion;

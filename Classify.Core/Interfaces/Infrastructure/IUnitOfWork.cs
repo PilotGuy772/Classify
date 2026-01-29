@@ -1,6 +1,6 @@
 using Classify.Core.Interfaces.Repository;
 
-namespace Classify.Core.Interfaces;
+namespace Classify.Core.Interfaces.Infrastructure;
 
 public interface IUnitOfWork : IAsyncDisposable
 {

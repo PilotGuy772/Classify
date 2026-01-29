@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Classify.Core.Domain;
 using Classify.Core.Interfaces;
+using Classify.Core.Interfaces.Infrastructure;
 
 namespace Classify.Desktop.ViewModels;
 
