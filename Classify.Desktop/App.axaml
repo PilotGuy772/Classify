@@ -1,10 +1,21 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Classify.Desktop.App"
+             xmlns:desktop="clr-namespace:Classify.Desktop"
+             xmlns:converters="clr-namespace:Classify.Desktop.Converters"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+             
+    <Application.DataTemplates>
+        <desktop:ViewLocator/>
+    </Application.DataTemplates>
+             
+    <Application.Resources>
+        <converters:EnumEqualsConverter x:Key="EnumEquals" />
+    </Application.Resources>
+
 </Application>

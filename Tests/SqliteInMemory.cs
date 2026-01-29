@@ -31,15 +31,17 @@ public static class SqliteInMemory
         return context;
     }
     
-    public static ServiceProvider BuildTestServices()
+    public static IServiceProvider BuildTestServices()
     {
         ServiceCollection services = new();
 
         SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
-        services.AddDbContext<ClassifyContext>(options =>
-            options.UseSqlite(connection));
+        services.AddDbContextFactory<ClassifyContext>(options =>
+        {
+            options.UseSqlite(connection);
+        });
 
         // Repositories
         services.AddScoped<IComposerRepository, ComposerRepository>();
@@ -48,7 +50,7 @@ public static class SqliteInMemory
         services.AddScoped<IRecordingRepository, RecordingRepository>();
         services.AddScoped<IPerformedMovementRepository, PerformedMovementRepository>();
         services.AddScoped<IProposedMatchRepository, ProposedMatchRepository>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddTransient<IUnitOfWork, UnitOfWork>();
 
         // Application services / use cases
         services.AddScoped<IIngestionService, LibraryIngestionService>();

@@ -8,6 +8,22 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        DataContext = new MainWindowViewModel();
+    }
+
+    private MainWindowViewModel Vm => (MainWindowViewModel)DataContext!;
+
+    private void HomeClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Vm.ShowHome();
+    }
+
+    private void SettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Vm.ShowSettings();
+    }
+
+    private void LibraryClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Vm.ShowLibrary();
     }
 }

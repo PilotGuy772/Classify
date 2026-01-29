@@ -2,8 +2,49 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Classify.Desktop.MainWindow"
+        x:DataType="viewModels:MainWindowViewModel"
         Title="Classify.Desktop">
-    Welcome to Avalonia!
+    
+        <Window.DataContext>
+                <viewModels:MainWindowViewModel />
+        </Window.DataContext>
+
+        <Grid ColumnDefinitions="200,*"
+              RowDefinitions="Auto,*">
+
+                <!-- Sidebar -->
+                <StackPanel Grid.RowSpan="2"
+                            Grid.Column="0"
+                            Background="#333"
+                            Spacing="8"
+                            Margin="8">
+
+                        <Button Content="Home"
+                                Click="HomeClicked"/>
+
+                        <Button Content="Settings"
+                                Click="SettingsClicked"/>
+                        
+                        <Button Content="Library"
+                                Click="LibraryClicked"/>
+                </StackPanel>
+
+                <!-- Top bar -->
+                <Border Grid.Column="1"
+                        Grid.Row="0"
+                        Height="40"
+                        Background="#555"
+                        Padding="8">
+                        <TextBox Watermark="Search…" />
+                </Border>
+
+                <!-- Page content -->
+                <ContentControl Grid.Column="1"
+                                Grid.Row="1"
+                                Content="{Binding CurrentPage}" />
+        </Grid>
+    
 </Window>

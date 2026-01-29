@@ -1,10 +1,12 @@
 using Classify.Core.Domain;
 using Classify.Core.Enums;
+using Classify.Core.Interfaces;
 using Classify.Core.Interfaces.Service;
 using Classify.Data;
 using Classify.Data.Context;
 using Classify.Services.Ingestion;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
 namespace Tests.Services.Ingestion;
@@ -26,8 +28,8 @@ public class LibraryIngestion
             .Setup(s => s.ScanAudioFilesAsync(It.IsAny<string>()))
             .ReturnsAsync(fakeFiles);
 
-        await using ClassifyContext context = SqliteInMemory.CreateDbContext();
-        UnitOfWork unitOfWork = new(context);
+        IServiceProvider services = SqliteInMemory.BuildTestServices();
+        IUnitOfWork unitOfWork = services.GetRequiredService<IUnitOfWork>();
 
         LibraryIngestionService service = new(scanner.Object, unitOfWork);
 
@@ -56,8 +58,8 @@ public class LibraryIngestion
             .Setup(s => s.ScanAudioFilesAsync(It.IsAny<string>()))
             .ReturnsAsync(fakeFiles);
 
-        await using ClassifyContext context = SqliteInMemory.CreateDbContext();
-        UnitOfWork unitOfWork = new(context);
+        IServiceProvider services = SqliteInMemory.BuildTestServices();
+        IUnitOfWork unitOfWork = services.GetRequiredService<IUnitOfWork>();
 
         LibraryIngestionService service = new(scanner.Object, unitOfWork);
 

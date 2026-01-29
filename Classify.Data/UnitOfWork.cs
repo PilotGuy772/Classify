@@ -2,20 +2,28 @@ using Classify.Core.Interfaces;
 using Classify.Core.Interfaces.Repository;
 using Classify.Data.Context;
 using Classify.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Classify.Data;
 
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private readonly ClassifyContext _context;
     
     // All repositories share the SAME DbContext instance
 
-    public UnitOfWork(ClassifyContext context)
+    
+    public UnitOfWork(IDbContextFactory<ClassifyContext> contextFactory)
     {
-        // ONE context instance for this Unit of Work
-        _context = context;
+        _context = contextFactory.CreateDbContext();
+
+        Composers = new ComposerRepository(_context);
+        Works = new WorkRepository(_context);
+        Movements = new MovementRepository(_context);
+        Recordings = new RecordingRepository(_context);
+        AudioFiles = new AudioFileRepository(_context);
     }
+    
 
     // Lazy initialization: create repository only when first accessed
     public IAudioFileRepository AudioFiles =>
@@ -58,5 +66,15 @@ public class UnitOfWork : IUnitOfWork
     public async Task RollbackAsync()
     {
         await _context.Database.RollbackTransactionAsync();
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _context.DisposeAsync();
     }
 }

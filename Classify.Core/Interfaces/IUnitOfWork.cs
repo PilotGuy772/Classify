@@ -2,7 +2,7 @@ using Classify.Core.Interfaces.Repository;
 
 namespace Classify.Core.Interfaces;
 
-public interface IUnitOfWork
+public interface IUnitOfWork : IAsyncDisposable
 {
     // all repositories
     IAudioFileRepository         AudioFiles         { get; }

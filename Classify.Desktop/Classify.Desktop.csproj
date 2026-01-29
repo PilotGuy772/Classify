@@ -29,4 +29,9 @@
       <ProjectReference Include="..\Classify.Data\Classify.Data.csproj" />
       <ProjectReference Include="..\Classify.Services\Classify.Services.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Remove="App.axaml" />
+      <AvaloniaResource Include="App.axaml" />
+    </ItemGroup>
 </Project>
