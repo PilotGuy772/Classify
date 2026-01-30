@@ -95,8 +95,7 @@ namespace Classify.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AudioFileId")
-                        .IsUnique();
+                    b.HasIndex("AudioFileId");
 
                     b.HasIndex("MovementId");
 
@@ -224,8 +223,8 @@ namespace Classify.Data.Migrations
             modelBuilder.Entity("Classify.Core.Domain.PerformedMovement", b =>
                 {
                     b.HasOne("Classify.Core.Domain.AudioFile", null)
-                        .WithOne()
-                        .HasForeignKey("Classify.Core.Domain.PerformedMovement", "AudioFileId")
+                        .WithMany()
+                        .HasForeignKey("AudioFileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

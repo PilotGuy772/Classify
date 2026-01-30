@@ -35,4 +35,9 @@ public class Repository<T>(ClassifyContext context) : IRepository<T>
             DbSet.Remove(entity);
         }
     }
+
+    public async Task<bool> AnyAsync()
+    {
+        return await DbSet.AnyAsync();
+    }
 }

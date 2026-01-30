@@ -8,6 +8,7 @@ internal static class Program
     {
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
+        
     }
 
     private static AppBuilder BuildAvaloniaApp()

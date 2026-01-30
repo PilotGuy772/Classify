@@ -15,4 +15,5 @@ public interface IRepository<T>
 
     public Task DeleteAsync(int id);
     // Additional functions may be added later!
+    public Task<bool> AnyAsync();
 }

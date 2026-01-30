@@ -22,7 +22,7 @@ public class PerformedMovementConfiguration : IEntityTypeConfiguration<Performed
             .HasForeignKey(p => p.RecordingId);
 
         builder.HasOne<AudioFile>()
-            .WithOne()
-            .HasForeignKey<PerformedMovement>(p => p.AudioFileId);
+            .WithMany()
+            .HasForeignKey(pm => pm.AudioFileId);
     }
 }
