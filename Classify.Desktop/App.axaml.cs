@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Classify.Core.Interfaces;
 using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Repository;
 using Classify.Core.Interfaces.Service;
@@ -113,6 +112,11 @@ public class App : Application
         services.AddTransient<HomeViewModel>();
         services.AddTransient<LibraryViewModel>();
         services.AddTransient<SettingsViewModel>();
+        services.AddTransient<AudioFileDetailViewModel>();
+        services.AddTransient<ComposerDetailViewModel>();
+        services.AddTransient<MovementDetailViewModel>();
+        services.AddTransient<RecordingDetailViewModel>();
+        services.AddTransient<WorkDetailViewModel>();
 
 #if (DEBUG)
         // DEV only

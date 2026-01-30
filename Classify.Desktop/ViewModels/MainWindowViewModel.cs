@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Classify.Desktop.ViewModels;
@@ -43,5 +44,25 @@ public class MainWindowViewModel : ViewModelBase
     {
         CurrentPage = _serviceProvider.GetRequiredService<LibraryViewModel>();
         RaisePropertyChanged(nameof(CurrentPage));
+    }
+    
+    public async Task NavigateToDetail(LibraryItemType type, int id)
+    {
+        ViewModelBase vm = type switch
+        {
+            LibraryItemType.Composer   => _serviceProvider.GetRequiredService<ComposerDetailViewModel>(),
+            LibraryItemType.Work       => _serviceProvider.GetRequiredService<WorkDetailViewModel>(),
+            LibraryItemType.Movement   => _serviceProvider.GetRequiredService<MovementDetailViewModel>(),
+            LibraryItemType.Recording  => _serviceProvider.GetRequiredService<RecordingDetailViewModel>(),
+            LibraryItemType.AudioFile  => _serviceProvider.GetRequiredService<AudioFileDetailViewModel>(),
+            _ => CurrentPage
+        };
+
+        if (vm is IDetailViewModel dvm)
+        {
+            await dvm.LoadAsync(id);
+        }
+
+        CurrentPage = vm;
     }
 }

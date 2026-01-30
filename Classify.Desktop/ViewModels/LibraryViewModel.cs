@@ -2,7 +2,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Classify.Core.Domain;
-using Classify.Core.Interfaces;
 using Classify.Core.Interfaces.Infrastructure;
 
 namespace Classify.Desktop.ViewModels;
@@ -19,6 +18,7 @@ public enum LibraryItemType
 public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly MainWindowViewModel _shell;
 
     public LibraryItemType SelectedType
     {
@@ -32,12 +32,13 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
         }
     }
 
-    public ObservableCollection<string> Items { get; } = new();
+    public ObservableCollection<LibraryItemViewModel> Items { get; } = new();
 
-    public LibraryViewModel(IUnitOfWork unitOfWork)
+    public LibraryViewModel(IUnitOfWork unitOfWork, MainWindowViewModel shell)
     {
         _unitOfWork = unitOfWork;
         SelectedType = LibraryItemType.Composer;
+        _shell = shell;
     }
 
     private async Task LoadAsync()
@@ -48,29 +49,34 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
         {
             case LibraryItemType.Composer:
                 foreach (Composer c in await _unitOfWork.Composers.GetAllAsync())
-                    Items.Add(c.Name);
+                    Items.Add(new LibraryItemViewModel(c.Id, c.Name, LibraryItemType.Composer));
                 break;
 
             case LibraryItemType.Work:
                 foreach (Work w in await _unitOfWork.Works.GetAllAsync())
-                    Items.Add(w.Name);
+                    Items.Add(new LibraryItemViewModel(w.Id, w.Name, LibraryItemType.Work));
                 break;
 
             case LibraryItemType.Movement:
                 foreach (Movement m in await _unitOfWork.Movements.GetAllAsync())
-                    Items.Add(m.Name);
+                    Items.Add(new LibraryItemViewModel(m.Id, m.Name, LibraryItemType.Movement));
                 break;
 
             case LibraryItemType.Recording:
                 foreach (Recording r in await _unitOfWork.Recordings.GetAllAsync())
-                    Items.Add(r.Conductor);
+                    Items.Add(new LibraryItemViewModel(r.Id, r.Conductor, LibraryItemType.Recording));
                 break;
 
             case LibraryItemType.AudioFile:
                 foreach (AudioFile a in await _unitOfWork.AudioFiles.GetAllAsync())
-                    Items.Add(a.Path);
+                    Items.Add(new LibraryItemViewModel(a.Id, a.Path, LibraryItemType.AudioFile));
                 break;
         }
+    }
+    
+    public async Task OpenItem(LibraryItemViewModel item)
+    {
+        await _shell.NavigateToDetail(item.Type, item.Id);
     }
 
     public async ValueTask DisposeAsync()

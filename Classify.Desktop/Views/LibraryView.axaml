@@ -45,6 +45,14 @@
         </StackPanel>
 
         <!-- List -->
-        <ListBox ItemsSource="{Binding Items}" />
+        <ListBox ItemsSource="{Binding Items}"
+                 DoubleTapped="ItemDoubleTapped">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DisplayText}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
     </DockPanel>
 </UserControl>

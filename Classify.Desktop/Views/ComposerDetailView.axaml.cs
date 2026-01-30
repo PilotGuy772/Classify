@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Classify.Desktop.Views;
 
-public partial class HomeView : UserControl
+public partial class ComposerDetailView : UserControl
 {
-    public HomeView()
+    public ComposerDetailView()
     {
         InitializeComponent();
     }
