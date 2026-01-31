@@ -4,21 +4,14 @@ using Classify.Core.Interfaces.Infrastructure;
 
 namespace Classify.Desktop.ViewModels;
 
-public class AudioFileDetailViewModel : ViewModelBase, IDetailViewModel
+public class AudioFileDetailViewModel(IUnitOfWork uow) : ViewModelBase, IDetailViewModel
 {
-    public string Path { get; set; }
-    private readonly IUnitOfWork _uow;
+    public string Path { get; set; } = "";
 
 
-    public AudioFileDetailViewModel(IUnitOfWork uow)
-    {
-        _uow = uow;
-        Path = "";
-    }
-    
     public async Task LoadAsync(int id)
     {
-        AudioFile? m = await _uow.AudioFiles.GetByIdAsync(id);
+        AudioFile? m = await uow.AudioFiles.GetByIdAsync(id);
         Path = m!.Path;
         RaisePropertyChanged(nameof(Path));
     }

@@ -72,10 +72,12 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public void Dispose()
     {
         _context.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     public async ValueTask DisposeAsync()
     {
         await _context.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 }

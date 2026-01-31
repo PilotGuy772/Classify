@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Classify.Desktop.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public class MainWindowViewModel(IServiceProvider serviceProvider) : ViewModelBase
 {
     public ViewModelBase CurrentPage
     {
@@ -16,13 +16,6 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private readonly IServiceProvider _serviceProvider;
-    
-    public MainWindowViewModel(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     public void Initialize()
     {
         ShowHome();
@@ -30,19 +23,19 @@ public class MainWindowViewModel : ViewModelBase
 
     public void ShowHome()
     {
-        CurrentPage = _serviceProvider.GetRequiredService<HomeViewModel>();
+        CurrentPage = serviceProvider.GetRequiredService<HomeViewModel>();
         RaisePropertyChanged(nameof(CurrentPage));
     }
 
     public void ShowSettings()
     {
-        CurrentPage = _serviceProvider.GetRequiredService<SettingsViewModel>();
+        CurrentPage = serviceProvider.GetRequiredService<SettingsViewModel>();
         RaisePropertyChanged(nameof(CurrentPage));
     }
 
     public void ShowLibrary()
     {
-        CurrentPage = _serviceProvider.GetRequiredService<LibraryViewModel>();
+        CurrentPage = serviceProvider.GetRequiredService<LibraryViewModel>();
         RaisePropertyChanged(nameof(CurrentPage));
     }
     
@@ -50,11 +43,11 @@ public class MainWindowViewModel : ViewModelBase
     {
         ViewModelBase vm = type switch
         {
-            LibraryItemType.Composer   => _serviceProvider.GetRequiredService<ComposerDetailViewModel>(),
-            LibraryItemType.Work       => _serviceProvider.GetRequiredService<WorkDetailViewModel>(),
-            LibraryItemType.Movement   => _serviceProvider.GetRequiredService<MovementDetailViewModel>(),
-            LibraryItemType.Recording  => _serviceProvider.GetRequiredService<RecordingDetailViewModel>(),
-            LibraryItemType.AudioFile  => _serviceProvider.GetRequiredService<AudioFileDetailViewModel>(),
+            LibraryItemType.Composer   => serviceProvider.GetRequiredService<ComposerDetailViewModel>(),
+            LibraryItemType.Work       => serviceProvider.GetRequiredService<WorkDetailViewModel>(),
+            LibraryItemType.Movement   => serviceProvider.GetRequiredService<MovementDetailViewModel>(),
+            LibraryItemType.Recording  => serviceProvider.GetRequiredService<RecordingDetailViewModel>(),
+            LibraryItemType.AudioFile  => serviceProvider.GetRequiredService<AudioFileDetailViewModel>(),
             _ => CurrentPage
         };
 

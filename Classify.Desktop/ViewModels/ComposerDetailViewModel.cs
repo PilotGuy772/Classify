@@ -4,20 +4,13 @@ using Classify.Core.Interfaces.Infrastructure;
 
 namespace Classify.Desktop.ViewModels;
 
-public class ComposerDetailViewModel : ViewModelBase, IDetailViewModel
+public class ComposerDetailViewModel(IUnitOfWork uow) : ViewModelBase, IDetailViewModel
 {
-    public string Name { get; set; }
-    private readonly IUnitOfWork _uow;
+    public string Name { get; set; } = "";
 
-    public ComposerDetailViewModel(IUnitOfWork uow)
-    {
-        _uow = uow;
-        Name = "";
-    }
-    
     public async Task LoadAsync(int id)
     {
-        Composer? composer = await _uow.Composers.GetByIdAsync(id);
+        Composer? composer = await uow.Composers.GetByIdAsync(id);
         Name = composer!.Name;
         RaisePropertyChanged(nameof(Name));
     }

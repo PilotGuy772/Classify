@@ -39,6 +39,7 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
         _unitOfWork = unitOfWork;
         SelectedType = LibraryItemType.Composer;
         _shell = shell;
+        _ = LoadAsync();
     }
 
     private async Task LoadAsync()
@@ -71,10 +72,12 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
                 foreach (AudioFile a in await _unitOfWork.AudioFiles.GetAllAsync())
                     Items.Add(new LibraryItemViewModel(a.Id, a.Path, LibraryItemType.AudioFile));
                 break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
     
-    public async Task OpenItem(LibraryItemViewModel item)
+    public async Task OpenItemAsync(LibraryItemViewModel item)
     {
         await _shell.NavigateToDetail(item.Type, item.Id);
     }
@@ -82,10 +85,12 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await _unitOfWork.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 
     public void Dispose()
     {
-        _unitOfWork.DisposeAsync();
+        _unitOfWork.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

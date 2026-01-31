@@ -4,20 +4,13 @@ using Classify.Core.Interfaces.Infrastructure;
 
 namespace Classify.Desktop.ViewModels;
 
-public class RecordingDetailViewModel : ViewModelBase, IDetailViewModel
+public class RecordingDetailViewModel(IUnitOfWork uow) : ViewModelBase, IDetailViewModel
 {
-    public string Conductor { get; set; }
-    private readonly IUnitOfWork _uow;
+    public string Conductor { get; set; } = "";
 
-    public RecordingDetailViewModel(IUnitOfWork uow)
-    {
-        _uow = uow;
-        Conductor = "";
-    }
-    
     public async Task LoadAsync(int id)
     {
-        Recording? m = await _uow.Recordings.GetByIdAsync(id);
+        Recording? m = await uow.Recordings.GetByIdAsync(id);
         Conductor = m!.Conductor;
         RaisePropertyChanged(nameof(Conductor));
     }

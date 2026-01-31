@@ -18,7 +18,7 @@ public partial class LibraryView : UserControl
             lb.SelectedItem is LibraryItemViewModel item &&
             DataContext is LibraryViewModel vm)
         {
-            _ = vm.OpenItem(item);
+            _ = vm.OpenItemAsync(item);
         }
     }
 }
