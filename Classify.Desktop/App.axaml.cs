@@ -116,6 +116,7 @@ public class App : Application
         services.AddTransient<HomeViewModel>();
         services.AddTransient<LibraryViewModel>();
         services.AddTransient<SettingsViewModel>();
+        services.AddTransient<LibraryScanViewModel>();
         services.AddTransient<AudioFileDetailViewModel>();
         services.AddTransient<ComposerDetailViewModel>();
         services.AddTransient<MovementDetailViewModel>();

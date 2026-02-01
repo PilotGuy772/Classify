@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Classify.Desktop.Views.LibraryScanView"
+             x:DataType="viewModels:LibraryScanViewModel">
+
+    <DockPanel Margin="12">
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8">
+            <Button Content="Scan Library"
+                    Command="{Binding ScanLibraryCommand}" />
+        </StackPanel>
+
+        <ListBox ItemsSource="{Binding ScannedFiles}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="{Binding FileName}" />
+                        <TextBlock Text="(" Foreground="#888" />
+                        <TextBlock Text="{Binding Status}" Foreground="#888" />
+                        <TextBlock Text=")" Foreground="#888" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+    </DockPanel>
+</UserControl>

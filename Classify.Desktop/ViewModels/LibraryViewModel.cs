@@ -20,7 +20,7 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly MainWindowViewModel _shell;
-    private readonly IIngestionService _scanner;
+    private readonly IIngestionOrchestrationService _scanner;
 
     public LibraryItemType SelectedType
     {
@@ -34,9 +34,9 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
         }
     }
 
-    public ObservableCollection<LibraryItemViewModel> Items { get; } = new();
+    public ObservableCollection<LibraryItemViewModel> Items { get; } = [];
 
-    public LibraryViewModel(IUnitOfWork unitOfWork, MainWindowViewModel shell, IIngestionService scanner)
+    public LibraryViewModel(IUnitOfWork unitOfWork, MainWindowViewModel shell, IIngestionOrchestrationService scanner)
     {
         _unitOfWork = unitOfWork;
         SelectedType = LibraryItemType.Composer;
@@ -85,10 +85,6 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
         await _shell.NavigateToDetail(item.Type, item.Id);
     }
 
-    public async Task ScanLibraryAsync()
-    {
-        
-    }
 
     public async ValueTask DisposeAsync()
     {

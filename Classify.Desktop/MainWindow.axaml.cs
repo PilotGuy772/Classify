@@ -26,4 +26,9 @@ public partial class MainWindow : Window
     {
         Vm.ShowLibrary();
     }
+
+    private void LibraryScanClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Vm.ShowLibraryScan();
+    }
 }

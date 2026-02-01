@@ -4,8 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Classify.Desktop.ViewModels;
 
-public class MainWindowViewModel(IServiceProvider serviceProvider) : ViewModelBase
+public class MainWindowViewModel : ViewModelBase
 {
+    private readonly IServiceProvider serviceProvider;
+
     public ViewModelBase CurrentPage
     {
         get;
@@ -15,6 +17,8 @@ public class MainWindowViewModel(IServiceProvider serviceProvider) : ViewModelBa
             RaisePropertyChanged();
         }
     }
+
+    public System.Windows.Input.ICommand ShowLibraryScanCommand { get; }
 
     public void Initialize()
     {
@@ -38,6 +42,12 @@ public class MainWindowViewModel(IServiceProvider serviceProvider) : ViewModelBa
         CurrentPage = serviceProvider.GetRequiredService<LibraryViewModel>();
         RaisePropertyChanged(nameof(CurrentPage));
     }
+
+    public void ShowLibraryScan()
+    {
+        CurrentPage = serviceProvider.GetRequiredService<LibraryScanViewModel>();
+        RaisePropertyChanged(nameof(CurrentPage));
+    }
     
     public async Task NavigateToDetail(LibraryItemType type, int id)
     {
@@ -57,5 +67,11 @@ public class MainWindowViewModel(IServiceProvider serviceProvider) : ViewModelBa
         }
 
         CurrentPage = vm;
+    }
+
+    public MainWindowViewModel(IServiceProvider serviceProvider)
+    {
+        this.serviceProvider = serviceProvider;
+        ShowLibraryScanCommand = new RelayCommand(_ => ShowLibraryScan());
     }
 }

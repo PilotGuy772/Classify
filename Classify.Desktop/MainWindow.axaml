@@ -30,6 +30,9 @@
                         
                         <Button Content="Library"
                                 Click="LibraryClicked"/>
+
+                        <Button Content="Scan Library"
+                                Command="{Binding ShowLibraryScanCommand}"/>
                 </StackPanel>
 
                 <!-- Top bar -->

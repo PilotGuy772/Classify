@@ -22,12 +22,4 @@ public partial class LibraryView : UserControl
             _ = vm.OpenItemAsync(item);
         }
     }
-
-    private void ScanLibrary(object? sender, RoutedEventArgs routedEventArgs)
-    {
-        if (DataContext is LibraryViewModel vm)
-        {
-            _ = vm.ScanLibraryAsync();
-        }
-    }
 }
