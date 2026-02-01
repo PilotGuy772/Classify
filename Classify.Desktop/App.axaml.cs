@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Repository;
 using Classify.Core.Interfaces.Service;
@@ -14,6 +16,7 @@ using Classify.Desktop.ViewModels;
 using Classify.Services.Ingestion;
 using Classify.Services.Ingestion.File;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Classify.Desktop;
@@ -106,6 +109,7 @@ public class App : Application
         // Application services / use cases
         services.AddScoped<IIngestionService, LibraryIngestionService>();
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
+        services.AddScoped<IIngestionOrchestrationService, LibraryIngestionOrchestrationService>();
 
         // ViewModels
         services.AddSingleton<MainWindowViewModel>();
@@ -117,6 +121,24 @@ public class App : Application
         services.AddTransient<MovementDetailViewModel>();
         services.AddTransient<RecordingDetailViewModel>();
         services.AddTransient<WorkDetailViewModel>();
+        
+        // App Configuration
+        string settingsPath =
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Classify",
+                "settings.json");
+
+        ConfigurationBuilder builder = new();
+        builder.SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile(settingsPath, optional: true);
+
+        IConfiguration config = builder.Build();
+
+        services.AddSingleton(config);
+        services.Configure<AppSettings>(config.GetSection("AppSettings"));
+
 
 #if (DEBUG)
         // DEV only

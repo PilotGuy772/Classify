@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Classify.Desktop.ViewModels;
 
 namespace Classify.Desktop.Views;
@@ -19,6 +20,14 @@ public partial class LibraryView : UserControl
             DataContext is LibraryViewModel vm)
         {
             _ = vm.OpenItemAsync(item);
+        }
+    }
+
+    private void ScanLibrary(object? sender, RoutedEventArgs routedEventArgs)
+    {
+        if (DataContext is LibraryViewModel vm)
+        {
+            _ = vm.ScanLibraryAsync();
         }
     }
 }

@@ -9,40 +9,53 @@
     <DockPanel Margin="12">
 
         <!-- Selector -->
-        <StackPanel DockPanel.Dock="Top"
-                    Orientation="Horizontal"
-                    Spacing="12">
+        <DockPanel DockPanel.Dock="Top"
+                   LastChildFill="False"
+                   Margin="0,0,0,8">
 
-            <RadioButton Content="Composers"
-                         GroupName="Library"
-                         IsChecked="{Binding SelectedType,
-                                     Converter={StaticResource EnumEquals},
-                                     ConverterParameter=Composer}" />
+            <!-- Scan button (right-aligned) -->
+            <Button Content="Scan Library"
+                    DockPanel.Dock="Right"
+                    Click="ScanLibrary"
+                    Margin="8,0,0,0"/>
 
-            <RadioButton Content="Works"
-                         GroupName="Library"
-                         IsChecked="{Binding SelectedType,
-                                     Converter={StaticResource EnumEquals},
-                                     ConverterParameter=Work}" />
+            <!-- Radio buttons (left-aligned) -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="12">
 
-            <RadioButton Content="Movements"
-                         GroupName="Library"
-                         IsChecked="{Binding SelectedType,
-                                     Converter={StaticResource EnumEquals},
-                                     ConverterParameter=Movement}" />
+                <RadioButton Content="Composers"
+                             GroupName="Library"
+                             IsChecked="{Binding SelectedType,
+                                 Converter={StaticResource EnumEquals},
+                                 ConverterParameter=Composer}" />
 
-            <RadioButton Content="Recordings"
-                         GroupName="Library"
-                         IsChecked="{Binding SelectedType,
-                                     Converter={StaticResource EnumEquals},
-                                     ConverterParameter=Recording}" />
+                <RadioButton Content="Works"
+                             GroupName="Library"
+                             IsChecked="{Binding SelectedType,
+                                 Converter={StaticResource EnumEquals},
+                                 ConverterParameter=Work}" />
 
-            <RadioButton Content="Audio Files"
-                         GroupName="Library"
-                         IsChecked="{Binding SelectedType,
-                                     Converter={StaticResource EnumEquals},
-                                     ConverterParameter=AudioFile}" />
-        </StackPanel>
+                <RadioButton Content="Movements"
+                             GroupName="Library"
+                             IsChecked="{Binding SelectedType,
+                                 Converter={StaticResource EnumEquals},
+                                 ConverterParameter=Movement}" />
+
+                <RadioButton Content="Recordings"
+                             GroupName="Library"
+                             IsChecked="{Binding SelectedType,
+                                 Converter={StaticResource EnumEquals},
+                                 ConverterParameter=Recording}" />
+
+                <RadioButton Content="Audio Files"
+                             GroupName="Library"
+                             IsChecked="{Binding SelectedType,
+                                 Converter={StaticResource EnumEquals},
+                                 ConverterParameter=AudioFile}" />
+            </StackPanel>
+
+        </DockPanel>
+
 
         <!-- List -->
         <ListBox ItemsSource="{Binding Items}"

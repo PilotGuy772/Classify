@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Classify.Core.Domain;
 using Classify.Core.Interfaces.Infrastructure;
+using Classify.Core.Interfaces.Service;
 
 namespace Classify.Desktop.ViewModels;
 
@@ -19,6 +20,7 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly MainWindowViewModel _shell;
+    private readonly IIngestionService _scanner;
 
     public LibraryItemType SelectedType
     {
@@ -34,11 +36,12 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
 
     public ObservableCollection<LibraryItemViewModel> Items { get; } = new();
 
-    public LibraryViewModel(IUnitOfWork unitOfWork, MainWindowViewModel shell)
+    public LibraryViewModel(IUnitOfWork unitOfWork, MainWindowViewModel shell, IIngestionService scanner)
     {
         _unitOfWork = unitOfWork;
         SelectedType = LibraryItemType.Composer;
         _shell = shell;
+        _scanner = scanner;
         _ = LoadAsync();
     }
 
@@ -80,6 +83,11 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
     public async Task OpenItemAsync(LibraryItemViewModel item)
     {
         await _shell.NavigateToDetail(item.Type, item.Id);
+    }
+
+    public async Task ScanLibraryAsync()
+    {
+        
     }
 
     public async ValueTask DisposeAsync()

@@ -34,8 +34,4 @@
       <AvaloniaXaml Remove="App.axaml" />
       <AvaloniaResource Include="App.axaml" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="ViewModels\Detail\" />
-    </ItemGroup>
 </Project>
