@@ -3,12 +3,18 @@ using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Enums;
 using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Service;
+using Microsoft.Extensions.Options;
 
 namespace Classify.Services.Ingestion;
 
-public class LibraryIngestionOrchestrationService(IIngestionService ingestionService, IUnitOfWork uow, AppSettings settings) : IIngestionOrchestrationService
+public class LibraryIngestionOrchestrationService(
+    IIngestionService ingestionService,
+    IUnitOfWork uow,
+    IOptions<AppSettings> settings)
+    : IIngestionOrchestrationService
 {
     private TaskCompletionSource<Dictionary<int, UserInputtedMatch>?>? _inputTcs;
+    private readonly AppSettings _settings = settings.Value;
 
     public LibraryScanState State
     {
@@ -43,7 +49,7 @@ public class LibraryIngestionOrchestrationService(IIngestionService ingestionSer
     private async Task ScanAsync(CancellationToken ct)
     {
         // scan library files
-        await ingestionService.ScanLibraryAsync(settings.LibraryPath);
+        await ingestionService.ScanLibraryAsync(_settings.LibraryPath);
         ct.ThrowIfCancellationRequested();
 
         // FUTURE: Implement matching algorithms //
