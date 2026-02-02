@@ -1,7 +1,6 @@
-using System;
 using System.Windows.Input;
 
-namespace Classify.Desktop.ViewModels;
+namespace Classify.Core.Domain.Infrastructure;
 
 public class RelayCommand : ICommand
 {

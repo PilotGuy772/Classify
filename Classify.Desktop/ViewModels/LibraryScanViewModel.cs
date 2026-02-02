@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Interfaces.Service;
 using Classify.Core.Enums;
 

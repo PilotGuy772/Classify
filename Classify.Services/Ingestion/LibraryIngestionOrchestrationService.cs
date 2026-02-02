@@ -13,7 +13,7 @@ public class LibraryIngestionOrchestrationService(
     IOptions<AppSettings> settings)
     : IIngestionOrchestrationService
 {
-    private TaskCompletionSource<Dictionary<int, UserInputtedMatch>?>? _inputTcs;
+    private TaskCompletionSource<Dictionary<int, ProposedMatch>?>? _inputTcs;
     private readonly AppSettings _settings = settings.Value;
 
     public LibraryScanState State
@@ -56,10 +56,10 @@ public class LibraryIngestionOrchestrationService(
 
         // FUTURE: Look over ProposedMatches and present them to the user //
 
-        _inputTcs = new TaskCompletionSource<Dictionary<int, UserInputtedMatch>?>();
+        _inputTcs = new TaskCompletionSource<Dictionary<int, ProposedMatch>?>();
         State = LibraryScanState.AwaitingUserInput;
         UserInputRequested?.Invoke("Input missing file metadata.");
-        Dictionary<int, UserInputtedMatch>? results = await _inputTcs.Task;
+        Dictionary<int, ProposedMatch>? results = await _inputTcs.Task;
         _inputTcs = null;
 
         // Parse inputted match
@@ -75,7 +75,7 @@ public class LibraryIngestionOrchestrationService(
 
         try
         {
-            foreach (KeyValuePair<int, UserInputtedMatch> kvp in results)
+            foreach (KeyValuePair<int, ProposedMatch> kvp in results)
             {
                 await ProcessInputAsync(kvp.Value, kvp.Key, ct);
             }
@@ -91,7 +91,7 @@ public class LibraryIngestionOrchestrationService(
         }
     }
 
-    private async Task ProcessInputAsync(UserInputtedMatch result, int afId, CancellationToken ct)
+    private async Task ProcessInputAsync(ProposedMatch result, int afId, CancellationToken ct)
     {
         int composerId, workId, movementId, recordingId;
         
@@ -115,7 +115,7 @@ public class LibraryIngestionOrchestrationService(
         {
             Work work = new()
             {
-                Name = result.WorkName ?? "",
+                Name = result.WorkTitle ?? "",
                 CatalogNumber = result.CatalogNumber ?? "",
                 ComposerId = composerId
             };
@@ -132,7 +132,7 @@ public class LibraryIngestionOrchestrationService(
         {
             Movement movement = new()
             {
-                Name = result.MovementName ?? "",
+                Name = result.MovementTitle ?? "",
                 Order = result.MovementNumber ?? 0,
                 WorkId = workId
             };
@@ -175,7 +175,7 @@ public class LibraryIngestionOrchestrationService(
 
     }
 
-    public Task ProvideUserInputAsync(Dictionary<int, UserInputtedMatch> matches)
+    public Task ProvideUserInputAsync(Dictionary<int, ProposedMatch>? matches)
     {
         _inputTcs?.TrySetResult(matches);
         State = LibraryScanState.Scanning;

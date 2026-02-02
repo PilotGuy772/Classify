@@ -9,7 +9,7 @@ public interface IIngestionOrchestrationService
     public LibraryScanState State { get; }
 
     public Task StartScanAsync(CancellationToken cancellationToken);
-    public Task ProvideUserInputAsync(Dictionary<int, UserInputtedMatch>? match);
+    public Task ProvideUserInputAsync(Dictionary<int, ProposedMatch>? match);
 
     public event Action<LibraryScanState>? ScanStateChanged;
     public event Action<string>? UserInputRequested;

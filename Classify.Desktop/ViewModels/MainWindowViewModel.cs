@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Classify.Core.Domain.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Classify.Desktop.ViewModels;

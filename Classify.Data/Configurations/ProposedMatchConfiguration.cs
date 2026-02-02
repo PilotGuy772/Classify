@@ -33,6 +33,32 @@ public class ProposedMatchConfiguration : IEntityTypeConfiguration<ProposedMatch
 
         builder.HasOne<AudioFile>()
             .WithMany()
-            .HasForeignKey(pm => pm.AudioFileId);
+            .HasForeignKey(pm => pm.AudioFileId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Optional foreign keys: Composer, Work, Recording, Movement
+        builder.HasOne<Composer>()
+            .WithMany()
+            .HasForeignKey(pm => pm.ComposerId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder.HasOne<Work>()
+            .WithMany()
+            .HasForeignKey(pm => pm.WorkId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder.HasOne<Recording>()
+            .WithMany()
+            .HasForeignKey(pm => pm.RecordingId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder.HasOne<Movement>()
+            .WithMany()
+            .HasForeignKey(pm => pm.MovementId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
     }
 }

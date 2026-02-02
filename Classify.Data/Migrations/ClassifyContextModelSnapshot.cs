@@ -116,6 +116,9 @@ namespace Classify.Data.Migrations
                     b.Property<string>("CatalogNumber")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("ComposerId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("ComposerName")
                         .HasColumnType("TEXT");
 
@@ -134,15 +137,27 @@ namespace Classify.Data.Migrations
                     b.Property<string>("MatchReasoning")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("MovementId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("MovementNumber")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MovementTitle")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("PerformanceOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RecordingId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Source")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("WorkId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("WorkTitle")
                         .HasColumnType("TEXT");
@@ -150,6 +165,14 @@ namespace Classify.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AudioFileId");
+
+                    b.HasIndex("ComposerId");
+
+                    b.HasIndex("MovementId");
+
+                    b.HasIndex("RecordingId");
+
+                    b.HasIndex("WorkId");
 
                     b.ToTable("ProposedMatch");
                 });
@@ -248,6 +271,26 @@ namespace Classify.Data.Migrations
                         .HasForeignKey("AudioFileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Classify.Core.Domain.Composer", null)
+                        .WithMany()
+                        .HasForeignKey("ComposerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Classify.Core.Domain.Movement", null)
+                        .WithMany()
+                        .HasForeignKey("MovementId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Classify.Core.Domain.Recording", null)
+                        .WithMany()
+                        .HasForeignKey("RecordingId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Classify.Core.Domain.Work", null)
+                        .WithMany()
+                        .HasForeignKey("WorkId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Classify.Core.Domain.Recording", b =>
