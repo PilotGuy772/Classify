@@ -76,6 +76,7 @@ public class LibraryIngestionOrchestrationService(
                     Name = result.ComposerName ?? ""
                 };
                 composer = await uow.Composers.AddAsync(composer);
+                await uow.SaveChangesAsync();
                 composerId = composer.Id;
             }
             else
@@ -93,6 +94,7 @@ public class LibraryIngestionOrchestrationService(
                     ComposerId = composerId
                 };
                 work = await uow.Works.AddAsync(work);
+                await uow.SaveChangesAsync();
                 workId = work.Id;
             }
             else
@@ -110,6 +112,7 @@ public class LibraryIngestionOrchestrationService(
                     WorkId = workId
                 };
                 movement = await uow.Movements.AddAsync(movement);
+                await uow.SaveChangesAsync();
                 movementId = movement.Id;
             }
             else
@@ -126,6 +129,7 @@ public class LibraryIngestionOrchestrationService(
                     WorkId = workId
                 };
                 recording = await uow.Recordings.AddAsync(recording);
+                await uow.SaveChangesAsync();
                 recordingId = recording.Id;
             }
             else
@@ -143,6 +147,7 @@ public class LibraryIngestionOrchestrationService(
             };
 
             await uow.PerformedMovements.AddAsync(performedMovement);
+            await uow.SaveChangesAsync();
             ct.ThrowIfCancellationRequested();
 
             // Mark as confirmed and update ProposedMatch
