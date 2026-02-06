@@ -19,12 +19,6 @@
                        VerticalAlignment="Center" />
         </StackPanel>
 
-        <!-- Placeholder shown when orchestration is awaiting user input -->
-        <TextBlock Text="Waiting for user input..."
-                   IsVisible="{Binding IsAwaitingUserInput}"
-                   Foreground="#888"
-                   Margin="0,8,0,8" />
-
         <ListBox ItemsSource="{Binding ScannedFiles}">
             <ListBox.ItemTemplate>
                 <DataTemplate>

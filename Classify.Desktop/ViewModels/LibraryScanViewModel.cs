@@ -31,17 +31,6 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
         }
     } = "Idle";
 
-    public bool IsAwaitingUserInput
-    {
-        get;
-        private set
-        {
-            if (field == value) return;
-            field = value;
-            RaisePropertyChanged();
-        }
-    }
-
     public LibraryScanViewModel(IIngestionOrchestrationService orchestration)
     {
         _orchestration = orchestration;
@@ -50,7 +39,6 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
 
         // subscribe to orchestration events
         _orchestration.ScanStateChanged += OnScanStateChanged;
-        _orchestration.UserInputRequested += OnUserInputRequested;
 
         // initialize properties from current service state
         OnScanStateChanged(_orchestration.State);
@@ -64,14 +52,6 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
     {
         // map enum to display string
         CurrentState = state.ToString();
-        IsAwaitingUserInput = state == LibraryScanState.AwaitingUserInput;
-    }
-
-    private void OnUserInputRequested(string message)
-    {
-        // When orchestration asks for input, ensure IsAwaitingUserInput is true. We don't send input here.
-        IsAwaitingUserInput = true;
-        // Optionally we could capture the message but per requirements we simply show placeholder.
     }
 
     private async Task ScanLibraryAsync()
@@ -100,7 +80,6 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
         if (_orchestration is not null)
         {
             _orchestration.ScanStateChanged -= OnScanStateChanged;
-            _orchestration.UserInputRequested -= OnUserInputRequested;
         }
 
         _cts?.Cancel();

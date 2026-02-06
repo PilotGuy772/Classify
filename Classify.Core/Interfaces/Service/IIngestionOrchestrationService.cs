@@ -9,8 +9,9 @@ public interface IIngestionOrchestrationService
     public LibraryScanState State { get; }
 
     public Task StartScanAsync(CancellationToken cancellationToken);
-    public Task ProvideUserInputAsync(Dictionary<int, ProposedMatch>? match);
+
+    // accept a proposed match by ID (service will load the ProposedMatch from DB and persist changes)
+    public Task AcceptProposedMatchAsync(int proposedMatchId, CancellationToken cancellationToken);
 
     public event Action<LibraryScanState>? ScanStateChanged;
-    public event Action<string>? UserInputRequested;
 }
