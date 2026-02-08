@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Classify.Core.Domain;
 using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Interfaces.Service;
 using Classify.Core.Enums;
+using Classify.Core.Interfaces.Infrastructure;
 
 namespace Classify.Desktop.ViewModels;
 
@@ -14,6 +18,7 @@ public record ScannedFileViewModel(string FileName, string Status);
 public class LibraryScanViewModel : ViewModelBase, IDisposable
 {
     private readonly IIngestionOrchestrationService _orchestration;
+    private readonly IUnitOfWork _unitOfWork;
     private CancellationTokenSource? _cts;
 
     public ObservableCollection<ScannedFileViewModel> ScannedFiles { get; } = new();
@@ -31,9 +36,10 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
         }
     } = "Idle";
 
-    public LibraryScanViewModel(IIngestionOrchestrationService orchestration)
+    public LibraryScanViewModel(IIngestionOrchestrationService orchestration, IUnitOfWork unitOfWork)
     {
         _orchestration = orchestration;
+        _unitOfWork = unitOfWork;
 
         ScanLibraryCommand = new RelayCommand(o => _ = ScanLibraryAsync());
 
@@ -43,15 +49,40 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
         // initialize properties from current service state
         OnScanStateChanged(_orchestration.State);
 
-        // seed some example items (skeleton)
-        ScannedFiles.Add(new ScannedFileViewModel("example1.mp3", "Added"));
-        ScannedFiles.Add(new ScannedFileViewModel("example2.wav", "Awaiting Input"));
+        _ = LoadIncompleteAudioFilesAsync();
     }
 
     private void OnScanStateChanged(LibraryScanState state)
     {
         // map enum to display string
         CurrentState = state.ToString();
+
+        if (state == LibraryScanState.Completed)
+        {
+            // fire-and-forget load; UI will update when complete
+            _ = LoadIncompleteAudioFilesAsync();
+        }
+    }
+
+    private async Task LoadIncompleteAudioFilesAsync()
+    {
+        try
+        {
+            IEnumerable<AudioFile> all = await _unitOfWork.AudioFiles.GetAllAsync();
+            IEnumerable<AudioFile> incomplete = all.Where(a => a.Status != IngestionStatus.Complete);
+
+            ScannedFiles.Clear();
+            foreach (AudioFile a in incomplete)
+            {
+                ScannedFiles.Add(new ScannedFileViewModel(a.Path, a.Status.ToString()));
+            }
+
+            RaisePropertyChanged(nameof(ScannedFiles));
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+        }
     }
 
     private async Task ScanLibraryAsync()
