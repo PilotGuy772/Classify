@@ -133,7 +133,7 @@ public class LibraryIngestionOrchestrationServiceTests
             Confirmed = false
         };
 
-        await uow.ProposedMatch.AddAsync(pm);
+        await uow.ProposedMatches.AddAsync(pm);
         await uow.SaveChangesAsync();
 
         IIngestionOrchestrationService orchestration = new LibraryIngestionOrchestrationService(
@@ -161,7 +161,7 @@ public class LibraryIngestionOrchestrationServiceTests
         IEnumerable<PerformedMovement> pms = await uow.PerformedMovements.GetAllAsync();
         pms.Should().ContainSingle(pm2 => pm2.AudioFileId == audio.Id && pm2.Order == 1);
 
-        ProposedMatch? updated = await uow.ProposedMatch.GetByIdAsync(pm.Id);
+        ProposedMatch? updated = await uow.ProposedMatches.GetByIdAsync(pm.Id);
         updated.Should().NotBeNull();
         updated!.Confirmed.Should().BeTrue();
     }
@@ -209,7 +209,7 @@ public class LibraryIngestionOrchestrationServiceTests
             ConfidenceScore = 0.5f
         };
 
-        await uow.ProposedMatch.AddAsync(pm);
+        await uow.ProposedMatches.AddAsync(pm);
         await uow.SaveChangesAsync();
 
         IIngestionOrchestrationService orchestration = new LibraryIngestionOrchestrationService(
@@ -225,7 +225,7 @@ public class LibraryIngestionOrchestrationServiceTests
         IEnumerable<PerformedMovement> pms = await uow.PerformedMovements.GetAllAsync();
         pms.Should().ContainSingle(p => p.AudioFileId == audio.Id && p.MovementId == existingMovement.Id && p.RecordingId == existingRecording.Id && p.Order == 2);
 
-        ProposedMatch? updated = await uow.ProposedMatch.GetByIdAsync(pm.Id);
+        ProposedMatch? updated = await uow.ProposedMatches.GetByIdAsync(pm.Id);
         updated.Should().NotBeNull();
         updated!.Confirmed.Should().BeTrue();
     }

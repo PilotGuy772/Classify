@@ -7,7 +7,7 @@ namespace Classify.Data.Repositories;
 
 public class ProposedMatchRepository(ClassifyContext context) : Repository<ProposedMatch>(context), IProposedMatchRepository
 {
-    public async Task<IEnumerable<ProposedMatch>> GetByFileIdAsync(int fileId)
+    public async Task<IEnumerable<ProposedMatch>> GetByAudioFileIdAsync(int fileId)
     {
         return await DbSet.AsNoTracking()
             .Where(pm => pm.AudioFileId == fileId)

@@ -39,7 +39,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IPerformedMovementRepository PerformedMovements =>
         field ??= new PerformedMovementRepository(_context);
 
-    public IProposedMatchRepository ProposedMatch =>
+    public IProposedMatchRepository ProposedMatches =>
         field ??= new ProposedMatchRepository(_context);
 
     public IRecordingRepository Recordings =>

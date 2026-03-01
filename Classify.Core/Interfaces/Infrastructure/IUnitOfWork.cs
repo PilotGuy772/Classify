@@ -9,7 +9,7 @@ public interface IUnitOfWork : IAsyncDisposable, IDisposable
     IComposerRepository          Composers          { get; }
     IMovementRepository          Movements          { get; }
     IPerformedMovementRepository PerformedMovements { get; }
-    IProposedMatchRepository     ProposedMatch      { get; }
+    IProposedMatchRepository     ProposedMatches      { get; }
     IRecordingRepository         Recordings         { get; }
     IWorkRepository              Works              { get; }
 

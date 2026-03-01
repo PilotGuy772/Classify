@@ -5,15 +5,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Classify.Core.Domain;
 using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Interfaces.Service;
 using Classify.Core.Enums;
 using Classify.Core.Interfaces.Infrastructure;
+using Classify.Desktop.Views;
 
 namespace Classify.Desktop.ViewModels;
 
-public record ScannedFileViewModel(string FileName, string Status);
+public record ScannedFileViewModel(int Id, string FileName, string Status);
 
 public class LibraryScanViewModel : ViewModelBase, IDisposable
 {
@@ -64,7 +68,7 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
         }
     }
 
-    private async Task LoadIncompleteAudioFilesAsync()
+    public async Task LoadIncompleteAudioFilesAsync()
     {
         try
         {
@@ -74,10 +78,10 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
             ScannedFiles.Clear();
             foreach (AudioFile a in incomplete)
             {
-                ScannedFiles.Add(new ScannedFileViewModel(a.Path, a.Status.ToString()));
+                ScannedFiles.Add(new ScannedFileViewModel(a.Id, a.Path, a.Status.ToString()));
             }
 
-            RaisePropertyChanged(nameof(ScannedFiles));
+            // ObservableCollection changed; UI updates automatically
         }
         catch (Exception e)
         {
@@ -104,6 +108,34 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
             Console.Error.WriteLine(e);
             throw;
         }
+    }
+
+    public async Task FileItemDoubleTappedAsync(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is not ListBox { SelectedItem: ScannedFileViewModel item }) return;
+
+        ProposedMatchViewModel pmVm = new (_unitOfWork, item.Id, item.FileName);
+        ProposedMatchDialog dialog = new()
+        {
+            DataContext = pmVm
+        };
+
+        // Show the dialog and refresh the list after it closes
+        await dialog.ShowDialog((Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null) ?? throw new InvalidOperationException());
+        await LoadIncompleteAudioFilesAsync();
+    }
+
+    public async Task OpenProposedMatchesDialogAsync(int audioFileId, string audioFilePath)
+    {
+        IEnumerable<ProposedMatch> proposedMatches = await _unitOfWork.ProposedMatches.GetByAudioFileIdAsync(audioFileId);
+        ProposedMatchesViewModel viewModel = new(_unitOfWork, audioFileId, audioFilePath, proposedMatches);
+
+        ProposedMatchesDialog dialog = new()
+        {
+            DataContext = viewModel
+        };
+
+        await dialog.ShowDialog(App.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null);
     }
 
     public void Dispose()

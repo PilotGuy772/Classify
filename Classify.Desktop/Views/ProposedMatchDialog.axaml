@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
+        x:Class="Classify.Desktop.Views.ProposedMatchDialog"
+        x:DataType="viewModels:ProposedMatchViewModel"
+        Title="Propose Match">
+
+    <StackPanel Margin="12" Spacing="8">
+        <TextBlock Text="Audio File:" FontWeight="Bold" />
+        <TextBlock Text="{Binding AudioFilePath}" TextWrapping="Wrap" />
+
+        <TextBlock Text="Composer Name" />
+        <TextBox Text="{Binding ComposerName}" />
+
+        <TextBlock Text="Work Title" />
+        <TextBox Text="{Binding WorkTitle}" />
+
+        <TextBlock Text="Catalog Number" />
+        <TextBox Text="{Binding CatalogNumber}" />
+
+        <TextBlock Text="Conductor Name" />
+        <TextBox Text="{Binding ConductorName}" />
+
+        <TextBlock Text="Movement Number" />
+        <TextBox Text="{Binding MovementNumber}" />
+
+        <TextBlock Text="Movement Title" />
+        <TextBox Text="{Binding MovementTitle}" />
+
+        <TextBlock Text="Performance Order" />
+        <TextBox Text="{Binding PerformanceOrder}" />
+
+        <TextBlock Text="Source" />
+        <TextBox Text="{Binding Source}" />
+
+        <TextBlock Text="Confidence Score" />
+        <TextBox Text="{Binding ConfidenceScore}" />
+
+        <TextBlock Text="Match Reasoning" />
+        <TextBox Text="{Binding MatchReasoning}" AcceptsReturn="True" Height="80" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Content="Cancel" Click="CancelClicked" />
+            <Button Content="Submit" Command="{Binding SubmitCommand}" />
+        </StackPanel>
+    </StackPanel>
+</Window>

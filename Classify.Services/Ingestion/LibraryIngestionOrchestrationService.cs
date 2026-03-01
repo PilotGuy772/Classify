@@ -57,7 +57,7 @@ public class LibraryIngestionOrchestrationService(
     public async Task AcceptProposedMatchAsync(int proposedMatchId, CancellationToken ct)
     {
         // Load the ProposedMatch from repository
-        ProposedMatch? result = await uow.ProposedMatch.GetByIdAsync(proposedMatchId);
+        ProposedMatch? result = await uow.ProposedMatches.GetByIdAsync(proposedMatchId);
         if (result is null)
             throw new InvalidOperationException($"ProposedMatch with id {proposedMatchId} not found.");
 
@@ -152,7 +152,7 @@ public class LibraryIngestionOrchestrationService(
 
             // Mark as confirmed and update ProposedMatch
             result.Confirmed = true;
-            uow.ProposedMatch.Update(result);
+            uow.ProposedMatches.Update(result);
 
             await uow.SaveChangesAsync();
             await uow.CommitAsync();

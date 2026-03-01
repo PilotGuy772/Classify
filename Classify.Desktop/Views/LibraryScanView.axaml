@@ -19,7 +19,8 @@
                        VerticalAlignment="Center" />
         </StackPanel>
 
-        <ListBox ItemsSource="{Binding ScannedFiles}">
+        <ListBox Name="FilesList" ItemsSource="{Binding ScannedFiles}"
+                 DoubleTapped="FileItemDoubleTapped">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Spacing="12">

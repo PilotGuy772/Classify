@@ -75,7 +75,7 @@ public class App : Application
             await uow.PerformedMovements.AnyAsync() ||
             await uow.Composers.AnyAsync() ||
             await uow.Movements.AnyAsync() ||
-            await uow.ProposedMatch.AnyAsync() ||
+            await uow.ProposedMatches.AnyAsync() ||
             await uow.Recordings.AnyAsync() ||
             await uow.Works.AnyAsync())
         {
