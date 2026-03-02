@@ -1,3 +1,5 @@
+using Classify.Core.Domain;
+using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Enums;
 
 namespace Classify.Core.Interfaces.Service;

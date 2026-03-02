@@ -31,14 +31,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AvaloniaXaml Remove="App.axaml" />
-      <AvaloniaResource Include="App.axaml" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Update="appsettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Remove="App.axaml" />
+      <AvaloniaResource Include="App.axaml" />
     </ItemGroup>
 
 </Project>

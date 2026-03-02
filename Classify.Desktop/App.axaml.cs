@@ -122,6 +122,8 @@ public class App : Application
         services.AddTransient<MovementDetailViewModel>();
         services.AddTransient<RecordingDetailViewModel>();
         services.AddTransient<WorkDetailViewModel>();
+        services.AddTransient<ProposedMatchesViewModel>();
+        services.AddTransient<ProposedMatchViewModel>();
         
         // App Configuration
         string settingsPath =

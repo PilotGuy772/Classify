@@ -127,10 +127,10 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
 
     public async Task OpenProposedMatchesDialogAsync(int audioFileId, string audioFilePath)
     {
-        IEnumerable<ProposedMatch> proposedMatches = await _unitOfWork.ProposedMatches.GetByAudioFileIdAsync(audioFileId);
-        ProposedMatchesViewModel viewModel = new(_unitOfWork, audioFileId, audioFilePath, proposedMatches);
+        var proposedMatches = await _unitOfWork.ProposedMatches.GetByAudioFileIdAsync(audioFileId);
+        var viewModel = new ProposedMatchesViewModel(_unitOfWork, _orchestration, audioFileId, audioFilePath, proposedMatches);
 
-        ProposedMatchesDialog dialog = new()
+        var dialog = new ProposedMatchesDialog
         {
             DataContext = viewModel
         };

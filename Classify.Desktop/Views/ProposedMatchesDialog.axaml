@@ -7,14 +7,22 @@
         x:Class="Classify.Desktop.Views.ProposedMatchesDialog"
         x:DataType="viewModels:ProposedMatchesViewModel"
         Width="600" Height="400">
-
+    
     <DockPanel Margin="12">
         <TextBlock Text="Proposed Matches for Audio File: {Binding AudioFilePath}" DockPanel.Dock="Top" FontWeight="Bold" />
 
         <ListBox ItemsSource="{Binding ProposedMatches}" DockPanel.Dock="Top">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding WorkTitle}" />
+                    <DockPanel>
+                        <TextBlock Text="{Binding WorkTitle}" DockPanel.Dock="Left" />
+                        <Button Content="Edit"
+                                Click="OnEditMatchButtonClick"
+                                Tag="{Binding}" />
+                        <Button Content="Accept"
+                                Click="OnAcceptMatchButtonClick"
+                                Tag="{Binding}" />
+                    </DockPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
