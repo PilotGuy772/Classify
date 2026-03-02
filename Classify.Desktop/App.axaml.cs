@@ -13,6 +13,8 @@ using Classify.Data.Context;
 using Classify.Data.Repositories;
 using Classify.Data.Seeders;
 using Classify.Desktop.ViewModels;
+using Classify.Desktop.Views;
+using Classify.Services;
 using Classify.Services.Ingestion;
 using Classify.Services.Ingestion.File;
 using Microsoft.EntityFrameworkCore;
@@ -110,6 +112,9 @@ public class App : Application
         services.AddScoped<IIngestionService, LibraryIngestionService>();
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
         services.AddScoped<IIngestionOrchestrationService, LibraryIngestionOrchestrationService>();
+        
+        // Utility
+        services.AddTransient<IDialogService, DialogService>();
 
         // ViewModels
         services.AddSingleton<MainWindowViewModel>();
@@ -122,8 +127,10 @@ public class App : Application
         services.AddTransient<MovementDetailViewModel>();
         services.AddTransient<RecordingDetailViewModel>();
         services.AddTransient<WorkDetailViewModel>();
-        services.AddTransient<ProposedMatchesViewModel>();
-        services.AddTransient<ProposedMatchViewModel>();
+        services.AddTransient<ProposedMatchesDialogViewModel>();
+        services.AddTransient<ProposedMatchDialogViewModel>();
+        services.AddTransient<ProposedMatchDialog>();
+        services.AddTransient<ProposedMatchesDialog>();
         
         // App Configuration
         string settingsPath =

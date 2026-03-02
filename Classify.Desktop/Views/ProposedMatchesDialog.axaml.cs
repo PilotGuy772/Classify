@@ -24,7 +24,7 @@ public partial class ProposedMatchesDialog : Window
         _ = sender; // Suppress unused parameter warning
         _ = e;      // Suppress unused parameter warning
 
-        if (DataContext is ProposedMatchesViewModel vm)
+        if (DataContext is ProposedMatchesDialogViewModel vm)
         {
             await vm.AddProposedMatchAsync();
         }
@@ -35,7 +35,7 @@ public partial class ProposedMatchesDialog : Window
         _ = sender; // Suppress unused parameter warning
         _ = e;      // Suppress unused parameter warning
 
-        if (DataContext is ProposedMatchesViewModel vm)
+        if (DataContext is ProposedMatchesDialogViewModel vm)
         {
             await vm.AddProposedMatchAsync();
         }
@@ -43,7 +43,7 @@ public partial class ProposedMatchesDialog : Window
 
     private void OnEditMatchButtonClick(object? sender, RoutedEventArgs _)
     {
-        if (DataContext is ProposedMatchesViewModel viewModel && sender is Button button && button.Tag is ProposedMatch match)
+        if (DataContext is ProposedMatchesDialogViewModel viewModel && sender is Button button && button.Tag is ProposedMatch match)
         {
             viewModel.EditMatchCommand.Execute(match);
         }
@@ -51,7 +51,7 @@ public partial class ProposedMatchesDialog : Window
 
     private void OnAcceptMatchButtonClick(object? sender, RoutedEventArgs _)
     {
-        if (DataContext is ProposedMatchesViewModel viewModel && sender is Button button && button.Tag is ProposedMatch match)
+        if (DataContext is ProposedMatchesDialogViewModel viewModel && sender is Button button && button.Tag is ProposedMatch match)
         {
             viewModel.AcceptMatchCommand.Execute(match);
         }

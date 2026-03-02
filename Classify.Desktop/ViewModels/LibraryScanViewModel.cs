@@ -23,6 +23,7 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
 {
     private readonly IIngestionOrchestrationService _orchestration;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IDialogService _dialogService;
     private CancellationTokenSource? _cts;
 
     public ObservableCollection<ScannedFileViewModel> ScannedFiles { get; } = new();
@@ -40,10 +41,11 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
         }
     } = "Idle";
 
-    public LibraryScanViewModel(IIngestionOrchestrationService orchestration, IUnitOfWork unitOfWork)
+    public LibraryScanViewModel(IIngestionOrchestrationService orchestration, IUnitOfWork unitOfWork, IDialogService dialogService)
     {
         _orchestration = orchestration;
         _unitOfWork = unitOfWork;
+        _dialogService = dialogService;
 
         ScanLibraryCommand = new RelayCommand(o => _ = ScanLibraryAsync());
 
@@ -110,32 +112,9 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
         }
     }
 
-    public async Task FileItemDoubleTappedAsync(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    public async Task OpenProposedMatchesDialogAsync(int audioFileId)
     {
-        if (sender is not ListBox { SelectedItem: ScannedFileViewModel item }) return;
-
-        ProposedMatchViewModel pmVm = new (_unitOfWork, item.Id, item.FileName);
-        ProposedMatchDialog dialog = new()
-        {
-            DataContext = pmVm
-        };
-
-        // Show the dialog and refresh the list after it closes
-        await dialog.ShowDialog((Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null) ?? throw new InvalidOperationException());
-        await LoadIncompleteAudioFilesAsync();
-    }
-
-    public async Task OpenProposedMatchesDialogAsync(int audioFileId, string audioFilePath)
-    {
-        var proposedMatches = await _unitOfWork.ProposedMatches.GetByAudioFileIdAsync(audioFileId);
-        var viewModel = new ProposedMatchesViewModel(_unitOfWork, _orchestration, audioFileId, audioFilePath, proposedMatches);
-
-        var dialog = new ProposedMatchesDialog
-        {
-            DataContext = viewModel
-        };
-
-        await dialog.ShowDialog(App.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null);
+        await _dialogService.ShowDialogAsync<ProposedMatchesDialogViewModel, int>(audioFileId);
     }
 
     public void Dispose()

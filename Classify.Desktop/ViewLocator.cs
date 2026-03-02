@@ -12,6 +12,7 @@ public class ViewLocator : IDataTemplate
             return null;
 
         string viewName = data.GetType().FullName!
+            .Replace("DialogViewModel", "Dialog")
             .Replace("ViewModel", "View");
 
         Type? viewType = Type.GetType(viewName);

@@ -5,23 +5,25 @@
         xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
         mc:Ignorable="d"
         x:Class="Classify.Desktop.Views.ProposedMatchesDialog"
-        x:DataType="viewModels:ProposedMatchesViewModel"
+        x:DataType="viewModels:ProposedMatchesDialogViewModel"
         Width="600" Height="400">
     
     <DockPanel Margin="12">
-        <TextBlock Text="Proposed Matches for Audio File: {Binding AudioFilePath}" DockPanel.Dock="Top" FontWeight="Bold" />
+        <TextBlock Text="{Binding AudioFilePath}" DockPanel.Dock="Top" FontWeight="Bold" />
 
         <ListBox ItemsSource="{Binding ProposedMatches}" DockPanel.Dock="Top">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel>
                         <TextBlock Text="{Binding WorkTitle}" DockPanel.Dock="Left" />
-                        <Button Content="Edit"
-                                Click="OnEditMatchButtonClick"
-                                Tag="{Binding}" />
-                        <Button Content="Accept"
-                                Click="OnAcceptMatchButtonClick"
-                                Tag="{Binding}" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Inspect"
+                                    Click="OnEditMatchButtonClick"
+                                    Tag="{Binding}" />
+                            <Button Content="Accept"
+                                    Click="OnAcceptMatchButtonClick"
+                                    Tag="{Binding}" />
+                        </StackPanel>
                     </DockPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

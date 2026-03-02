@@ -5,7 +5,7 @@
         xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
         x:Class="Classify.Desktop.Views.ProposedMatchDialog"
-        x:DataType="viewModels:ProposedMatchViewModel"
+        x:DataType="viewModels:ProposedMatchDialogViewModel"
         Title="Propose Match">
 
     <StackPanel Margin="12" Spacing="8">
@@ -44,7 +44,11 @@
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
             <Button Content="Cancel" Click="CancelClicked" />
-            <Button Content="Submit" Command="{Binding SubmitCommand}" />
+            <Button Content="Add New Match" Command="{Binding SubmitCommand}" />
+            <Button Content="Add and Accept Match"
+                    Command="{Binding AddAndAcceptMatchCommand}"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,0,0" />
         </StackPanel>
     </StackPanel>
 </Window>

@@ -15,7 +15,7 @@ public partial class LibraryScanView : UserControl
     {
         if (DataContext is LibraryScanViewModel vm && sender is ListBox { SelectedItem: ScannedFileViewModel item })
         {
-            await vm.OpenProposedMatchesDialogAsync(item.Id, item.FileName);
+            await vm.OpenProposedMatchesDialogAsync(item.Id);
         }
     }
 

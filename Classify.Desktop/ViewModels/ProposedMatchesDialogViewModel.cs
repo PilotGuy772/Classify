@@ -14,12 +14,13 @@ using Classify.Desktop.Views;
 
 namespace Classify.Desktop.ViewModels;
 
-public class ProposedMatchesViewModel : ViewModelBase
+public class ProposedMatchesDialogViewModel : ViewModelBase, IDialog<int>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly int _audioFileId;
+    private int _audioFileId;
+    private readonly IDialogService _dialogService;
 
-    public string AudioFilePath { get; }
+    public string AudioFilePath { get; private set; }
     public ObservableCollection<ProposedMatch> ProposedMatches { get; } = new();
 
     public ICommand AddMatchCommand { get; }
@@ -27,17 +28,12 @@ public class ProposedMatchesViewModel : ViewModelBase
     public ICommand AcceptMatchCommand { get; }
     public ICommand NonGenericEditMatchCommand { get; }
     public ICommand NonGenericAcceptMatchCommand { get; }
+    public ICommand AddAndAcceptMatchCommand { get; }
 
-    public ProposedMatchesViewModel(IUnitOfWork unitOfWork, IIngestionOrchestrationService ingestionOrchestrationService, int audioFileId, string audioFilePath, IEnumerable<ProposedMatch> proposedMatches)
+    public ProposedMatchesDialogViewModel(IUnitOfWork unitOfWork, IIngestionOrchestrationService ingestionOrchestrationService, IDialogService dialogService)
     {
         _unitOfWork = unitOfWork;
-        _audioFileId = audioFileId;
-        AudioFilePath = audioFilePath;
-
-        foreach (var match in proposedMatches)
-        {
-            ProposedMatches.Add(match);
-        }
+        _dialogService = dialogService;
 
         AddMatchCommand = new AsyncRelayCommand(AddProposedMatchAsync);
         EditMatchCommand = new AsyncRelayCommand<ProposedMatch>(async match => await EditProposedMatchAsync(match));
@@ -67,19 +63,20 @@ public class ProposedMatchesViewModel : ViewModelBase
 
     public async Task AddProposedMatchAsync()
     {
-        ProposedMatchViewModel proposedMatchViewModel = new(_unitOfWork, _audioFileId, AudioFilePath);
-        ProposedMatchDialog dialog = new()
-        {
-            DataContext = proposedMatchViewModel
-        };
+        //ProposedMatchViewModel proposedMatchViewModel = new(_unitOfWork, ingestionOrchestrationService, _audioFileId, AudioFilePath);
+        // ProposedMatchDialog dialog = new()
+        // {
+        //     DataContext = proposedMatchViewModel
+        // };
+        await _dialogService.ShowDialogAsync<ProposedMatchDialogViewModel, int>(_audioFileId);
 
-        var mainWindow = ((Application)Application.Current)?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null;
-        if (mainWindow == null)
-        {
-            throw new InvalidOperationException("MainWindow is not available.");
-        }
+        // var mainWindow = ((Application)Application.Current)?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null;
+        // if (mainWindow == null)
+        // {
+        //     throw new InvalidOperationException("MainWindow is not available.");
+        // }
 
-        await dialog.ShowDialog(mainWindow);
+        // await dialog.ShowDialog(mainWindow);
 
         // Refresh the list after adding a new match
         IEnumerable<ProposedMatch> updatedMatches = await _unitOfWork.ProposedMatches.GetByAudioFileIdAsync(_audioFileId);
@@ -92,39 +89,25 @@ public class ProposedMatchesViewModel : ViewModelBase
 
     private async Task EditProposedMatchAsync(ProposedMatch match)
     {
-        var proposedMatchViewModel = new ProposedMatchViewModel(_unitOfWork, _audioFileId, AudioFilePath)
-        {
-            ComposerName = match.ComposerName,
-            WorkTitle = match.WorkTitle,
-            CatalogNumber = match.CatalogNumber,
-            ConductorName = match.ConductorName,
-            MovementNumber = match.MovementNumber,
-            MovementTitle = match.MovementTitle,
-            PerformanceOrder = match.PerformanceOrder,
-            Source = match.Source,
-            ConfidenceScore = match.ConfidenceScore,
-            MatchReasoning = match.MatchReasoning
-        };
-
-        var dialog = new ProposedMatchDialog
-        {
-            DataContext = proposedMatchViewModel
-        };
-
-        var mainWindow = ((Application)Application.Current)?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null;
-        if (mainWindow == null)
-        {
-            throw new InvalidOperationException("MainWindow is not available.");
-        }
-
-        await dialog.ShowDialog(mainWindow);
+        await _dialogService.ShowDialogAsync<ProposedMatchDialogViewModel, ProposedMatch>(match);
 
         // Refresh the list after editing
-        var updatedMatches = await _unitOfWork.ProposedMatches.GetByAudioFileIdAsync(_audioFileId);
+        IEnumerable<ProposedMatch> updatedMatches = await _unitOfWork.ProposedMatches.GetByAudioFileIdAsync(_audioFileId);
         ProposedMatches.Clear();
-        foreach (var updatedMatch in updatedMatches)
+        foreach (ProposedMatch updatedMatch in updatedMatches)
         {
             ProposedMatches.Add(updatedMatch);
+        }
+    }
+
+    public void Initialize(int afId)
+    {
+        _audioFileId = afId;
+        AudioFile file = _unitOfWork.AudioFiles.GetByIdAsync(afId).Result!;
+        AudioFilePath = file.Path;
+        foreach (ProposedMatch match in _unitOfWork.ProposedMatches.GetByAudioFileIdAsync(afId).Result)
+        {
+            ProposedMatches.Add(match);
         }
     }
 }
