@@ -156,6 +156,20 @@ public class LibraryIngestionOrchestrationService(
 
             await uow.SaveChangesAsync();
             await uow.CommitAsync();
+
+            // AFTER successful commit of all ingestion work, mark the AudioFile as Complete
+            AudioFile? audioFile = await uow.AudioFiles.GetByIdAsync(afId);
+            if (audioFile is null)
+            {
+                throw new InvalidOperationException($"AudioFile with id {afId} not found when marking Complete.");
+            }
+
+            if (audioFile.Status != IngestionStatus.Complete)
+            {
+                audioFile.Status = IngestionStatus.Complete;
+                uow.AudioFiles.Update(audioFile);
+                await uow.SaveChangesAsync();
+            }
         }
         catch
         {

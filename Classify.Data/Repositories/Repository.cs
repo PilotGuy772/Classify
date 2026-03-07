@@ -15,8 +15,7 @@ public class Repository<T>(ClassifyContext context) : IRepository<T>
 
     public async Task<IEnumerable<T>> GetAllAsync()
         => await DbSet.AsNoTracking().ToListAsync();
-
-    public async Task<T> AddAsync(T entity)
+    public virtual async Task<T> AddAsync(T entity)
     {
         await DbSet.AddAsync(entity);
         return entity;
