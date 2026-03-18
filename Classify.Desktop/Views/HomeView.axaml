@@ -3,11 +3,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+             xmlns:controls="clr-namespace:Classify.Desktop.Controls;assembly=Classify.Desktop"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Classify.Desktop.Views.HomeView"
              x:DataType="viewModels:HomeViewModel">
-    <TextBlock Text="{Binding Text}"
-               VerticalAlignment="Center"
-               HorizontalAlignment="Center"
-               FontSize="24"/>
+
+  <StackPanel Spacing="8" Margin="8">
+    <TextBlock Text="{Binding Text}" FontSize="18" />
+
+    <!-- Composer search control (single selection) -->
+    <controls:MultiEntitySearchControl SearchService="{Binding ComposerSearchService}"
+                                        SelectedItems="{Binding SelectedComposers, Mode=TwoWay}" />
+
+    <!-- Independent TextBox to display selected composer's name after submit -->
+    <StackPanel Orientation="Horizontal" Spacing="6">
+      <TextBox Text="{Binding DisplayComposerName, Mode=TwoWay}" Width="300" />
+      <Button Content="Submit" Command="{Binding SubmitCommand}" />
+    </StackPanel>
+  </StackPanel>
+
 </UserControl>

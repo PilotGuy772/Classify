@@ -113,6 +113,9 @@ public class App : Application
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
         services.AddScoped<IIngestionOrchestrationService, LibraryIngestionOrchestrationService>();
         
+        // Search services (concrete per-entity)
+        services.AddTransient<Classify.Data.Services.ComposerSearchService>();
+        
         // Utility
         services.AddTransient<IDialogService, DialogService>();
 

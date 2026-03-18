@@ -34,12 +34,12 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
     // Added a property for CurrentProposedMatch to resolve the symbol.
     public ProposedMatch? CurrentProposedMatch { get; private set; }
 
-    public ProposedMatchDialogViewModel(IUnitOfWork uow, IIngestionOrchestrationService ingestionOrchestrationService)
+    public ProposedMatchDialogViewModel(IUnitOfWork uow, IIngestionOrchestrationService ingestionOrchestrationService, Classify.Data.Services.ComposerSearchService composerSearchService)
     {
         _uow = uow;
         _ingestionOrchestrationService = ingestionOrchestrationService;
 
-        SubmitCommand = new RelayCommand(o => _ = SubmitAsync());
+        SubmitCommand = new Classify.Core.Domain.Infrastructure.RelayCommand(o => _ = SubmitAsync());
 
         AddAndAcceptMatchCommand = new AsyncRelayCommand(async () =>
         {
