@@ -13,5 +13,14 @@ public class MovementRepository(ClassifyContext context) : Repository<Movement>(
             .Where(m => m.WorkId == id)
             .ToListAsync();
     }
-    
+    public async Task<IEnumerable<Movement>> FindByNameAsync(string query, int limit = 15, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(query)) return [];
+        string q = query.Trim();
+        return await DbSet.AsNoTracking()
+            .Where(m => EF.Functions.Like(m.Name, $"%{q}%"))
+            .OrderBy(m => m.Order)
+            .Take(limit)
+            .ToListAsync(ct);
+    }
 }

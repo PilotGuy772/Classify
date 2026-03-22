@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -64,6 +65,9 @@ public class EntitySearchControlBase : UserControl
 	public EntitySearchControlBase()
 	{
 		RemovePillCommand = new Core.Domain.Infrastructure.RelayCommand(o => RemovePill(o));
+
+		// when SelectedItem is set via binding, reflect it in SelectedItems so UI pills update
+		this.GetObservable(SelectedItemProperty).Subscribe(new ActionObserver<object?>(item => OnSelectedItemChanged(item)));
 	}
 
 	/// <summary>
@@ -110,7 +114,7 @@ public class EntitySearchControlBase : UserControl
 	{
 		if (e.Key == Key.Enter && _suggestionsListControl != null && _suggestionsListControl.SelectedIndex >= 0)
 		{
-			var sr = Suggestions[_suggestionsListControl.SelectedIndex];
+			SearchResult sr = Suggestions[_suggestionsListControl.SelectedIndex];
 			AcceptSuggestion(sr);
 			e.Handled = true;
 		}
@@ -120,7 +124,7 @@ public class EntitySearchControlBase : UserControl
 	{
 		if (_suggestionsListControl != null && _suggestionsListControl.SelectedIndex >= 0)
 		{
-			var sr = Suggestions[_suggestionsListControl.SelectedIndex];
+			SearchResult sr = Suggestions[_suggestionsListControl.SelectedIndex];
 			AcceptSuggestion(sr);
 		}
 	}
@@ -145,7 +149,7 @@ public class EntitySearchControlBase : UserControl
 		string text = _searchBox?.Text ?? string.Empty;
 		_cts?.Cancel();
 		_cts = new CancellationTokenSource();
-		var token = _cts.Token;
+		CancellationToken token = _cts.Token;
 		try
 		{
 			await Task.Delay(Debounce, token);
@@ -164,9 +168,9 @@ public class EntitySearchControlBase : UserControl
 			return;
 		}
 
-		var results = await SearchService.SearchAsync(text, token);
+		IEnumerable<SearchResult> results = await SearchService.SearchAsync(text, token);
 		Suggestions.Clear();
-		foreach (var r in results)
+		foreach (SearchResult r in results)
 			Suggestions.Add(r);
 	}
 
@@ -187,6 +191,21 @@ public class EntitySearchControlBase : UserControl
 		SelectedItem = entity;
 		_searchBox?.Clear();
 		Suggestions.Clear();
+	}
+
+	/// <summary>
+	/// Called when the SelectedItem StyledProperty changes (including when set via VM binding).
+	/// Default: ensure SelectedItems contains the SelectedItem.
+	/// Derived controls override for different semantics (e.g., single-selection replace).
+	/// </summary>
+	protected virtual void OnSelectedItemChanged(object? item)
+	{
+		if (item == null) return;
+		if (SelectedItems == null) SelectedItems = new ObservableCollection<object>();
+		if (!SelectedItems.Contains(item))
+		{
+			SelectedItems.Add(item);
+		}
 	}
 }
 

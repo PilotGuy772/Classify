@@ -115,6 +115,9 @@ public class App : Application
         
         // Search services (concrete per-entity)
         services.AddTransient<Classify.Data.Services.ComposerSearchService>();
+        services.AddTransient<Classify.Data.Services.WorkSearchService>();
+        services.AddTransient<Classify.Data.Services.MovementSearchService>();
+        services.AddTransient<Classify.Data.Services.RecordingSearchService>();
         
         // Utility
         services.AddTransient<IDialogService, DialogService>();

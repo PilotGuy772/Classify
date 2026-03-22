@@ -1,3 +1,4 @@
+using Classify.Core.Domain;
 using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Service;
 
@@ -10,7 +11,7 @@ public class ComposerSearchService(IUnitOfWork uow) : IEntitySearchService
         if (string.IsNullOrWhiteSpace(query))
             return Enumerable.Empty<SearchResult>();
 
-        var composers = await uow.Composers.FindByNameAsync(query, 25, ct);
+        IEnumerable<Composer> composers = await uow.Composers.FindByNameAsync(query, 25, ct);
         return composers.Select(c => new SearchResult { Entity = c, DisplayText = c.Name }).ToList();
     }
 }

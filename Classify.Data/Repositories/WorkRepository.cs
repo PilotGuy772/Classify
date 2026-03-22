@@ -13,4 +13,15 @@ public class WorkRepository(ClassifyContext context) : Repository<Work>(context)
             .Where(w => w.ComposerId == id)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<Work>> FindByTitleOrCatalogAsync(string query, int limit = 15, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(query)) return [];
+        string q = query.Trim();
+        return await DbSet.AsNoTracking()
+            .Where(w => EF.Functions.Like(w.Name, $"%{q}%") || EF.Functions.Like(w.CatalogNumber, $"%{q}%"))
+            .OrderBy(w => w.Name)
+            .Take(limit)
+            .ToListAsync(ct);
+    }
 }

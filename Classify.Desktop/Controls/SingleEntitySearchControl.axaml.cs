@@ -32,5 +32,12 @@ public partial class SingleEntitySearchControl : EntitySearchControlBase
         _searchBox?.Clear();
         Suggestions.Clear();
     }
+
+    protected override void OnSelectedItemChanged(object? item)
+    {
+        if (SelectedItems == null) SelectedItems = new System.Collections.ObjectModel.ObservableCollection<object>();
+        SelectedItems.Clear();
+        if (item != null) SelectedItems.Add(item);
+    }
 }
 

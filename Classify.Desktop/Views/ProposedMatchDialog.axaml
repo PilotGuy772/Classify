@@ -3,52 +3,60 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+        xmlns:controls="clr-namespace:Classify.Desktop.Controls;assembly=Classify.Desktop"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
         x:Class="Classify.Desktop.Views.ProposedMatchDialog"
         x:DataType="viewModels:ProposedMatchDialogViewModel"
         Title="Propose Match">
 
-    <StackPanel Margin="12" Spacing="8">
+    <ScrollViewer Margin="12" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="8">
         <TextBlock Text="Audio File:" FontWeight="Bold" />
         <TextBlock Text="{Binding AudioFilePath}" TextWrapping="Wrap" />
 
         <TextBlock Text="Composer Name" />
-        <TextBox Text="{Binding ComposerName}" />
+        <TextBox Text="{Binding ComposerName}" HorizontalAlignment="Stretch" />
+        <TextBlock Text="Or select an existing Composer" />
+        <controls:SingleEntitySearchControl x:Name="ComposerSearch" SearchService="{Binding ComposerSearchService}" SelectedItem="{Binding SelectedComposer, Mode=TwoWay}" HorizontalAlignment="Stretch" />
 
         <TextBlock Text="Work Title" />
-        <TextBox Text="{Binding WorkTitle}" />
+        <TextBox Text="{Binding WorkTitle}" HorizontalAlignment="Stretch" />
+        <TextBlock Text="Or select an existing Work" />
+        <controls:SingleEntitySearchControl x:Name="WorkSearch" SearchService="{Binding WorkSearchService}" SelectedItem="{Binding SelectedWork, Mode=TwoWay}" HorizontalAlignment="Stretch" />
 
         <TextBlock Text="Catalog Number" />
-        <TextBox Text="{Binding CatalogNumber}" />
+        <TextBox Text="{Binding CatalogNumber}" HorizontalAlignment="Stretch" />
 
         <TextBlock Text="Conductor Name" />
-        <TextBox Text="{Binding ConductorName}" />
+        <TextBox Text="{Binding ConductorName}" HorizontalAlignment="Stretch" />
+        <TextBlock Text="Or select an existing Recording" />
+        <controls:SingleEntitySearchControl x:Name="RecordingSearch" SearchService="{Binding RecordingSearchService}" SelectedItem="{Binding SelectedRecording, Mode=TwoWay}" HorizontalAlignment="Stretch" />
 
         <TextBlock Text="Movement Number" />
-        <TextBox Text="{Binding MovementNumber}" />
+        <TextBox Text="{Binding MovementNumber}" HorizontalAlignment="Stretch" />
 
         <TextBlock Text="Movement Title" />
-        <TextBox Text="{Binding MovementTitle}" />
+        <TextBox Text="{Binding MovementTitle}" HorizontalAlignment="Stretch" />
+        <TextBlock Text="Or select an existing Movement" />
+        <controls:SingleEntitySearchControl x:Name="MovementSearch" SearchService="{Binding MovementSearchService}" SelectedItem="{Binding SelectedMovement, Mode=TwoWay}" HorizontalAlignment="Stretch" />
 
         <TextBlock Text="Performance Order" />
-        <TextBox Text="{Binding PerformanceOrder}" />
+        <TextBox Text="{Binding PerformanceOrder}" HorizontalAlignment="Stretch" />
 
         <TextBlock Text="Source" />
-        <TextBox Text="{Binding Source}" />
+        <TextBox Text="{Binding Source}" HorizontalAlignment="Stretch" />
 
         <TextBlock Text="Confidence Score" />
-        <TextBox Text="{Binding ConfidenceScore}" />
+        <TextBox Text="{Binding ConfidenceScore}" HorizontalAlignment="Stretch" />
 
         <TextBlock Text="Match Reasoning" />
-        <TextBox Text="{Binding MatchReasoning}" AcceptsReturn="True" Height="80" />
+        <TextBox Text="{Binding MatchReasoning}" AcceptsReturn="True" Height="120" HorizontalAlignment="Stretch" />
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+        <WrapPanel HorizontalAlignment="Right">
             <Button Content="Cancel" Click="CancelClicked" />
             <Button Content="Add New Match" Command="{Binding SubmitCommand}" />
-            <Button Content="Add and Accept Match"
-                    Command="{Binding AddAndAcceptMatchCommand}"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,0,0" />
-        </StackPanel>
-    </StackPanel>
+            <Button Content="Add and Accept Match" Command="{Binding AddAndAcceptMatchCommand}" />
+        </WrapPanel>
+      </StackPanel>
+    </ScrollViewer>
 </Window>

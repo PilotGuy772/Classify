@@ -28,18 +28,83 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
     public float ConfidenceScore { get; set; } = 0.0f;
     public string? MatchReasoning { get; set; }
 
+    // selected entities from the search controls (non-generic object)
+    private object? _selectedComposer;
+    public object? SelectedComposer
+    {
+        get => _selectedComposer;
+        set
+        {
+            if (_selectedComposer == value) return;
+            _selectedComposer = value;
+            RaisePropertyChanged();
+        }
+    }
+
+    private object? _selectedWork;
+    public object? SelectedWork
+    {
+        get => _selectedWork;
+        set
+        {
+            if (_selectedWork == value) return;
+            _selectedWork = value;
+            RaisePropertyChanged();
+        }
+    }
+
+    private object? _selectedMovement;
+    public object? SelectedMovement
+    {
+        get => _selectedMovement;
+        set
+        {
+            if (_selectedMovement == value) return;
+            _selectedMovement = value;
+            RaisePropertyChanged();
+        }
+    }
+
+    private object? _selectedRecording;
+    public object? SelectedRecording
+    {
+        get => _selectedRecording;
+        set
+        {
+            if (_selectedRecording == value) return;
+            _selectedRecording = value;
+            RaisePropertyChanged();
+        }
+    }
+
     public ICommand SubmitCommand { get; }
     public ICommand AddAndAcceptMatchCommand { get; }
 
     // Added a property for CurrentProposedMatch to resolve the symbol.
     public ProposedMatch? CurrentProposedMatch { get; private set; }
 
-    public ProposedMatchDialogViewModel(IUnitOfWork uow, IIngestionOrchestrationService ingestionOrchestrationService, Classify.Data.Services.ComposerSearchService composerSearchService)
+    public Classify.Data.Services.ComposerSearchService ComposerSearchService { get; }
+    public Classify.Data.Services.WorkSearchService WorkSearchService { get; }
+    public Classify.Data.Services.MovementSearchService MovementSearchService { get; }
+    public Classify.Data.Services.RecordingSearchService RecordingSearchService { get; }
+
+    public ProposedMatchDialogViewModel(
+        IUnitOfWork uow,
+        IIngestionOrchestrationService ingestionOrchestrationService,
+        Classify.Data.Services.ComposerSearchService composerSearchService,
+        Classify.Data.Services.WorkSearchService workSearchService,
+        Classify.Data.Services.MovementSearchService movementSearchService,
+        Classify.Data.Services.RecordingSearchService recordingSearchService)
     {
         _uow = uow;
         _ingestionOrchestrationService = ingestionOrchestrationService;
 
-        SubmitCommand = new Classify.Core.Domain.Infrastructure.RelayCommand(o => _ = SubmitAsync());
+        ComposerSearchService = composerSearchService;
+        WorkSearchService = workSearchService;
+        MovementSearchService = movementSearchService;
+        RecordingSearchService = recordingSearchService;
+
+        SubmitCommand = new RelayCommand(o => _ = SubmitAsync());
 
         AddAndAcceptMatchCommand = new AsyncRelayCommand(async () =>
         {
@@ -69,6 +134,16 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
             Confirmed = false
         };
 
+        // apply selected entity FKs if available
+        if (SelectedComposer is Composer sc)
+            pm.ComposerId = sc.Id;
+        if (SelectedWork is Work sw)
+            pm.WorkId = sw.Id;
+        if (SelectedMovement is Movement sm)
+            pm.MovementId = sm.Id;
+        if (SelectedRecording is Recording sr)
+            pm.RecordingId = sr.Id;
+
         await _uow.ProposedMatches.AddAsync(pm);
         await _uow.SaveChangesAsync();
     }
@@ -91,6 +166,15 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
             Confirmed = false
         };
 
+        if (SelectedComposer is Composer sc)
+            CurrentProposedMatch.ComposerId = sc.Id;
+        if (SelectedWork is Work sw)
+            CurrentProposedMatch.WorkId = sw.Id;
+        if (SelectedMovement is Movement sm)
+            CurrentProposedMatch.MovementId = sm.Id;
+        if (SelectedRecording is Recording sr)
+            CurrentProposedMatch.RecordingId = sr.Id;
+
         await _uow.ProposedMatches.AddAsync(CurrentProposedMatch);
         await _uow.SaveChangesAsync();
     }
@@ -109,6 +193,31 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
         Source = proposedMatch.Source;
         ConfidenceScore = proposedMatch.ConfidenceScore;
         MatchReasoning = proposedMatch.MatchReasoning;
+
+        // If the ProposedMatch references existing entities, load them and set Selected* so controls show pills
+        if (proposedMatch.ComposerId.HasValue)
+        {
+            var composer = _uow.Composers.GetByIdAsync(proposedMatch.ComposerId.Value).Result;
+            if (composer != null) SelectedComposer = composer;
+        }
+
+        if (proposedMatch.WorkId.HasValue)
+        {
+            var work = _uow.Works.GetByIdAsync(proposedMatch.WorkId.Value).Result;
+            if (work != null) SelectedWork = work;
+        }
+
+        if (proposedMatch.MovementId.HasValue)
+        {
+            var movement = _uow.Movements.GetByIdAsync(proposedMatch.MovementId.Value).Result;
+            if (movement != null) SelectedMovement = movement;
+        }
+
+        if (proposedMatch.RecordingId.HasValue)
+        {
+            var recording = _uow.Recordings.GetByIdAsync(proposedMatch.RecordingId.Value).Result;
+            if (recording != null) SelectedRecording = recording;
+        }
     }
 
     public void Initialize(int audioFileId)
