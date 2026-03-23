@@ -1,0 +1,9 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Linux-specific overrides. Keep minimal — system decorations expected. -->
+
+  <!-- TODO(Linux): Provide GNOME/KDE theme tweaks if needed. Avoid assuming button placement or custom window chrome. -->
+
+</Styles>
+

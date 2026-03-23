@@ -53,10 +53,34 @@ public class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             MainWindowViewModel vm = Services.GetRequiredService<MainWindowViewModel>();
-            desktop.MainWindow = new MainWindow
+            MainWindow mainWindow = new()
             {
                 DataContext = vm
             };
+
+            // Apply platform class to the top-level window so it propagates to children.
+            try
+            {
+                IPlatformService? platformService = Services.GetService<IPlatformService>();
+                if (platformService is not null)
+                {
+                    string platformClass = platformService.Current switch
+                    {
+                        PlatformKind.MacOS => "platform-macos",
+                        PlatformKind.Linux => "platform-linux",
+                        PlatformKind.Windows => "platform-windows",
+                        _ => "platform-unknown"
+                    };
+
+                    mainWindow.Classes.Add(platformClass);
+                }
+            }
+            catch
+            {
+                // Don't crash startup for styling errors.
+            }
+
+            desktop.MainWindow = mainWindow;
             vm.Initialize();
         }
 

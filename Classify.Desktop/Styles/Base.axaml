@@ -1,0 +1,33 @@
+<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Semantic classes used across the app. Keep values identical to current inline styles so this is non-breaking. -->
+
+  <!-- Sidebar: previously a StackPanel with Background="#333", Spacing and Margin -->
+  <Style Selector="StackPanel.sidebar">
+	<Setter Property="Background" Value="#333" />
+	<Setter Property="Spacing" Value="8" />
+	<Setter Property="Margin" Value="8" />
+  </Style>
+
+  <!-- Titlebar / top bar: previously a Border with Height=40, Background="#555", Padding=8 -->
+  <Style Selector="Border.titlebar">
+	<Setter Property="Background" Value="#555" />
+	<Setter Property="Height" Value="40" />
+	<Setter Property="Padding" Value="8" />
+  </Style>
+
+  <!-- Toolbar-button: small neutral style for sidebar buttons -->
+  <Style Selector="Button.toolbar-button">
+	<Setter Property="Padding" Value="6,4" />
+	<Setter Property="HorizontalAlignment" Value="Stretch" />
+  </Style>
+
+  <!-- Primary semantic button (combination usage allowed: Button.primary.toolbar-button) -->
+  <Style Selector="Button.primary.toolbar-button">
+	<!-- Intentionally empty for now. Platform-specific accents can override this. -->
+  </Style>
+
+</Styles>
+
+

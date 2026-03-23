@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Mime;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Classify.Core.Interfaces.Infrastructure;
-using Classify.Desktop;
 using Classify.Desktop.ViewModels;
 using Classify.Desktop.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +36,20 @@ public class DialogService : IDialogService
         Window window = (Window)Activator.CreateInstance(windowType)!;
 
         window.DataContext = vm;
+
+        // Copy platform classes from main window so dialogs inherit platform-specific styling hooks.
+        try
+        {
+            Window main = GetMainWindow();
+            foreach (string cls in main.Classes.Where(cls => !window.Classes.Contains(cls)))
+            {
+                window.Classes.Add(cls);
+            }
+        }
+        catch
+        {
+            // Don't let styling failures block dialog display.
+        }
 
         // If you're using ViewLocator, Avalonia will resolve the view automatically.
         // Otherwise you'd map VM → Window here.

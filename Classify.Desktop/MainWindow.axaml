@@ -6,6 +6,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Classify.Desktop.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="PreferSystemChrome"
         Title="Classify.Desktop">
     
         <Window.DataContext>
@@ -18,29 +20,29 @@
                 <!-- Sidebar -->
                 <StackPanel Grid.RowSpan="2"
                             Grid.Column="0"
-                            Background="#333"
-                            Spacing="8"
-                            Margin="8">
+                            Classes="sidebar">
 
                         <Button Content="Home"
+                                Classes="toolbar-button"
                                 Click="HomeClicked"/>
 
                         <Button Content="Settings"
+                                Classes="toolbar-button"
                                 Click="SettingsClicked"/>
                         
                         <Button Content="Library"
+                                Classes="toolbar-button"
                                 Click="LibraryClicked"/>
 
                         <Button Content="Scan Library"
+                                Classes="primary toolbar-button"
                                 Command="{Binding ShowLibraryScanCommand}"/>
                 </StackPanel>
 
                 <!-- Top bar -->
                 <Border Grid.Column="1"
                         Grid.Row="0"
-                        Height="40"
-                        Background="#555"
-                        Padding="8">
+                        Classes="titlebar">
                         <TextBox Watermark="Search…" />
                 </Border>
 

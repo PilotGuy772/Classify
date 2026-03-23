@@ -1,0 +1,18 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- macOS-specific overrides. Keep minimal for now; future changes can target .platform-macos selectors. -->
+
+  <!-- Example: adjust titlebar for traffic-light safe area. DO NOT change height here; prefer padding adjustments. -->
+  <!-- TODO(macOS): refine .titlebar padding to avoid traffic light overlap. Consider using ExtendClientArea... APIs in MainWindow. -->
+
+  <!-- Example selector: Button.primary.platform-macos (add accent color) -->
+  <!--
+  <Style Selector="Button.primary.platform-macos">
+    <Setter Property="Background" Value="#007AFF" />
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+  -->
+
+</Styles>
+

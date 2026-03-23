@@ -29,6 +29,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Classify.Data\Classify.Data.csproj" />
       <ProjectReference Include="..\Classify.Services\Classify.Services.csproj" />
+      <ProjectReference Include="..\Classify.Infrastructure\Classify.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
