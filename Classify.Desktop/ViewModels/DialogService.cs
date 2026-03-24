@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -40,10 +39,11 @@ public class DialogService : IDialogService
         // Copy platform classes from main window so dialogs inherit platform-specific styling hooks.
         try
         {
-            Window main = GetMainWindow();
-            foreach (string cls in main.Classes.Where(cls => !window.Classes.Contains(cls)))
+            var main = GetMainWindow();
+            foreach (var cls in main.Classes)
             {
-                window.Classes.Add(cls);
+                if (!window.Classes.Contains(cls))
+                    window.Classes.Add(cls);
             }
         }
         catch

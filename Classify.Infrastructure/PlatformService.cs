@@ -1,3 +1,4 @@
+using System;
 using Classify.Core.Interfaces.Infrastructure;
 
 namespace Classify.Infrastructure;

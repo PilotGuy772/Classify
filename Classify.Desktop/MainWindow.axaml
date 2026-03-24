@@ -18,23 +18,23 @@
               RowDefinitions="Auto,*">
 
                 <!-- Sidebar -->
-                <StackPanel Grid.RowSpan="2"
+                <StackPanel x:Name="SidebarPanel" Grid.RowSpan="2"
                             Grid.Column="0"
                             Classes="sidebar">
 
-                        <Button Content="Home"
+                        <Button x:Name="HomeButton" Content="Home"
                                 Classes="toolbar-button"
                                 Click="HomeClicked"/>
 
-                        <Button Content="Settings"
+                        <Button x:Name="SettingsButton" Content="Settings"
                                 Classes="toolbar-button"
                                 Click="SettingsClicked"/>
                         
-                        <Button Content="Library"
+                        <Button x:Name="LibraryButton" Content="Library"
                                 Classes="toolbar-button"
                                 Click="LibraryClicked"/>
 
-                        <Button Content="Scan Library"
+                        <Button x:Name="ScanButton" Content="Scan Library"
                                 Classes="primary toolbar-button"
                                 Command="{Binding ShowLibraryScanCommand}"/>
                 </StackPanel>

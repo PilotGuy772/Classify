@@ -3,6 +3,8 @@
              x:Class="Classify.Desktop.App"
              xmlns:desktop="clr-namespace:Classify.Desktop"
              xmlns:converters="clr-namespace:Classify.Desktop.Converters"
+             xmlns:vm="clr-namespace:Classify.Desktop.ViewModels"
+             xmlns:views="clr-namespace:Classify.Desktop.Views"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
              
