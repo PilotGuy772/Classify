@@ -25,4 +25,24 @@ public class AudioFileRepository(ClassifyContext context) : Repository<AudioFile
     {
         return await DbSet.FirstOrDefaultAsync(a => a.Path.Equals(path));
     }
+
+    public async Task<IReadOnlyList<AudioFile>> GetByIdsOrderedAsync(IReadOnlyList<int> ids, CancellationToken ct = default)
+    {
+        if (ids.Count == 0) return Array.Empty<AudioFile>();
+
+        List<AudioFile> files = await DbSet.AsNoTracking()
+            .Where(a => ids.Contains(a.Id))
+            .ToListAsync(ct);
+
+        Dictionary<int, AudioFile> byId = files.ToDictionary(a => a.Id);
+
+        List<AudioFile> ordered = new(ids.Count);
+        foreach (int id in ids)
+        {
+            if (byId.TryGetValue(id, out AudioFile? file))
+                ordered.Add(file);
+        }
+
+        return ordered;
+    }
 }

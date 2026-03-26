@@ -1,0 +1,49 @@
+Colors:
+
+Light Theme:
+Main Background: #FFFFFF
+Secondary Background: #F7F7F7
+Selected Background: #E6E6E6
+Standard Button Background: #F2F2F2
+Primary Button Background: <accent color>
+Outline: #D2D2D2
+Text: #000000
+Secondary Text: #8E8E93
+Tertiary Text: #FFFFFF
+
+Dark Theme:
+Main Background: #2C2C2C
+Secondary Background: #37373A
+Selected Background: #4E4E52
+Standard Button Background: <transparent>
+Primary Button Background: <transparent>
+Outline: #8E8E93
+Text: #DBDBDB
+Secondary Text: #8E8E93
+Tertiary Text: <accent color>
+
+Styling Notes:
+Standard Buttons are buttons that make a direct action ("Add to Playlist," "Shuffle," etc.):
+- Have an outline of weight 2
+- Take the Selected Background when being pressed
+
+Toolbar Buttons are buttons that handle navigation ("Playlists" page button etc.)
+- Have no outline
+- Have no background (transparent background)
+- Take the Selected Background only when selected (navigation is currently on the respective page)
+
+Primary buttons are buttons that perform the primary action for a page ("Play," "Submit," etc.)
+- text takes Tertiary Text in bold
+- no outline on Light Theme
+- same outline as Standard Button on Dark Theme
+
+The main sidebar (left side navigation bar) takes the Secondary Background
+The search bar (at the top) takes the Secondary Background
+All free entry TextBoxes take the Secondary Background
+Everything else not previously described takes the Main Background
+
+All text uses the main `Text` color except background or tooltip text for free text entry boxes, which takes the Secondary Text color.
+
+All buttons take corner radius 15.
+
+In the future, accent colors will be taken from the platform settings. For now, use #0088FF as the accent color.

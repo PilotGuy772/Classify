@@ -124,6 +124,7 @@ public class App : Application
         //services.AddDbContext<ClassifyContext>(options => options.UseSqlite("DataSource=library.db"));
         
         // Repositories
+        services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<IComposerRepository, ComposerRepository>();
         services.AddScoped<IWorkRepository, WorkRepository>();
         services.AddScoped<IMovementRepository, MovementRepository>();
@@ -136,6 +137,10 @@ public class App : Application
         services.AddScoped<IIngestionService, LibraryIngestionService>();
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
         services.AddScoped<IIngestionOrchestrationService, LibraryIngestionOrchestrationService>();
+
+        // Playables
+        services.AddScoped<IPlayableResolutionService, Classify.Data.Services.PlayableResolutionService>();
+        services.AddScoped<IPlayablePlaylistService, Classify.Data.Services.PlayablePlaylistService>();
         
         // Search services (concrete per-entity)
         services.AddTransient<Classify.Data.Services.ComposerSearchService>();

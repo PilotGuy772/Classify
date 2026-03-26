@@ -12,4 +12,6 @@ public interface IAudioFileRepository : IRepository<AudioFile>
     // public Task<IEnumerable<AudioFile>> GetAudioFilesByRecordingIdAsync(int id);
     // public Task<IEnumerable<AudioFile>> GetAudioFilesByMovementIdAsync(int id);
     public Task<AudioFile?> GetAudioFileByPath(string path);
+
+    Task<IReadOnlyList<AudioFile>> GetByIdsOrderedAsync(IReadOnlyList<int> ids, CancellationToken ct = default);
 }

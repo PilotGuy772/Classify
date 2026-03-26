@@ -44,7 +44,11 @@ public static class SqliteInMemory
             options.UseSqlite(connection);
         });
 
+        // Convenience: allow resolving a scoped DbContext instance
+        services.AddScoped<ClassifyContext>(sp => sp.GetRequiredService<IDbContextFactory<ClassifyContext>>().CreateDbContext());
+
         // Repositories
+        services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<IComposerRepository, ComposerRepository>();
         services.AddScoped<IWorkRepository, WorkRepository>();
         services.AddScoped<IMovementRepository, MovementRepository>();
@@ -56,6 +60,10 @@ public static class SqliteInMemory
         // Application services / use cases
         services.AddScoped<IIngestionService, LibraryIngestionService>();
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
+
+        // Playables
+        services.AddScoped<IPlayableResolutionService, Classify.Data.Services.PlayableResolutionService>();
+        services.AddScoped<IPlayablePlaylistService, Classify.Data.Services.PlayablePlaylistService>();
 
         ServiceProvider provider = services.BuildServiceProvider();
 
