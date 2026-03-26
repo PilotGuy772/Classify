@@ -43,5 +43,11 @@
       <AvaloniaResource Include="App.axaml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Views\BrowseView.axaml.cs">
+        <DependentUpon>BrowseView.axaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 
 </Project>

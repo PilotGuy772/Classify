@@ -20,6 +20,11 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     public System.Windows.Input.ICommand ShowLibraryScanCommand { get; }
+    public System.Windows.Input.ICommand ShowPlaylistsCommand { get; }
+    public System.Windows.Input.ICommand ShowBrowseCommand { get; }
+    public System.Windows.Input.ICommand ShowFavoritesCommand { get; }
+    public System.Windows.Input.ICommand ShowExploreCommand { get; }
+    public System.Windows.Input.ICommand ShowRadioCommand { get; }
 
     public void Initialize()
     {
@@ -49,6 +54,36 @@ public class MainWindowViewModel : ViewModelBase
         CurrentPage = serviceProvider.GetRequiredService<LibraryScanViewModel>();
         RaisePropertyChanged(nameof(CurrentPage));
     }
+
+    public void ShowPlaylists()
+    {
+        CurrentPage = serviceProvider.GetRequiredService<PlaylistsViewModel>();
+        RaisePropertyChanged(nameof(CurrentPage));
+    }
+
+    public void ShowBrowse()
+    {
+        CurrentPage = serviceProvider.GetRequiredService<BrowseViewModel>();
+        RaisePropertyChanged(nameof(CurrentPage));
+    }
+
+    public void ShowFavorites()
+    {
+        CurrentPage = serviceProvider.GetRequiredService<FavoritesViewModel>();
+        RaisePropertyChanged(nameof(CurrentPage));
+    }
+
+    public void ShowExplore()
+    {
+        CurrentPage = serviceProvider.GetRequiredService<ExploreViewModel>();
+        RaisePropertyChanged(nameof(CurrentPage));
+    }
+
+    public void ShowRadio()
+    {
+        CurrentPage = serviceProvider.GetRequiredService<RadioViewModel>();
+        RaisePropertyChanged(nameof(CurrentPage));
+    }
     
     public async Task NavigateToDetail(LibraryItemType type, int id)
     {
@@ -74,5 +109,10 @@ public class MainWindowViewModel : ViewModelBase
     {
         this.serviceProvider = serviceProvider;
         ShowLibraryScanCommand = new RelayCommand(_ => ShowLibraryScan());
+        ShowPlaylistsCommand = new RelayCommand(_ => ShowPlaylists());
+        ShowBrowseCommand = new RelayCommand(_ => ShowBrowse());
+        ShowFavoritesCommand = new RelayCommand(_ => ShowFavorites());
+        ShowExploreCommand = new RelayCommand(_ => ShowExplore());
+        ShowRadioCommand = new RelayCommand(_ => ShowRadio());
     }
 }

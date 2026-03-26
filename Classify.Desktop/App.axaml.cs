@@ -157,6 +157,11 @@ public class App : Application
         services.AddTransient<LibraryViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<LibraryScanViewModel>();
+        services.AddTransient<PlaylistsViewModel>();
+        services.AddTransient<BrowseViewModel>();
+        services.AddTransient<FavoritesViewModel>();
+        services.AddTransient<ExploreViewModel>();
+        services.AddTransient<RadioViewModel>();
         services.AddTransient<AudioFileDetailViewModel>();
         services.AddTransient<ComposerDetailViewModel>();
         services.AddTransient<MovementDetailViewModel>();

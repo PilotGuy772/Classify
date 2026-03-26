@@ -14,30 +14,82 @@
                 <viewModels:MainWindowViewModel />
         </Window.DataContext>
 
-        <Grid ColumnDefinitions="200,*"
+        <Grid ColumnDefinitions="315,*"
               RowDefinitions="Auto,*">
 
                 <!-- Sidebar -->
-                <StackPanel x:Name="SidebarPanel" Grid.RowSpan="2"
-                            Grid.Column="0"
-                            Classes="sidebar">
+                <Border Grid.RowSpan="2"
+                        Grid.Column="0"
+                        Classes="sidebar">
+                        <StackPanel Spacing="12">
+                                <Button x:Name="HomeButton"
+                                        Classes="sidebar-main-title"
+                                        Click="HomeClicked">
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <TextBlock Classes="sidebar-nav-icon" Text="♪" Width="48" Height="48" FontSize="34"/>
+                                                <TextBlock Classes="sidebar-main-title-text" Text="Classify"/>
+                                        </StackPanel>
+                                </Button>
 
-                        <Button x:Name="HomeButton" Content="Home"
-                                Classes="toolbar-button"
-                                Click="HomeClicked"/>
+                                <TextBlock Classes="sidebar-category-title" Text="Library"/>
 
-                        <Button x:Name="SettingsButton" Content="Settings"
-                                Classes="toolbar-button"
-                                Click="SettingsClicked"/>
-                        
-                        <Button x:Name="LibraryButton" Content="Library"
-                                Classes="toolbar-button"
-                                Click="LibraryClicked"/>
+                                <Button x:Name="PlaylistsButton"
+                                        Classes="sidebar-nav-button"
+                                        Click="PlaylistsClicked">
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <TextBlock Classes="sidebar-nav-icon" Text="≣"/>
+                                                <TextBlock Classes="sidebar-nav-label" Text="Playlists"/>
+                                        </StackPanel>
+                                </Button>
 
-                        <Button x:Name="ScanButton" Content="Scan Library"
-                                Classes="primary toolbar-button"
-                                Command="{Binding ShowLibraryScanCommand}"/>
-                </StackPanel>
+                                <Button x:Name="BrowseButton"
+                                        Classes="sidebar-nav-button"
+                                        Click="BrowseClicked">
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <TextBlock Classes="sidebar-nav-icon" Text="◉"/>
+                                                <TextBlock Classes="sidebar-nav-label" Text="Browse"/>
+                                        </StackPanel>
+                                </Button>
+
+                                <Button x:Name="ScanButton"
+                                        Classes="sidebar-nav-button"
+                                        Click="ScanClicked">
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <TextBlock Classes="sidebar-nav-icon" Text="▤"/>
+                                                <TextBlock Classes="sidebar-nav-label" Text="Scan"/>
+                                        </StackPanel>
+                                </Button>
+
+                                <TextBlock Classes="sidebar-category-title" Text="Listen"/>
+
+                                <Button x:Name="FavoritesButton"
+                                        Classes="sidebar-nav-button"
+                                        Click="FavoritesClicked">
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <TextBlock Classes="sidebar-nav-icon" Text="♡"/>
+                                                <TextBlock Classes="sidebar-nav-label" Text="Favorites"/>
+                                        </StackPanel>
+                                </Button>
+
+                                <Button x:Name="ExploreButton"
+                                        Classes="sidebar-nav-button"
+                                        Click="ExploreClicked">
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <TextBlock Classes="sidebar-nav-icon" Text="◌"/>
+                                                <TextBlock Classes="sidebar-nav-label" Text="Explore"/>
+                                        </StackPanel>
+                                </Button>
+
+                                <Button x:Name="RadioButton"
+                                        Classes="sidebar-nav-button"
+                                        Click="RadioClicked">
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <TextBlock Classes="sidebar-nav-icon" Text="◍"/>
+                                                <TextBlock Classes="sidebar-nav-label" Text="Radio"/>
+                                        </StackPanel>
+                                </Button>
+                        </StackPanel>
+                </Border>
 
                 <!-- Top bar -->
                 <Border Grid.Column="1"

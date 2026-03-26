@@ -25,21 +25,39 @@ public partial class MainWindow : Window
         UpdateSelection();
     }
 
-    private void SettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void PlaylistsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Vm.ShowSettings();
+        Vm.ShowPlaylists();
         UpdateSelection();
     }
 
-    private void LibraryClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void BrowseClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Vm.ShowLibrary();
+        Vm.ShowBrowse();
         UpdateSelection();
     }
 
-    private void LibraryScanClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void ScanClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         Vm.ShowLibraryScan();
+        UpdateSelection();
+    }
+
+    private void FavoritesClicked(object? sender, RoutedEventArgs e)
+    {
+        Vm.ShowFavorites();
+        UpdateSelection();
+    }
+
+    private void ExploreClicked(object? sender, RoutedEventArgs e)
+    {
+        Vm.ShowExplore();
+        UpdateSelection();
+    }
+
+    private void RadioClicked(object? sender, RoutedEventArgs e)
+    {
+        Vm.ShowRadio();
         UpdateSelection();
     }
 
@@ -66,14 +84,20 @@ public partial class MainWindow : Window
         try
         {
             var home = this.FindControl<Button>("HomeButton");
-            var settings = this.FindControl<Button>("SettingsButton");
-            var library = this.FindControl<Button>("LibraryButton");
+            var playlists = this.FindControl<Button>("PlaylistsButton");
+            var browse = this.FindControl<Button>("BrowseButton");
             var scan = this.FindControl<Button>("ScanButton");
+            var favorites = this.FindControl<Button>("FavoritesButton");
+            var explore = this.FindControl<Button>("ExploreButton");
+            var radio = this.FindControl<Button>("RadioButton");
 
             SetSelected(home, Vm.CurrentPage is HomeViewModel);
-            SetSelected(settings, Vm.CurrentPage is SettingsViewModel);
-            SetSelected(library, Vm.CurrentPage is LibraryViewModel);
+            SetSelected(playlists, Vm.CurrentPage is PlaylistsViewModel);
+            SetSelected(browse, Vm.CurrentPage is BrowseViewModel);
             SetSelected(scan, Vm.CurrentPage is LibraryScanViewModel);
+            SetSelected(favorites, Vm.CurrentPage is FavoritesViewModel);
+            SetSelected(explore, Vm.CurrentPage is ExploreViewModel);
+            SetSelected(radio, Vm.CurrentPage is RadioViewModel);
         }
         catch
         {

@@ -2,141 +2,110 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!-- Generalized semantic styles and color tokens for the whole app.
-       These were copied from macos.axaml for testing so they apply regardless of platform.
-  -->
-
-  <!-- Resource brushes -->
   <Styles.Resources>
-    <!-- Default (Light) brushes -->
-    <SolidColorBrush x:Key="Accent" Color="#0088FF" />
-    <SolidColorBrush x:Key="MainBackground" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="SecondaryBackground" Color="#F7F7F7" />
-    <SolidColorBrush x:Key="SelectedBackground" Color="#E6E6E6" />
-    <SolidColorBrush x:Key="StandardButtonBackground" Color="#F2F2F2" />
-    <SolidColorBrush x:Key="PrimaryButtonBackground" Color="#0088FF" />
-    <SolidColorBrush x:Key="Outline" Color="#D2D2D2" />
-    <SolidColorBrush x:Key="Text" Color="#000000" />
-    <SolidColorBrush x:Key="SecondaryText" Color="#8E8E93" />
-    <SolidColorBrush x:Key="TertiaryText" Color="#FFFFFF" />
-
-    <!-- Dark theme brush variants -->
-    <SolidColorBrush x:Key="Accent.Dark" Color="#0088FF" />
-    <SolidColorBrush x:Key="MainBackground.Dark" Color="#2C2C2C" />
-    <SolidColorBrush x:Key="SecondaryBackground.Dark" Color="#37373A" />
-    <SolidColorBrush x:Key="SelectedBackground.Dark" Color="#4E4E52" />
-    <SolidColorBrush x:Key="StandardButtonBackground.Dark" Color="#00000000" />
-    <SolidColorBrush x:Key="PrimaryButtonBackground.Dark" Color="#00000000" />
-    <SolidColorBrush x:Key="Outline.Dark" Color="#8E8E93" />
-    <SolidColorBrush x:Key="Text.Dark" Color="#DBDBDB" />
-    <SolidColorBrush x:Key="SecondaryText.Dark" Color="#8E8E93" />
-    <SolidColorBrush x:Key="TertiaryText.Dark" Color="#0088FF" />
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="MainBackgroundBrush">#FFFFFF</SolidColorBrush>
+          <SolidColorBrush x:Key="SecondaryBackgroundBrush">#F7F7F7</SolidColorBrush>
+          <SolidColorBrush x:Key="SelectedBackgroundBrush">#E6E6E6</SolidColorBrush>
+          <SolidColorBrush x:Key="OutlineBrush">#D2D2D2</SolidColorBrush>
+          <SolidColorBrush x:Key="TextBrush">#000000</SolidColorBrush>
+          <SolidColorBrush x:Key="SecondaryTextBrush">#8E8E93</SolidColorBrush>
+          <SolidColorBrush x:Key="AccentBrush">#0088FF</SolidColorBrush>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="MainBackgroundBrush">#2C2C2C</SolidColorBrush>
+          <SolidColorBrush x:Key="SecondaryBackgroundBrush">#37373A</SolidColorBrush>
+          <SolidColorBrush x:Key="SelectedBackgroundBrush">#4E4E52</SolidColorBrush>
+          <SolidColorBrush x:Key="OutlineBrush">#8E8E93</SolidColorBrush>
+          <SolidColorBrush x:Key="TextBrush">#DBDBDB</SolidColorBrush>
+          <SolidColorBrush x:Key="SecondaryTextBrush">#8E8E93</SolidColorBrush>
+          <SolidColorBrush x:Key="AccentBrush">#0088FF</SolidColorBrush>
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+    </ResourceDictionary>
   </Styles.Resources>
 
-  <!-- Sidebar -->
-  <Style Selector="Application[RequestedThemeVariant=Light] StackPanel.sidebar">
-    <Setter Property="Background" Value="{StaticResource SecondaryBackground}" />
-    <Setter Property="Spacing" Value="8" />
-    <Setter Property="Margin" Value="8" />
-  </Style>
-  
-  <Style Selector="Application[RequestedThemeVariant=Dark] StackPanel.sidebar">
-    <Setter Property="Background" Value="{StaticResource SecondaryBackground.Dark}" />
-    <Setter Property="Spacing" Value="8" />
-    <Setter Property="Margin" Value="8" />
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{DynamicResource MainBackgroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
   </Style>
 
-  <!-- Titlebar / top bar -->
   <Style Selector="Border.titlebar">
-    <Setter Property="Background" Value="{StaticResource SecondaryBackground}" />
-    <Setter Property="Height" Value="40" />
-    <Setter Property="Padding" Value="8" />
-    <!-- TODO(macOS): avoid hardcoded left padding for traffic lights; adjust later if needed -->
+    <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+    <Setter Property="Padding" Value="12" />
   </Style>
 
-  <!-- Search box / TextBox defaults -->
-  <Style Selector="Border.titlebar TextBox, TextBox">
-    <Setter Property="Background" Value="{StaticResource SecondaryBackground}" />
-    <Setter Property="Foreground" Value="{StaticResource Text}" />
-    <Setter Property="CaretBrush" Value="{StaticResource Text}" />
-    <Setter Property="BorderBrush" Value="{StaticResource Outline}" />
-    <Setter Property="CornerRadius" Value="15" />
+  <Style Selector="TextBox">
+    <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource OutlineBrush}" />
+    <Setter Property="CornerRadius" Value="12" />
   </Style>
 
-  <!-- General Buttons -->
-  <Style Selector="Button">
-    <Setter Property="CornerRadius" Value="15" />
-    <Setter Property="Foreground" Value="{StaticResource Text}" />
-    <Setter Property="Background" Value="{StaticResource StandardButtonBackground}" />
-    <Setter Property="BorderBrush" Value="{StaticResource Outline}" />
-    <Setter Property="BorderThickness" Value="2" />
+  <Style Selector="Border.sidebar">
+    <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource OutlineBrush}" />
+    <Setter Property="BorderThickness" Value="0,2,2,0" />
+    <Setter Property="CornerRadius" Value="0,20,0,20" />
+    <Setter Property="Padding" Value="12" />
   </Style>
 
-  <!-- Button pressed state -->
-  <Style Selector="Button:pressed">
-    <Setter Property="Background" Value="{StaticResource SelectedBackground}" />
-  </Style>
-
-  <!-- Toolbar-button: small neutral style for sidebar buttons -->
-  <Style Selector="Button.toolbar-button">
-    <Setter Property="Padding" Value="6,4" />
-    <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="CornerRadius" Value="15" />
+  <Style Selector="Button.sidebar-main-title">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="BorderBrush" Value="Transparent" />
-    <Setter Property="Foreground" Value="{StaticResource Text}" />
-  </Style>
-
-  <Style Selector="Button.toolbar-button:pointerover">
-    <Setter Property="Background" Value="{StaticResource SelectedBackground}" />
-  </Style>
-
-  <!-- Navigation selection for plain Buttons: Classes="selected" -->
-  <Style Selector="Button.toolbar-button.selected">
-    <Setter Property="Background" Value="{StaticResource SelectedBackground}" />
-  </Style>
-
-  <!-- Primary semantic button -->
-  <Style Selector="Button.primary">
     <Setter Property="CornerRadius" Value="15" />
+    <Setter Property="Padding" Value="12" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+  </Style>
+
+  <Style Selector="TextBlock.sidebar-main-title-text">
+    <Setter Property="FontSize" Value="40" />
     <Setter Property="FontWeight" Value="Bold" />
-    <Setter Property="Foreground" Value="{StaticResource TertiaryText}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
   </Style>
 
-  <!-- Primary specifics per theme -->
-  <Style Selector="Application[RequestedThemeVariant=Light] Button.primary">
-    <Setter Property="Background" Value="{StaticResource Accent}" />
-    <Setter Property="BorderBrush" Value="Transparent" />
+  <Style Selector="TextBlock.sidebar-category-title">
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="Margin" Value="10,0,0,0" />
+  </Style>
+
+  <Style Selector="Button.sidebar-nav-button">
+    <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="15" />
+    <Setter Property="Padding" Value="10,10,12,10" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
   </Style>
 
-  <Style Selector="Application[RequestedThemeVariant=Dark] Button.primary">
-    <Setter Property="Background" Value="{StaticResource PrimaryButtonBackground.Dark}" />
-    <Setter Property="BorderBrush" Value="{StaticResource Outline.Dark}" />
-    <Setter Property="BorderThickness" Value="2" />
-    <Setter Property="Foreground" Value="{StaticResource TertiaryText.Dark}" />
+  <Style Selector="Button.sidebar-nav-button:pointerover">
+    <Setter Property="Background" Value="{DynamicResource SelectedBackgroundBrush}" />
   </Style>
 
-  <!-- Dark theme overrides for other controls -->
-  <Style Selector="Application[RequestedThemeVariant=Dark] Button">
-    <Setter Property="Background" Value="{StaticResource StandardButtonBackground.Dark}" />
-    <Setter Property="BorderBrush" Value="{StaticResource Outline.Dark}" />
-    <Setter Property="Foreground" Value="{StaticResource Text.Dark}" />
-    <Setter Property="BorderThickness" Value="2" />
+  <Style Selector="Button.sidebar-nav-button:pressed">
+    <Setter Property="Background" Value="{DynamicResource SelectedBackgroundBrush}" />
   </Style>
 
-  
-
-  <Style Selector="Application[RequestedThemeVariant=Dark] Border.titlebar">
-    <Setter Property="Background" Value="{StaticResource SecondaryBackground.Dark}" />
+  <Style Selector="Button.sidebar-nav-button.selected">
+    <Setter Property="Background" Value="{DynamicResource SelectedBackgroundBrush}" />
   </Style>
 
-  <Style Selector="Application[RequestedThemeVariant=Dark] TextBox">
-    <Setter Property="Background" Value="{StaticResource SecondaryBackground.Dark}" />
-    <Setter Property="Foreground" Value="{StaticResource Text.Dark}" />
-    <Setter Property="CaretBrush" Value="{StaticResource Text.Dark}" />
-    <Setter Property="BorderBrush" Value="{StaticResource Outline.Dark}" />
+  <Style Selector="TextBlock.sidebar-nav-icon">
+    <Setter Property="Width" Value="26" />
+    <Setter Property="Height" Value="26" />
+    <Setter Property="FontSize" Value="22" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="TextAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
+  <Style Selector="TextBlock.sidebar-nav-label">
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
 </Styles>
