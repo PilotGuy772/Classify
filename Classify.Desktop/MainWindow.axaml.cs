@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Classify.Desktop.ViewModels;
 using System.ComponentModel;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 
@@ -11,6 +12,32 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        // Hint to Avalonia the titlebar height when using extended client area.
+        // Use an explicit int to follow repo style.
+        ExtendClientAreaTitleBarHeightHint = 36;
+
+        // Show/hide the macOS spacer only on macOS.
+        try
+        {
+            if (System.OperatingSystem.IsMacOS())
+            {
+                Border? spacer = this.FindControl<Border>("MacTrafficLightsSpacer");
+                spacer?.IsVisible = true;
+            }
+            else
+            {
+                Border? spacer = this.FindControl<Border>("MacTrafficLightsSpacer");
+                if (spacer is not null)
+                {
+                    spacer.IsVisible = false;
+                }
+            }
+        }
+        catch
+        {
+            // Ignore - visibility is cosmetic.
+        }
 
         // When DataContext (ViewModel) is set, attach handlers to keep the selected state in sync.
         this.DataContextChanged += (_, _) => AttachViewModelHandlers();
@@ -33,7 +60,7 @@ public partial class MainWindow : Window
 
     private void BrowseClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Vm.ShowBrowse();
+        Vm.ShowLibrary();
         UpdateSelection();
     }
 
@@ -83,13 +110,13 @@ public partial class MainWindow : Window
     {
         try
         {
-            var home = this.FindControl<Button>("HomeButton");
-            var playlists = this.FindControl<Button>("PlaylistsButton");
-            var browse = this.FindControl<Button>("BrowseButton");
-            var scan = this.FindControl<Button>("ScanButton");
-            var favorites = this.FindControl<Button>("FavoritesButton");
-            var explore = this.FindControl<Button>("ExploreButton");
-            var radio = this.FindControl<Button>("RadioButton");
+            Button? home = this.FindControl<Button>("HomeButton");
+            Button? playlists = this.FindControl<Button>("PlaylistsButton");
+            Button? browse = this.FindControl<Button>("BrowseButton");
+            Button? scan = this.FindControl<Button>("ScanButton");
+            Button? favorites = this.FindControl<Button>("FavoritesButton");
+            Button? explore = this.FindControl<Button>("ExploreButton");
+            Button? radio = this.FindControl<Button>("RadioButton");
 
             SetSelected(home, Vm.CurrentPage is HomeViewModel);
             SetSelected(playlists, Vm.CurrentPage is PlaylistsViewModel);
@@ -116,6 +143,24 @@ public partial class MainWindow : Window
         else
         {
             if (btn.Classes.Contains(sel)) btn.Classes.Remove(sel);
+        }
+    }
+
+    private void MacTrafficLightsSpacer_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e is null) return;
+        PointerPressedEventArgs args = e;
+        try
+        {
+            PointerPoint current = args.GetCurrentPoint(this);
+            if (current.Properties.IsLeftButtonPressed)
+            {
+                BeginMoveDrag(args);
+            }
+        }
+        catch
+        {
+            // Swallow - failing to begin drag should not crash the app.
         }
     }
 }

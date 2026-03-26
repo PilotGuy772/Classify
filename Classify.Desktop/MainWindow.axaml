@@ -17,8 +17,8 @@
         <Grid ColumnDefinitions="315,*"
               RowDefinitions="Auto,*">
 
-                <!-- Sidebar -->
-                <Border Grid.RowSpan="2"
+                <!-- Sidebar (now below the top toolbar) -->
+                <Border Grid.Row="1"
                         Grid.Column="0"
                         Classes="sidebar">
                         <StackPanel Spacing="12">
@@ -91,11 +91,29 @@
                         </StackPanel>
                 </Border>
 
-                <!-- Top bar -->
-                <Border Grid.Column="1"
-                        Grid.Row="0"
+                <!-- Top bar (spans full width) -->
+                <Border Grid.Row="0"
+                        Grid.ColumnSpan="2"
                         Classes="titlebar">
-                        <TextBox Watermark="Search…" />
+                        <!-- Use a grid so we can reserve a top-left region for macOS traffic lights (hit-testable)
+                             The left column is a transparent spacer that users can click/drag to move the window. -->
+                        <Grid>
+                                <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Spacer for macOS traffic lights. Background="Transparent" keeps it hit-testable. -->
+                                <Border Name="MacTrafficLightsSpacer"
+                                        Width="90"
+                                        Height="36"
+                                        Background="Transparent"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top"
+                                        PointerPressed="MacTrafficLightsSpacer_PointerPressed" />
+
+                                <TextBox Grid.Column="1" Watermark="Search…" />
+                        </Grid>
                 </Border>
 
                 <!-- Page content -->
