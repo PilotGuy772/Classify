@@ -14,19 +14,30 @@
                 <viewModels:MainWindowViewModel />
         </Window.DataContext>
 
-        <Grid ColumnDefinitions="315,*"
-              RowDefinitions="Auto,*">
+        <Grid RowDefinitions="Auto,*">
+                <Grid.ColumnDefinitions>
+                        <!-- Sidebar: start at 315px, but enforce a minimum of 180px -->
+                        <ColumnDefinition Width="315" MinWidth="180" />
+                        <!-- Splitter column (grab area) -->
+                        <ColumnDefinition Width="6" />
+                        <!-- Main content takes remaining space -->
+                        <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
                 <!-- Sidebar (now below the top toolbar) -->
                 <Border Grid.Row="1"
                         Grid.Column="0"
-                        Classes="sidebar">
-                        <StackPanel Spacing="12">
+                        Classes="sidebar"
+                        MinWidth="160">
+                        <!-- Make the sidebar vertically scrollable when content exceeds the window height -->
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel Spacing="12">
                                 <Button x:Name="HomeButton"
                                         Classes="sidebar-main-title"
                                         Click="HomeClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <TextBlock Classes="sidebar-nav-icon" Text="♪" Width="48" Height="48" FontSize="34"/>
+                                                <TextBlock Classes="sidebar-nav-icon" Text="♪" Width="30" Height="30" FontSize="34"/>
                                                 <TextBlock Classes="sidebar-main-title-text" Text="Classify"/>
                                         </StackPanel>
                                 </Button>
@@ -88,12 +99,22 @@
                                                 <TextBlock Classes="sidebar-nav-label" Text="Radio"/>
                                         </StackPanel>
                                 </Button>
-                        </StackPanel>
+                                </StackPanel>
+                        </ScrollViewer>
                 </Border>
+
+                <!-- Splitter between sidebar and content -->
+                <GridSplitter Grid.Row="1"
+                              Grid.Column="1"
+                              Classes="sidebar-splitter"
+                              ResizeDirection="Columns"
+                              ResizeBehavior="PreviousAndNext"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch" />
 
                 <!-- Top bar (spans full width) -->
                 <Border Grid.Row="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="3"
                         Classes="titlebar">
                         <!-- Use a grid so we can reserve a top-left region for macOS traffic lights (hit-testable)
                              The left column is a transparent spacer that users can click/drag to move the window. -->
@@ -117,7 +138,7 @@
                 </Border>
 
                 <!-- Page content -->
-                <ContentControl Grid.Column="1"
+                <ContentControl Grid.Column="2"
                                 Grid.Row="1"
                                 Content="{Binding CurrentPage}" />
         </Grid>
