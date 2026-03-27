@@ -42,31 +42,31 @@ public partial class MainWindow : Window
         }
 
         // When DataContext (ViewModel) is set, attach handlers to keep the selected state in sync.
-        this.DataContextChanged += (_, _) => AttachViewModelHandlers();
+        DataContextChanged += (_, _) => AttachViewModelHandlers();
         AttachViewModelHandlers();
     }
 
     private MainWindowViewModel Vm => (MainWindowViewModel)DataContext!;
 
-    private void HomeClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void HomeClicked(object? sender, RoutedEventArgs e)
     {
         Vm.ShowHome();
         UpdateSelection();
     }
 
-    private void PlaylistsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void PlaylistsClicked(object? sender, RoutedEventArgs e)
     {
         Vm.ShowPlaylists();
         UpdateSelection();
     }
 
-    private void BrowseClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void BrowseClicked(object? sender, RoutedEventArgs e)
     {
-        Vm.ShowBrowse();
+        Vm.ShowLibrary();
         UpdateSelection();
     }
 
-    private void ScanClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void ScanClicked(object? sender, RoutedEventArgs e)
     {
         Vm.ShowLibraryScan();
         UpdateSelection();
