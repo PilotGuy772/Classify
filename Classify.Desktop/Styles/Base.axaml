@@ -33,7 +33,7 @@
   </Style>
 
   <Style Selector="Border.titlebar">
-    <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+    <Setter Property="Background" Value="{DynamicResource MainBackgroundBrush}" />
     <Setter Property="Padding" Value="12" />
   </Style>
 
