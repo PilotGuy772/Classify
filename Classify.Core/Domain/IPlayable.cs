@@ -19,10 +19,4 @@ public interface IPlayable
     /// Underlying object for info panels / navigation.
     /// </summary>
     public object BaseObject { get; }
-
-    /// <summary>
-    /// Ordered audio file IDs for this playable, when known without additional queries.
-    /// Prefer resolving via a service when this returns empty.
-    /// </summary>
-    public IReadOnlyList<int> GetOrderedAudioFileIds();
 }

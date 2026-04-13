@@ -16,6 +16,4 @@ public class PerformedMovement : IPlayable
     public string? PhotoKey => null;
 
     public object BaseObject => this;
-
-    public IReadOnlyList<int> GetOrderedAudioFileIds() => [AudioFileId];
 }

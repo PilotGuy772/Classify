@@ -12,6 +12,4 @@ public class Recording : IPlayable
     public string? PhotoKey => null;
 
     public object BaseObject => this;
-
-    public IReadOnlyList<int> GetOrderedAudioFileIds() => Array.Empty<int>();
 }
