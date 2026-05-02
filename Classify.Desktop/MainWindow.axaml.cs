@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Classify.Desktop.ViewModels;
 using System.ComponentModel;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Threading;
 
 namespace Classify.Desktop;
@@ -44,6 +45,8 @@ public partial class MainWindow : Window
         // When DataContext (ViewModel) is set, attach handlers to keep the selected state in sync.
         DataContextChanged += (_, _) => AttachViewModelHandlers();
         AttachViewModelHandlers();
+
+        Loaded += (_, _) => UpdateWorkInfoPanelColumns();
     }
 
     private MainWindowViewModel Vm => (MainWindowViewModel)DataContext!;
@@ -97,6 +100,7 @@ public partial class MainWindow : Window
             vm.PropertyChanged -= VmOnPropertyChanged;
             vm.PropertyChanged += VmOnPropertyChanged;
             UpdateSelection();
+            UpdateWorkInfoPanelColumns();
         }
     }
 
@@ -104,7 +108,54 @@ public partial class MainWindow : Window
     {
         if (e.PropertyName == nameof(MainWindowViewModel.CurrentPage))
         {
-            Dispatcher.UIThread.Post(UpdateSelection);
+            Dispatcher.UIThread.Post(() =>
+            {
+                UpdateSelection();
+                UpdateWorkInfoPanelColumns();
+            });
+            return;
+        }
+
+        if (e.PropertyName == nameof(MainWindowViewModel.IsWorkInfoPanelOpen))
+        {
+            Dispatcher.UIThread.Post(UpdateWorkInfoPanelColumns);
+        }
+    }
+
+    private void UpdateWorkInfoPanelColumns()
+    {
+        try
+        {
+            Grid? inner = this.FindControl<Grid>("InnerSplitGrid");
+            GridSplitter? splitter = this.FindControl<GridSplitter>("InfoPanelSplitter");
+            if (inner is null || splitter is null || DataContext is not MainWindowViewModel vm)
+                return;
+            if (inner.ColumnDefinitions.Count < 3)
+                return;
+
+            ColumnDefinition splitterColumn = inner.ColumnDefinitions[1];
+            ColumnDefinition panelColumn = inner.ColumnDefinitions[2];
+
+            if (vm.IsWorkInfoPanelOpen)
+            {
+                splitterColumn.Width = new GridLength(8);
+                splitterColumn.MinWidth = 6;
+                panelColumn.Width = new GridLength(304);
+                panelColumn.MinWidth = 240;
+                splitter.IsHitTestVisible = true;
+            }
+            else
+            {
+                splitterColumn.Width = new GridLength(0);
+                splitterColumn.MinWidth = 0;
+                panelColumn.Width = new GridLength(0);
+                panelColumn.MinWidth = 0;
+                splitter.IsHitTestVisible = false;
+            }
+        }
+        catch
+        {
+            // Ignore layout failures for optional chrome.
         }
     }
 
@@ -122,7 +173,7 @@ public partial class MainWindow : Window
 
             SetSelected(home, Vm.CurrentPage is HomeViewModel);
             SetSelected(playlists, Vm.CurrentPage is PlaylistsViewModel);
-            SetSelected(browse, Vm.CurrentPage is BrowseViewModel);
+            SetSelected(browse, Vm.CurrentPage is LibraryViewModel);
             SetSelected(scan, Vm.CurrentPage is LibraryScanViewModel);
             SetSelected(favorites, Vm.CurrentPage is FavoritesViewModel);
             SetSelected(explore, Vm.CurrentPage is ExploreViewModel);

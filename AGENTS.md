@@ -56,3 +56,7 @@ Purpose: Give an AI agent the minimum concrete knowledge to be productive in thi
 
 If you need a focused agent task (implement a new repository method, add a migration, or create a ViewModel), point to the exact files above and include a small acceptance test (e.g., `dotnet test` scenario or a manual run command).
 
+
+6) General style guidelines
+- Always use the full types when instantiating variables; never use the `var` keyword.
+- Always create XML comments for any object that supports them, documenting the code as you write. Keep XML docs concise but thorough.

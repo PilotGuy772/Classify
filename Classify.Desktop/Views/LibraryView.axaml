@@ -53,6 +53,8 @@
 
         <!-- List -->
         <ListBox ItemsSource="{Binding Items}"
+                 SelectedItem="{Binding SelectedLibraryItem, Mode=TwoWay}"
+                 SelectionMode="Single"
                  DoubleTapped="ItemDoubleTapped">
             <ListBox.ItemTemplate>
                 <DataTemplate>

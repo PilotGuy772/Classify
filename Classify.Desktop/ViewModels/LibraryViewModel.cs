@@ -22,6 +22,24 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
     private readonly MainWindowViewModel _shell;
     private readonly IIngestionOrchestrationService _scanner;
 
+    private LibraryItemViewModel? selectedLibraryItem;
+
+    /// <summary>
+    /// Currently highlighted library row (single-click drives the Info Panel for works).
+    /// </summary>
+    public LibraryItemViewModel? SelectedLibraryItem
+    {
+        get => selectedLibraryItem;
+        set
+        {
+            if (ReferenceEquals(selectedLibraryItem, value))
+                return;
+            selectedLibraryItem = value;
+            RaisePropertyChanged();
+            _ = _shell.OnLibraryBrowserSelectionChangedAsync(value);
+        }
+    }
+
     public LibraryItemType SelectedType
     {
         get;
@@ -47,6 +65,7 @@ public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
 
     private async Task LoadAsync()
     {
+        SelectedLibraryItem = null;
         Items.Clear();
 
         switch (SelectedType)

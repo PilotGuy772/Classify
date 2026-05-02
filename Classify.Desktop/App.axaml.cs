@@ -152,6 +152,7 @@ public class App : Application
         services.AddTransient<IDialogService, DialogService>();
 
         // ViewModels
+        services.AddSingleton<WorkInfoPanelViewModel>();
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<HomeViewModel>();
         services.AddTransient<LibraryViewModel>();
