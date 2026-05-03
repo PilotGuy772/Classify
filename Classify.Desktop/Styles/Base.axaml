@@ -262,6 +262,11 @@
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
+  <Style Selector="Button.info-small-outline.is-favorite">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnAccentGlyphBrush}" />
+  </Style>
+
   <Style Selector="Button.info-small-accent-bordered">
     <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource OnAccentGlyphBrush}" />

@@ -1,0 +1,150 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="304" d:DesignHeight="776"
+             x:Class="Classify.Desktop.Views.WorkInfoPanelView"
+             x:DataType="viewModels:WorkInfoPanelViewModel"
+             x:Name="PanelRoot">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Border Classes="info-panel">
+            <StackPanel Spacing="10">
+                <!-- Header: Close + Piece Title -->
+                <Grid ColumnDefinitions="Auto,*">
+                    <Button Grid.Column="0"
+                            Classes="info-close"
+                            Command="{Binding ClosePanelCommand}"
+                            Content="×"
+                            Margin="0,0,10,0" />
+                    <TextBlock Grid.Column="1"
+                               Classes="info-piece-title"
+                               Text="{Binding PieceTitle}"
+                               TextTrimming="CharacterEllipsis"
+                               VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- Quick Info: cover placeholder + composer lines -->
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0"
+                            Classes="info-cover-placeholder"
+                            VerticalAlignment="Top" />
+                    <StackPanel Grid.Column="1"
+                                Margin="10,0,0,0"
+                                Spacing="4"
+                                VerticalAlignment="Top">
+                        <TextBlock Classes="info-meta-text"
+                                   Text="{Binding ComposerLine}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Classes="info-meta-text"
+                                   Text="{Binding SecondaryLine}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Large actions -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Classes="info-large-primary"
+                            Width="58"
+                            Height="35"
+                            Command="{Binding PlayWorkCommand}"
+                            Content="▶" />
+                    <Button Classes="info-large-outline"
+                            Width="100"
+                            Height="35"
+                            Command="{Binding EnqueueWorkCommand}"
+                            Content="Enqueue" />
+                    <Button Classes="info-large-outline"
+                            Width="100"
+                            Height="35"
+                            Command="{Binding AddWorkToPlaylistCommand}"
+                            Content="Add to Playlist" />
+                </StackPanel>
+
+                <!-- Movements -->
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="info-section-heading" Text="Movements" />
+                    <ItemsControl ItemsSource="{Binding MovementRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:MovementInfoRowViewModel}">
+                                <Grid Margin="0,0,0,4"
+                                      ColumnDefinitions="Auto,*,Auto,Auto"
+                                      Height="28">
+                                    <TextBlock Grid.Column="0"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,8,0"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource TextBrush}"
+                                               Text="{Binding OrdinalLabel}"
+                                               Width="28" />
+                                    <TextBlock Grid.Column="1"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource TextBrush}"
+                                               Text="{Binding Name}"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <Button Grid.Column="2"
+                                            Classes="info-small-accent"
+                                            Margin="4,0,4,0"
+                                            Command="{Binding PlayMovementRowCommand}"
+                                            Content="▶" />
+                                    <Button Grid.Column="3"
+                                            Classes="info-small-outline"
+                                            Command="{Binding EnqueueMovementRowCommand}"
+                                            Content="⏎" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <!-- Recordings -->
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="info-section-heading" Text="Recordings" />
+                    <ScrollViewer MaxHeight="290"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding RecordingRows}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type viewModels:RecordingInfoRowViewModel}">
+                                    <Grid Margin="0,0,0,4"
+                                          ColumnDefinitions="*,Auto,Auto,Auto"
+                                          MinHeight="31">
+                                        <StackPanel Grid.Column="0"
+                                                    Margin="0,0,8,0"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock FontSize="12"
+                                                       Foreground="{DynamicResource TextBrush}"
+                                                       Text="{Binding DisplayInfo}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <Button Grid.Column="1"
+                                                Classes="info-small-accent"
+                                                Margin="4,0,4,0"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding PlayRecordingRowCommand}"
+                                                Content="▶" />
+                                        <Button Grid.Column="2"
+                                                Classes="info-small-outline"
+                                                Margin="0,0,4,0"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding EnqueueRecordingRowCommand}"
+                                                Content="⏎" />
+                                        <Button Grid.Column="3"
+                                                Classes="info-small-outline"
+                                                Classes.is-favorite="{Binding IsFavorite}"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding ToggleFavoriteRecordingRowCommand}"
+                                                Content="★" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

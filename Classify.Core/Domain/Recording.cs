@@ -26,7 +26,9 @@ public class Recording : IPlayable
     public string? Ensemble { get; set; }
 
     /// <summary>
-    /// Gets or sets the soloist for this recording.
+    /// Gets or sets the soloist for this recording. 
+    /// Intended for use with works that primarily feature soloists, like concerti.
+    /// For solo works such as solo sonatas, the soloist is the performer and should be set here.
     /// </summary>
     public string? Soloist { get; set; }
 
@@ -38,13 +40,20 @@ public class Recording : IPlayable
     /// <summary>
     /// Returns a string representation of the recording.
     /// </summary>
-    /// <returns>The conductor's name.</returns>
-    public override string ToString() => Conductor;
+    /// <returns>If set, in order:
+    /// * The soloist
+    /// * The conductor
+    /// * The performing ensemble
+    /// * The year of performance
+    /// 
+    /// Separated by Unicode "\u00B7" (middle dot) characters. (·)</returns>
+    public override string ToString() =>
+        string.Join(" \u00B7 ", ((List<object?>)[Soloist, Conductor, Ensemble, Year]).Where(x => x is not null));
 
     /// <summary>
     /// Gets the display name for the recording.
     /// </summary>
-    public string Name => string.IsNullOrWhiteSpace(Conductor) ? $"Recording #{Id}" : Conductor;
+    public string Name => string.IsNullOrWhiteSpace(ToString()) ? $"Recording #{Id}" : ToString();
 
     /// <summary>
     /// Gets the photo key for the recording, if any.

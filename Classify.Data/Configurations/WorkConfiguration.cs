@@ -22,5 +22,11 @@ public class WorkConfiguration : IEntityTypeConfiguration<Work>
             .WithMany()
             .HasForeignKey(w => w.ComposerId)
             .IsRequired();
+
+        builder.HasOne<Recording>()
+            .WithMany()
+            .HasForeignKey(w => w.FavoriteRecordingId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

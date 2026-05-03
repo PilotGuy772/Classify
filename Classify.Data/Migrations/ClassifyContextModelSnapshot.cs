@@ -226,6 +226,9 @@ namespace Classify.Data.Migrations
                     b.Property<int>("ComposerId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("FavoriteRecordingId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -233,6 +236,8 @@ namespace Classify.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ComposerId");
+
+                    b.HasIndex("FavoriteRecordingId");
 
                     b.ToTable("Works");
                 });
@@ -327,6 +332,11 @@ namespace Classify.Data.Migrations
                         .HasForeignKey("ComposerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Classify.Core.Domain.Recording", null)
+                        .WithMany()
+                        .HasForeignKey("FavoriteRecordingId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("MovementRecording", b =>
