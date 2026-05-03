@@ -131,6 +131,9 @@ namespace Classify.Data.Migrations
                     b.Property<bool>("Confirmed")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("EnsembleName")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ExternalId")
                         .HasColumnType("TEXT");
 
@@ -151,6 +154,12 @@ namespace Classify.Data.Migrations
 
                     b.Property<int?>("RecordingId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RecordingYear")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SoloistName")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Source")
                         .IsRequired()
@@ -186,7 +195,16 @@ namespace Classify.Data.Migrations
                     b.Property<string>("Conductor")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Ensemble")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Soloist")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("WorkId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("Year")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");

@@ -21,6 +21,9 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
     public string? WorkTitle { get; set; }
     public string? CatalogNumber { get; set; }
     public string? ConductorName { get; set; }
+    public string? EnsembleName { get; set; }
+    public string? SoloistName { get; set; }
+    public int? RecordingYear { get; set; }
     public int? MovementNumber { get; set; }
     public string? MovementTitle { get; set; }
     public int? PerformanceOrder { get; set; }
@@ -125,6 +128,9 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
             WorkTitle = WorkTitle,
             CatalogNumber = CatalogNumber,
             ConductorName = ConductorName,
+            EnsembleName = EnsembleName,
+            SoloistName = SoloistName,
+            RecordingYear = RecordingYear,
             MovementNumber = MovementNumber,
             MovementTitle = MovementTitle,
             PerformanceOrder = PerformanceOrder,
@@ -157,6 +163,9 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
             WorkTitle = WorkTitle,
             CatalogNumber = CatalogNumber,
             ConductorName = ConductorName,
+            EnsembleName = EnsembleName,
+            SoloistName = SoloistName,
+            RecordingYear = RecordingYear,
             MovementNumber = MovementNumber,
             MovementTitle = MovementTitle,
             PerformanceOrder = PerformanceOrder,
@@ -187,6 +196,9 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
         WorkTitle = proposedMatch.WorkTitle;
         CatalogNumber = proposedMatch.CatalogNumber;
         ConductorName = proposedMatch.ConductorName;
+        EnsembleName = proposedMatch.EnsembleName;
+        SoloistName = proposedMatch.SoloistName;
+        RecordingYear = proposedMatch.RecordingYear;
         MovementNumber = proposedMatch.MovementNumber;
         MovementTitle = proposedMatch.MovementTitle;
         PerformanceOrder = proposedMatch.PerformanceOrder;

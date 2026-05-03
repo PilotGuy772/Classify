@@ -13,6 +13,15 @@ public class RecordingConfiguration : IEntityTypeConfiguration<Recording>
         builder.Property(r => r.Conductor)
             .IsRequired(false);
 
+        builder.Property(r => r.Ensemble)
+            .IsRequired(false);
+
+        builder.Property(r => r.Soloist)
+            .IsRequired(false);
+
+        builder.Property(r => r.Year)
+            .IsRequired(false);
+
         // Each recording has many movements (subordinate to works),
         // and each movement has many recordings.
         builder.HasMany<Movement>()

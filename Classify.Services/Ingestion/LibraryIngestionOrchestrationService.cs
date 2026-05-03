@@ -126,6 +126,9 @@ public class LibraryIngestionOrchestrationService(
                 Recording recording = new()
                 {
                     Conductor = result.ConductorName ?? "",
+                    Ensemble = result.EnsembleName,
+                    Soloist = result.SoloistName,
+                    Year = result.RecordingYear,
                     WorkId = workId
                 };
                 recording = await uow.Recordings.AddAsync(recording);

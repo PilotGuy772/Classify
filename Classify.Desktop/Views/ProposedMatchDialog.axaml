@@ -29,6 +29,16 @@
 
         <TextBlock Text="Conductor Name" />
         <TextBox Text="{Binding ConductorName}" HorizontalAlignment="Stretch" />
+
+        <TextBlock Text="Ensemble Name" />
+        <TextBox Text="{Binding EnsembleName}" HorizontalAlignment="Stretch" />
+
+        <TextBlock Text="Soloist Name" />
+        <TextBox Text="{Binding SoloistName}" HorizontalAlignment="Stretch" />
+
+        <TextBlock Text="Recording Year" />
+        <TextBox Text="{Binding RecordingYear}" HorizontalAlignment="Stretch" />
+
         <TextBlock Text="Or select an existing Recording" />
         <controls:SingleEntitySearchControl x:Name="RecordingSearch" SearchService="{Binding RecordingSearchService}" SelectedItem="{Binding SelectedRecording, Mode=TwoWay}" HorizontalAlignment="Stretch" />
 

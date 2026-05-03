@@ -20,6 +20,12 @@ public class ProposedMatchConfiguration : IEntityTypeConfiguration<ProposedMatch
             .IsRequired(false);
         builder.Property(pm => pm.MovementTitle)
             .IsRequired(false);
+        builder.Property(pm => pm.EnsembleName)
+            .IsRequired(false);
+        builder.Property(pm => pm.SoloistName)
+            .IsRequired(false);
+        builder.Property(pm => pm.RecordingYear)
+            .IsRequired(false);
         builder.Property(pm => pm.Source)
             .IsRequired();
         builder.Property(pm => pm.ExternalId)
