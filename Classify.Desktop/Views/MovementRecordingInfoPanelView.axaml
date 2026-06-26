@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="304" d:DesignHeight="776"
+             x:Class="Classify.Desktop.Views.MovementRecordingInfoPanelView"
+             x:DataType="viewModels:MovementRecordingInfoPanelViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                   HorizontalScrollBarVisibility="Disabled">
+        <Border Classes="info-panel">
+            <StackPanel Spacing="10">
+                <!-- Header: Close + MovementRecording Title -->
+                <Grid ColumnDefinitions="Auto,*">
+                    <Button Grid.Column="0"
+                            Classes="info-close"
+                            Command="{Binding ClosePanelCommand}"
+                            Content="×"
+                            Margin="0,0,10,0" />
+                    <TextBlock Grid.Column="1"
+                               Classes="info-piece-title"
+                               Text="{Binding Title}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- Quick Info Placeholder -->
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0"
+                            Classes="info-cover-placeholder"
+                            VerticalAlignment="Top" />
+                    <StackPanel Grid.Column="1"
+                                Margin="10,0,0,0"
+                                Spacing="4"
+                                VerticalAlignment="Top">
+                        <TextBlock Classes="info-meta-text"
+                                   Text="Performance Details"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Classes="info-meta-text"
+                                   Text="Audio specs / Details"
+                                   TextWrapping="Wrap"
+                                   Opacity="0.6" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Large Actions Placeholder -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Classes="info-large-primary"
+                            Width="58"
+                            Height="35"
+                            Content="▶"
+                            IsEnabled="False" />
+                    <Button Classes="info-large-outline"
+                            Width="100"
+                            Height="35"
+                            Content="Enqueue"
+                            IsEnabled="False" />
+                    <Button Classes="info-large-outline"
+                            Width="100"
+                            Height="35"
+                            Content="Add to Playlist"
+                            IsEnabled="False" />
+                </StackPanel>
+
+                <!-- Parent Movement Section -->
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="info-section-heading" Text="Movement" />
+                    <TextBlock Classes="info-meta-text"
+                               Text="{Binding MovementName}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <!-- Parent Recording Section -->
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="info-section-heading" Text="Recording" />
+                    <Grid ColumnDefinitions="*,Auto,Auto" MinHeight="28">
+                        <TextBlock Grid.Column="0"
+                                   Classes="info-meta-text"
+                                   Text="{Binding RecordingName}"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Classes="info-small-accent"
+                                Margin="4,0,4,0"
+                                VerticalAlignment="Center"
+                                Command="{Binding PlayRecordingCommand}"
+                                Content="▶" />
+                        <Button Grid.Column="2"
+                                Classes="info-small-outline"
+                                VerticalAlignment="Center"
+                                Command="{Binding EnqueueRecordingCommand}"
+                                Content="⏎" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- Fully Qualified Path for AudioFile Section -->
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="info-section-heading" Text="Audio File Path" />
+                    <TextBlock FontSize="11"
+                               Foreground="{DynamicResource SecondaryTextBrush}"
+                               Text="{Binding AudioFilePath}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

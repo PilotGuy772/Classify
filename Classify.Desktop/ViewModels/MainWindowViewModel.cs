@@ -26,8 +26,6 @@ public class MainWindowViewModel : ViewModelBase
         {
             currentPage = value;
             RaisePropertyChanged();
-            if (value is not LibraryViewModel)
-                IsWorkInfoPanelOpen = false;
         }
     }
 
@@ -149,7 +147,6 @@ public class MainWindowViewModel : ViewModelBase
     {
         if (item is null)
         {
-            IsWorkInfoPanelOpen = false;
             return;
         }
 
