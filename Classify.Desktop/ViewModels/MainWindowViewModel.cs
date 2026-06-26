@@ -46,10 +46,46 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private InfoPanelViewModelBase? activeInfoPanel;
+
     /// <summary>
-    /// Work inspector panel hosted at the right edge of the main column.
+    /// Gets or sets the currently active right-side Info Panel.
+    /// </summary>
+    public InfoPanelViewModelBase? ActiveInfoPanel
+    {
+        get => activeInfoPanel;
+        set
+        {
+            if (activeInfoPanel == value) return;
+            activeInfoPanel = value;
+            RaisePropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Gets the work inspector panel.
     /// </summary>
     public WorkInfoPanelViewModel WorkInfo { get; }
+
+    /// <summary>
+    /// Gets the composer inspector panel.
+    /// </summary>
+    public ComposerInfoPanelViewModel ComposerInfo { get; }
+
+    /// <summary>
+    /// Gets the movement inspector panel.
+    /// </summary>
+    public MovementInfoPanelViewModel MovementInfo { get; }
+
+    /// <summary>
+    /// Gets the recording inspector panel.
+    /// </summary>
+    public RecordingInfoPanelViewModel RecordingInfo { get; }
+
+    /// <summary>
+    /// Gets the movement recording inspector panel.
+    /// </summary>
+    public MovementRecordingInfoPanelViewModel MovementRecordingInfo { get; }
 
     public System.Windows.Input.ICommand ShowLibraryScanCommand { get; }
     public System.Windows.Input.ICommand ShowPlaylistsCommand { get; }
@@ -59,13 +95,28 @@ public class MainWindowViewModel : ViewModelBase
     public System.Windows.Input.ICommand ShowRadioCommand { get; }
 
     /// <summary>
-    /// Initializes shell navigation with injected services and the shared work Info Panel.
+    /// Initializes shell navigation with injected services and all Info Panels.
     /// </summary>
-    public MainWindowViewModel(IServiceProvider serviceProvider, WorkInfoPanelViewModel workInfo)
+    public MainWindowViewModel(
+        IServiceProvider serviceProvider,
+        WorkInfoPanelViewModel workInfo,
+        ComposerInfoPanelViewModel composerInfo,
+        MovementInfoPanelViewModel movementInfo,
+        RecordingInfoPanelViewModel recordingInfo,
+        MovementRecordingInfoPanelViewModel movementRecordingInfo)
     {
         this.serviceProvider = serviceProvider;
         WorkInfo = workInfo;
+        ComposerInfo = composerInfo;
+        MovementInfo = movementInfo;
+        RecordingInfo = recordingInfo;
+        MovementRecordingInfo = movementRecordingInfo;
+
         WorkInfo.AttachHost(this);
+        ComposerInfo.AttachHost(this);
+        MovementInfo.AttachHost(this);
+        RecordingInfo.AttachHost(this);
+        MovementRecordingInfo.AttachHost(this);
 
         ShowLibraryScanCommand = new RelayCommand(_ => ShowLibraryScan());
         ShowPlaylistsCommand = new RelayCommand(_ => ShowPlaylists());
@@ -92,17 +143,53 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Handles single-selection changes from the library browse list (opens Info Panel for works only).
+    /// Handles single-selection changes from the library browse list (opens Info Panel for selected entity).
     /// </summary>
     public async Task OnLibraryBrowserSelectionChangedAsync(LibraryItemViewModel? item)
     {
-        if (item is null || item.Type != LibraryItemType.Work)
+        if (item is null)
         {
             IsWorkInfoPanelOpen = false;
             return;
         }
 
-        await WorkInfo.LoadAsync(item.Id);
+        switch (item.Type)
+        {
+            case LibraryItemType.Work:
+                await WorkInfo.LoadAsync(item.Id);
+                ActiveInfoPanel = WorkInfo;
+                IsWorkInfoPanelOpen = true;
+                break;
+            case LibraryItemType.Composer:
+                await ComposerInfo.LoadAsync(item.Id);
+                ActiveInfoPanel = ComposerInfo;
+                IsWorkInfoPanelOpen = true;
+                break;
+            case LibraryItemType.Movement:
+                await MovementInfo.LoadAsync(item.Id);
+                ActiveInfoPanel = MovementInfo;
+                IsWorkInfoPanelOpen = true;
+                break;
+            case LibraryItemType.Recording:
+                await RecordingInfo.LoadAsync(item.Id);
+                ActiveInfoPanel = RecordingInfo;
+                IsWorkInfoPanelOpen = true;
+                break;
+            default:
+                IsWorkInfoPanelOpen = false;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Programmatically opens the movement recording info panel.
+    /// </summary>
+    /// <param name="performedMovementId">The performed movement identifier.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public async Task OpenMovementRecordingInfoPanelAsync(int performedMovementId)
+    {
+        await MovementRecordingInfo.LoadAsync(performedMovementId);
+        ActiveInfoPanel = MovementRecordingInfo;
         IsWorkInfoPanelOpen = true;
     }
 

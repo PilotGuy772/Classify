@@ -153,6 +153,10 @@ public class App : Application
 
         // ViewModels
         services.AddSingleton<WorkInfoPanelViewModel>();
+        services.AddSingleton<ComposerInfoPanelViewModel>();
+        services.AddSingleton<MovementInfoPanelViewModel>();
+        services.AddSingleton<RecordingInfoPanelViewModel>();
+        services.AddSingleton<MovementRecordingInfoPanelViewModel>();
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<HomeViewModel>();
         services.AddTransient<LibraryViewModel>();

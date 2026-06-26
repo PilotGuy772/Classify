@@ -15,34 +15,19 @@ namespace Classify.Desktop.ViewModels;
 /// <summary>
 /// Right-side Info Panel content for a selected library work (Figma "Info Panel").
 /// </summary>
-public sealed class WorkInfoPanelViewModel : ViewModelBase
+public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
 {
-    private readonly IUnitOfWork unitOfWork;
-    private MainWindowViewModel? host;
-
-    private string pieceTitle = string.Empty;
     private string composerLine = string.Empty;
     private string secondaryLine = string.Empty;
 
     /// <summary>
     /// Creates the panel view model with direct database access via <see cref="IUnitOfWork"/>.
     /// </summary>
-    public WorkInfoPanelViewModel(IUnitOfWork unitOfWork)
+    public WorkInfoPanelViewModel(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
-        this.unitOfWork = unitOfWork;
-
-        ClosePanelCommand = new AsyncRelayCommand(CloseAsync);
         PlayWorkCommand = new AsyncRelayCommand(PlayWorkAsync);
         EnqueueWorkCommand = new AsyncRelayCommand(EnqueueWorkAsync);
         AddWorkToPlaylistCommand = new AsyncRelayCommand(AddWorkToPlaylistAsync);
-    }
-
-    /// <summary>
-    /// Wire the shell host after construction so panel commands can collapse the dock without circular DI.
-    /// </summary>
-    public void AttachHost(MainWindowViewModel shell)
-    {
-        host = shell;
     }
 
     /// <summary>
@@ -50,13 +35,8 @@ public sealed class WorkInfoPanelViewModel : ViewModelBase
     /// </summary>
     public string PieceTitle
     {
-        get => pieceTitle;
-        private set
-        {
-            if (pieceTitle == value) return;
-            pieceTitle = value;
-            RaisePropertyChanged();
-        }
+        get => Title;
+        private set => Title = value;
     }
 
     /// <summary>
@@ -98,11 +78,6 @@ public sealed class WorkInfoPanelViewModel : ViewModelBase
     public ObservableCollection<RecordingInfoRowViewModel> RecordingRows { get; } = new();
 
     /// <summary>
-    /// Command to close/collapse the info panel.
-    /// </summary>
-    public ICommand ClosePanelCommand { get; }
-
-    /// <summary>
     /// Main header action: Play this work.
     /// </summary>
     public ICommand PlayWorkCommand { get; }
@@ -122,7 +97,7 @@ public sealed class WorkInfoPanelViewModel : ViewModelBase
     /// <summary>
     /// Loads movement and recording lists for the given work using a scoped unit of work.
     /// </summary>
-    public async Task LoadAsync(int workId)
+    public override async Task LoadAsync(int workId)
     {
         currentWorkId = workId;
         MovementRows.Clear();
@@ -231,11 +206,7 @@ public sealed class WorkInfoPanelViewModel : ViewModelBase
         return table[indexOneBased] + ".";
     }
 
-    private Task CloseAsync()
-    {
-        host?.CloseWorkInfoPanel();
-        return Task.CompletedTask;
-    }
+
 
     private Task PlayWorkAsync()
     {

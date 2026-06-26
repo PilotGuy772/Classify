@@ -11,7 +11,7 @@ public sealed class PlayablePlaylistService(IUnitOfWork uow, IPlayableResolution
         IReadOnlyList<int> ids = await resolver.ResolveAudioFileIdsAsync(playable, ct);
         if (ids.Count == 0) return Array.Empty<string>();
 
-        IReadOnlyList<Classify.Core.Domain.AudioFile> files = await uow.AudioFiles.GetByIdsOrderedAsync(ids, ct);
+        IReadOnlyList<AudioFile> files = await uow.AudioFiles.GetByIdsOrderedAsync(ids, ct);
         return files.Select(a => a.Path).ToList();
     }
 }

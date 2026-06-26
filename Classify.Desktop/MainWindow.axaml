@@ -161,10 +161,10 @@
                                       VerticalAlignment="Stretch"
                                       IsHitTestVisible="False" />
 
-                        <views:WorkInfoPanelView Grid.Column="2"
-                                                 HorizontalAlignment="Stretch"
-                                                 VerticalAlignment="Stretch"
-                                                 DataContext="{Binding WorkInfo}" />
+                        <ContentControl Grid.Column="2"
+                                        Content="{Binding ActiveInfoPanel}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch" />
                 </Grid>
         </Grid>
     

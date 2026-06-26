@@ -13,7 +13,8 @@ public enum LibraryItemType
     Work,
     Movement,
     Recording,
-    AudioFile
+    AudioFile,
+    MovementRecording
 }
 
 public class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposable
