@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+             xmlns:ti="using:TablerIcons"
              mc:Ignorable="d" d:DesignWidth="304" d:DesignHeight="776"
              x:Class="Classify.Desktop.Views.MovementInfoPanelView"
              x:DataType="viewModels:MovementInfoPanelViewModel">
@@ -16,8 +17,9 @@
                     <Button Grid.Column="0"
                             Classes="info-close"
                             Command="{Binding ClosePanelCommand}"
-                            Content="×"
-                            Margin="0,0,10,0" />
+                            Margin="0,0,10,0">
+                        <ti:TablerIcon Icon="IconX" Width="12" Height="12" />
+                    </Button>
                     <TextBlock Grid.Column="1"
                                Classes="info-piece-title"
                                Text="{Binding Title}"
@@ -49,8 +51,9 @@
                     <Button Classes="info-large-primary"
                             Width="58"
                             Height="35"
-                            Content="▶"
-                            IsEnabled="False" />
+                            IsEnabled="False">
+                        <ti:TablerIcon Icon="IconPlayerPlay" Width="16" Height="16" />
+                    </Button>
                     <Button Classes="info-large-outline"
                             Width="100"
                             Height="35"
@@ -66,31 +69,39 @@
                 <!-- Parent Composer Section -->
                 <StackPanel Spacing="4">
                     <TextBlock Classes="info-section-heading" Text="Composer" />
-                    <TextBlock Classes="info-meta-text"
-                               Text="{Binding ComposerName}"
-                               TextWrapping="Wrap" />
+                    <Button Classes="info-link"
+                            Command="{Binding ShowComposerCommand}">
+                        <TextBlock Classes="info-meta-text"
+                                   Text="{Binding ComposerName}"
+                                   TextWrapping="Wrap" />
+                    </Button>
                 </StackPanel>
 
                 <!-- Parent Work Section -->
                 <StackPanel Spacing="4">
                     <TextBlock Classes="info-section-heading" Text="Work" />
                     <Grid ColumnDefinitions="*,Auto,Auto" MinHeight="28">
-                        <TextBlock Grid.Column="0"
-                                   Classes="info-meta-text"
-                                   Text="{Binding WorkName}"
-                                   TextWrapping="Wrap"
-                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="0"
+                                Classes="info-link"
+                                Command="{Binding ShowWorkCommand}">
+                            <TextBlock Classes="info-meta-text"
+                                       Text="{Binding WorkName}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                        </Button>
                         <Button Grid.Column="1"
                                 Classes="info-small-accent"
                                 Margin="4,0,4,0"
                                 VerticalAlignment="Center"
-                                Command="{Binding PlayWorkCommand}"
-                                Content="▶" />
+                                Command="{Binding PlayWorkCommand}">
+                            <ti:TablerIcon Icon="IconPlayerPlay" Width="12" Height="12" />
+                        </Button>
                         <Button Grid.Column="2"
                                 Classes="info-small-outline"
                                 VerticalAlignment="Center"
-                                Command="{Binding EnqueueWorkCommand}"
-                                Content="⏎" />
+                                Command="{Binding EnqueueWorkCommand}">
+                            <ti:TablerIcon Icon="IconPlaylistAdd" Width="12" Height="12" />
+                        </Button>
                     </Grid>
                 </StackPanel>
 
@@ -106,32 +117,36 @@
                                     <Grid Margin="0,0,0,4"
                                           ColumnDefinitions="*,Auto,Auto,Auto"
                                           MinHeight="31">
-                                        <StackPanel Grid.Column="0"
-                                                    Margin="0,0,8,0"
-                                                    VerticalAlignment="Center">
+                                        <Button Grid.Column="0"
+                                                Classes="info-link"
+                                                Margin="0,0,8,0"
+                                                Command="{Binding ShowMovementRecordingCommand}">
                                             <TextBlock FontSize="12"
                                                        Foreground="{DynamicResource TextBrush}"
                                                        Text="{Binding DisplayText}"
                                                        TextWrapping="Wrap" />
-                                        </StackPanel>
+                                        </Button>
                                         <Button Grid.Column="1"
                                                 Classes="info-small-accent"
                                                 Margin="4,0,4,0"
                                                 VerticalAlignment="Center"
-                                                Command="{Binding PlayRecordingRowCommand}"
-                                                Content="▶" />
+                                                Command="{Binding PlayRecordingRowCommand}">
+                                            <ti:TablerIcon Icon="IconPlayerPlay" Width="12" Height="12" />
+                                        </Button>
                                         <Button Grid.Column="2"
                                                 Classes="info-small-outline"
                                                 Margin="0,0,4,0"
                                                 VerticalAlignment="Center"
-                                                Command="{Binding EnqueueRecordingRowCommand}"
-                                                Content="⏎" />
+                                                Command="{Binding EnqueueRecordingRowCommand}">
+                                            <ti:TablerIcon Icon="IconPlaylistAdd" Width="12" Height="12" />
+                                        </Button>
                                         <Button Grid.Column="3"
                                                 Classes="info-small-outline"
                                                 Classes.is-favorite="{Binding IsFavorite}"
                                                 VerticalAlignment="Center"
-                                                Command="{Binding ToggleFavoriteRecordingRowCommand}"
-                                                Content="★" />
+                                                Command="{Binding ToggleFavoriteRecordingRowCommand}">
+                                            <ti:TablerIcon Icon="IconStar" Width="12" Height="12" />
+                                        </Button>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

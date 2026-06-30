@@ -16,6 +16,7 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     private string recordingName = string.Empty;
     private string audioFilePath = string.Empty;
     private int parentRecordingId;
+    private int parentMovementId;
 
     /// <summary>
     /// Gets the parent movement name.
@@ -70,6 +71,16 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     public ICommand EnqueueRecordingCommand { get; }
 
     /// <summary>
+    /// Gets the command to show the parent movement's info panel.
+    /// </summary>
+    public ICommand ShowMovementCommand { get; }
+
+    /// <summary>
+    /// Gets the command to show the parent recording's info panel.
+    /// </summary>
+    public ICommand ShowRecordingCommand { get; }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="MovementRecordingInfoPanelViewModel"/> with direct database access.
     /// </summary>
     /// <param name="unitOfWork">The database unit of work.</param>
@@ -77,6 +88,8 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     {
         PlayRecordingCommand = new AsyncRelayCommand(PlayRecordingAsync);
         EnqueueRecordingCommand = new AsyncRelayCommand(EnqueueRecordingAsync);
+        ShowMovementCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Movement, parentMovementId));
+        ShowRecordingCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Recording, parentRecordingId));
     }
 
     /// <summary>
@@ -94,6 +107,7 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
             RecordingName = string.Empty;
             AudioFilePath = string.Empty;
             parentRecordingId = 0;
+            parentMovementId = 0;
             return;
         }
 
@@ -101,6 +115,7 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
 
         Movement? movement = await unitOfWork.Movements.GetByIdAsync(pm.MovementId);
         MovementName = movement?.Name ?? "—";
+        parentMovementId = movement?.Id ?? 0;
 
         Recording? recording = await unitOfWork.Recordings.GetByIdAsync(pm.RecordingId);
         if (recording is not null)

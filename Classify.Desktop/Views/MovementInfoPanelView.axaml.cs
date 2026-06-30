@@ -5,7 +5,7 @@ namespace Classify.Desktop.Views;
 /// <summary>
 /// Figma Info Panel layout for an inspected movement.
 /// </summary>
-public class MovementInfoPanelView : UserControl
+public partial class MovementInfoPanelView : UserControl
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="MovementInfoPanelView"/> class.

@@ -77,4 +77,18 @@ public abstract class InfoPanelViewModelBase : ViewModelBase
     /// <param name="id">The domain entity identifier.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public abstract Task LoadAsync(int id);
+
+    /// <summary>
+    /// Opens the Info Panel for a given entity type and ID.
+    /// </summary>
+    /// <param name="type">The type of library item.</param>
+    /// <param name="id">The database identifier.</param>
+    /// <returns>A task representing the operation.</returns>
+    public async Task OpenInfoPanelAsync(LibraryItemType type, int id)
+    {
+        if (host is not null)
+        {
+            await host.OpenInfoPanelAsync(type, id);
+        }
+    }
 }

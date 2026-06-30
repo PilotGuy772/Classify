@@ -18,6 +18,7 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     private string composerName = string.Empty;
     private string workName = string.Empty;
     private int parentWorkId;
+    private int parentComposerId;
 
     /// <summary>
     /// Gets the parent composer name.
@@ -58,6 +59,16 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     public ICommand EnqueueWorkCommand { get; }
 
     /// <summary>
+    /// Gets the command to show the parent composer's info panel.
+    /// </summary>
+    public ICommand ShowComposerCommand { get; }
+
+    /// <summary>
+    /// Gets the command to show the parent work's info panel.
+    /// </summary>
+    public ICommand ShowWorkCommand { get; }
+
+    /// <summary>
     /// Gets the collection of movement recording rows.
     /// </summary>
     public ObservableCollection<MovementRecordingRowViewModel> RecordingRows { get; } = new();
@@ -70,6 +81,8 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     {
         PlayWorkCommand = new AsyncRelayCommand(PlayWorkAsync);
         EnqueueWorkCommand = new AsyncRelayCommand(EnqueueWorkAsync);
+        ShowComposerCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Composer, parentComposerId));
+        ShowWorkCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Work, parentWorkId));
     }
 
     /// <summary>
@@ -88,6 +101,7 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
             ComposerName = string.Empty;
             WorkName = string.Empty;
             parentWorkId = 0;
+            parentComposerId = 0;
             return;
         }
 
@@ -101,10 +115,12 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
 
             Composer? composer = await unitOfWork.Composers.GetByIdAsync(work.ComposerId);
             ComposerName = composer?.Name ?? "—";
+            parentComposerId = composer?.Id ?? 0;
         }
         else
         {
             parentWorkId = 0;
+            parentComposerId = 0;
             WorkName = "—";
             ComposerName = "—";
         }
@@ -245,6 +261,11 @@ public sealed class MovementRecordingRowViewModel : ViewModelBase
     public ICommand ToggleFavoriteRecordingRowCommand { get; }
 
     /// <summary>
+    /// Gets the command to show this movement recording's info panel.
+    /// </summary>
+    public ICommand ShowMovementRecordingCommand { get; }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="MovementRecordingRowViewModel"/> with parent callbacks.
     /// </summary>
     /// <param name="displayText">The display text of the recording.</param>
@@ -267,5 +288,6 @@ public sealed class MovementRecordingRowViewModel : ViewModelBase
         PlayRecordingRowCommand = new AsyncRelayCommand(() => panel.PlayRecordingStubAsync(this));
         EnqueueRecordingRowCommand = new AsyncRelayCommand(() => panel.EnqueueRecordingStubAsync(this));
         ToggleFavoriteRecordingRowCommand = new AsyncRelayCommand(() => panel.ToggleFavoriteRecordingStubAsync(this));
+        ShowMovementRecordingCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.MovementRecording, performedMovementId));
     }
 }

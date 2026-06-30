@@ -66,17 +66,17 @@ public sealed class RecordingInfoPanelViewModel : InfoPanelViewModelBase
             grouped[work.Id].Items.Add((pm, mv));
         }
 
-        foreach (var pair in grouped.Values)
+        foreach ((Work Work, List<(PerformedMovement Pm, Movement Mv)> Items) pair in grouped.Values)
         {
-            RecordingWorkGroupViewModel group = new(pair.Work.Name);
+            RecordingWorkGroupViewModel group = new(pair.Work.Name, pair.Work.Id, this);
             
             // Sort movements by Order, then Name
-            var sortedMovements = pair.Items
+            List<(PerformedMovement Pm, Movement Mv)> sortedMovements = pair.Items
                 .OrderBy(x => x.Mv.Order)
                 .ThenBy(x => x.Mv.Name)
                 .ToList();
 
-            foreach (var item in sortedMovements)
+            foreach ((PerformedMovement Pm, Movement Mv) item in sortedMovements)
             {
                 string ordinalLabel = FormatRomanOrdinal(item.Mv.Order);
                 group.Movements.Add(new RecordingMovementRowViewModel(
@@ -131,17 +131,31 @@ public sealed class RecordingWorkGroupViewModel : ViewModelBase
     public string WorkTitle { get; }
 
     /// <summary>
+    /// Gets the domain work identifier.
+    /// </summary>
+    public int WorkId { get; }
+
+    /// <summary>
     /// Gets the movement recording rows.
     /// </summary>
     public ObservableCollection<RecordingMovementRowViewModel> Movements { get; } = new();
 
     /// <summary>
+    /// Gets the command to show this work's info panel.
+    /// </summary>
+    public ICommand ShowWorkCommand { get; }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="RecordingWorkGroupViewModel"/>.
     /// </summary>
     /// <param name="workTitle">The work title.</param>
-    public RecordingWorkGroupViewModel(string workTitle)
+    /// <param name="workId">The work identifier.</param>
+    /// <param name="panel">The owning recording panel.</param>
+    public RecordingWorkGroupViewModel(string workTitle, int workId, RecordingInfoPanelViewModel panel)
     {
         WorkTitle = workTitle;
+        WorkId = workId;
+        ShowWorkCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.Work, workId));
     }
 }
 
@@ -176,6 +190,11 @@ public sealed class RecordingMovementRowViewModel : ViewModelBase
     public ICommand EnqueueMovementRecordingRowCommand { get; }
 
     /// <summary>
+    /// Gets the command to show this movement recording's info panel.
+    /// </summary>
+    public ICommand ShowMovementRecordingCommand { get; }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="RecordingMovementRowViewModel"/> with parent callbacks.
     /// </summary>
     /// <param name="ordinalLabel">The Roman numeral label.</param>
@@ -194,5 +213,6 @@ public sealed class RecordingMovementRowViewModel : ViewModelBase
 
         PlayMovementRecordingRowCommand = new AsyncRelayCommand(() => panel.PlayMovementRecordingStubAsync(this));
         EnqueueMovementRecordingRowCommand = new AsyncRelayCommand(() => panel.EnqueueMovementRecordingStubAsync(this));
+        ShowMovementRecordingCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.MovementRecording, performedMovementId));
     }
 }

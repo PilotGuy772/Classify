@@ -99,6 +99,11 @@ public sealed class WorkRowViewModel : ViewModelBase
     public ICommand EnqueueWorkRowCommand { get; }
 
     /// <summary>
+    /// Gets the command to show this work's info panel.
+    /// </summary>
+    public ICommand ShowWorkCommand { get; }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="WorkRowViewModel"/> with parent panel callbacks.
     /// </summary>
     /// <param name="name">The work name.</param>
@@ -110,5 +115,6 @@ public sealed class WorkRowViewModel : ViewModelBase
         WorkId = workId;
         PlayWorkRowCommand = new AsyncRelayCommand(() => panel.PlayWorkRowStubAsync(this));
         EnqueueWorkRowCommand = new AsyncRelayCommand(() => panel.EnqueueWorkRowStubAsync(this));
+        ShowWorkCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.Work, workId));
     }
 }

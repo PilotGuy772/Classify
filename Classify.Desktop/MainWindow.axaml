@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
         xmlns:views="clr-namespace:Classify.Desktop.Views"
+        xmlns:ti="using:TablerIcons"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Classify.Desktop.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
@@ -34,7 +35,7 @@
                                         Classes="sidebar-main-title"
                                         Click="HomeClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <TextBlock Classes="sidebar-nav-icon" Text="♪" Width="30" Height="30" FontSize="34"/>
+                                                <ti:TablerIcon Icon="IconMusic" Width="30" Height="30" Brush="{DynamicResource AccentBrush}"/>
                                                 <TextBlock Classes="sidebar-main-title-text" Text="Classify"/>
                                         </StackPanel>
                                 </Button>
@@ -45,7 +46,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="PlaylistsClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <TextBlock Classes="sidebar-nav-icon" Text="≣"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconPlaylist"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Playlists"/>
                                         </StackPanel>
                                 </Button>
@@ -54,7 +55,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="BrowseClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <TextBlock Classes="sidebar-nav-icon" Text="◉"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconLibrary"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Browse"/>
                                         </StackPanel>
                                 </Button>
@@ -63,7 +64,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="ScanClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <TextBlock Classes="sidebar-nav-icon" Text="▤"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconScan"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Scan"/>
                                         </StackPanel>
                                 </Button>
@@ -74,7 +75,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="FavoritesClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <TextBlock Classes="sidebar-nav-icon" Text="♡"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconHeart"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Favorites"/>
                                         </StackPanel>
                                 </Button>
@@ -83,7 +84,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="ExploreClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <TextBlock Classes="sidebar-nav-icon" Text="◌"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconCompass"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Explore"/>
                                         </StackPanel>
                                 </Button>
@@ -92,7 +93,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="RadioClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <TextBlock Classes="sidebar-nav-icon" Text="◍"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconRadio"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Radio"/>
                                         </StackPanel>
                                 </Button>

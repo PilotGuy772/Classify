@@ -34,6 +34,11 @@ public sealed class MovementInfoRowViewModel : ViewModelBase
     public ICommand EnqueueMovementRowCommand { get; }
 
     /// <summary>
+    /// Gets the command to show this movement's info panel.
+    /// </summary>
+    public ICommand ShowMovementCommand { get; }
+
+    /// <summary>
     /// Creates a movements section row binding model with commands targeting the owning panel.
     /// </summary>
     public MovementInfoRowViewModel(string ordinalLabel, string name, int movementId, WorkInfoPanelViewModel panel)
@@ -43,5 +48,6 @@ public sealed class MovementInfoRowViewModel : ViewModelBase
         MovementId = movementId;
         PlayMovementRowCommand = new AsyncRelayCommand(() => panel.PlayMovementStubAsync(this));
         EnqueueMovementRowCommand = new AsyncRelayCommand(() => panel.EnqueueMovementStubAsync(this));
+        ShowMovementCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.Movement, movementId));
     }
 }

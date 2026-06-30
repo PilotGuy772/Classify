@@ -48,6 +48,11 @@ public sealed class RecordingInfoRowViewModel : ViewModelBase
     public ICommand ToggleFavoriteRecordingRowCommand { get; }
 
     /// <summary>
+    /// Gets the command to show this recording's info panel.
+    /// </summary>
+    public ICommand ShowRecordingCommand { get; }
+
+    /// <summary>
     /// Creates a recordings section row binding model with commands targeting the owning panel.
     /// </summary>
     public RecordingInfoRowViewModel(string displayInfo, int recordingId, bool isFavorite, WorkInfoPanelViewModel panel)
@@ -58,5 +63,6 @@ public sealed class RecordingInfoRowViewModel : ViewModelBase
         PlayRecordingRowCommand = new AsyncRelayCommand(() => panel.PlayRecordingStubAsync(this));
         EnqueueRecordingRowCommand = new AsyncRelayCommand(() => panel.EnqueueRecordingStubAsync(this));
         ToggleFavoriteRecordingRowCommand = new AsyncRelayCommand(() => panel.ToggleFavoriteRecordingStubAsync(this));
+        ShowRecordingCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.Recording, recordingId));
     }
 }

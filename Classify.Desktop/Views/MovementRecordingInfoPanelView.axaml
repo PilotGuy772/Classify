@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+             xmlns:ti="using:TablerIcons"
              mc:Ignorable="d" d:DesignWidth="304" d:DesignHeight="776"
              x:Class="Classify.Desktop.Views.MovementRecordingInfoPanelView"
              x:DataType="viewModels:MovementRecordingInfoPanelViewModel">
@@ -16,8 +17,9 @@
                     <Button Grid.Column="0"
                             Classes="info-close"
                             Command="{Binding ClosePanelCommand}"
-                            Content="×"
-                            Margin="0,0,10,0" />
+                            Margin="0,0,10,0">
+                        <ti:TablerIcon Icon="IconX" Width="12" Height="12" />
+                    </Button>
                     <TextBlock Grid.Column="1"
                                Classes="info-piece-title"
                                Text="{Binding Title}"
@@ -49,8 +51,9 @@
                     <Button Classes="info-large-primary"
                             Width="58"
                             Height="35"
-                            Content="▶"
-                            IsEnabled="False" />
+                            IsEnabled="False">
+                        <ti:TablerIcon Icon="IconPlayerPlay" Width="16" Height="16" />
+                    </Button>
                     <Button Classes="info-large-outline"
                             Width="100"
                             Height="35"
@@ -66,31 +69,39 @@
                 <!-- Parent Movement Section -->
                 <StackPanel Spacing="4">
                     <TextBlock Classes="info-section-heading" Text="Movement" />
-                    <TextBlock Classes="info-meta-text"
-                               Text="{Binding MovementName}"
-                               TextWrapping="Wrap" />
+                    <Button Classes="info-link"
+                            Command="{Binding ShowMovementCommand}">
+                        <TextBlock Classes="info-meta-text"
+                                   Text="{Binding MovementName}"
+                                   TextWrapping="Wrap" />
+                    </Button>
                 </StackPanel>
 
                 <!-- Parent Recording Section -->
                 <StackPanel Spacing="4">
                     <TextBlock Classes="info-section-heading" Text="Recording" />
                     <Grid ColumnDefinitions="*,Auto,Auto" MinHeight="28">
-                        <TextBlock Grid.Column="0"
-                                   Classes="info-meta-text"
-                                   Text="{Binding RecordingName}"
-                                   TextWrapping="Wrap"
-                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="0"
+                                Classes="info-link"
+                                Command="{Binding ShowRecordingCommand}">
+                            <TextBlock Classes="info-meta-text"
+                                       Text="{Binding RecordingName}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" />
+                        </Button>
                         <Button Grid.Column="1"
                                 Classes="info-small-accent"
                                 Margin="4,0,4,0"
                                 VerticalAlignment="Center"
-                                Command="{Binding PlayRecordingCommand}"
-                                Content="▶" />
+                                Command="{Binding PlayRecordingCommand}">
+                            <ti:TablerIcon Icon="IconPlayerPlay" Width="12" Height="12" />
+                        </Button>
                         <Button Grid.Column="2"
                                 Classes="info-small-outline"
                                 VerticalAlignment="Center"
-                                Command="{Binding EnqueueRecordingCommand}"
-                                Content="⏎" />
+                                Command="{Binding EnqueueRecordingCommand}">
+                            <ti:TablerIcon Icon="IconPlaylistAdd" Width="12" Height="12" />
+                        </Button>
                     </Grid>
                 </StackPanel>
 

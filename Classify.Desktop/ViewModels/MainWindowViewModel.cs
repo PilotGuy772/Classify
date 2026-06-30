@@ -141,35 +141,38 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Handles single-selection changes from the library browse list (opens Info Panel for selected entity).
+    /// Programmatically opens the Info Panel for a given entity type and ID.
     /// </summary>
-    public async Task OnLibraryBrowserSelectionChangedAsync(LibraryItemViewModel? item)
+    /// <param name="type">The type of library item.</param>
+    /// <param name="id">The database identifier.</param>
+    /// <returns>A task representing the operation.</returns>
+    public async Task OpenInfoPanelAsync(LibraryItemType type, int id)
     {
-        if (item is null)
-        {
-            return;
-        }
-
-        switch (item.Type)
+        switch (type)
         {
             case LibraryItemType.Work:
-                await WorkInfo.LoadAsync(item.Id);
+                await WorkInfo.LoadAsync(id);
                 ActiveInfoPanel = WorkInfo;
                 IsWorkInfoPanelOpen = true;
                 break;
             case LibraryItemType.Composer:
-                await ComposerInfo.LoadAsync(item.Id);
+                await ComposerInfo.LoadAsync(id);
                 ActiveInfoPanel = ComposerInfo;
                 IsWorkInfoPanelOpen = true;
                 break;
             case LibraryItemType.Movement:
-                await MovementInfo.LoadAsync(item.Id);
+                await MovementInfo.LoadAsync(id);
                 ActiveInfoPanel = MovementInfo;
                 IsWorkInfoPanelOpen = true;
                 break;
             case LibraryItemType.Recording:
-                await RecordingInfo.LoadAsync(item.Id);
+                await RecordingInfo.LoadAsync(id);
                 ActiveInfoPanel = RecordingInfo;
+                IsWorkInfoPanelOpen = true;
+                break;
+            case LibraryItemType.MovementRecording:
+                await MovementRecordingInfo.LoadAsync(id);
+                ActiveInfoPanel = MovementRecordingInfo;
                 IsWorkInfoPanelOpen = true;
                 break;
             default:
@@ -179,15 +182,26 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Handles single-selection changes from the library browse list (opens Info Panel for selected entity).
+    /// </summary>
+    public async Task OnLibraryBrowserSelectionChangedAsync(LibraryItemViewModel? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        await OpenInfoPanelAsync(item.Type, item.Id);
+    }
+
+    /// <summary>
     /// Programmatically opens the movement recording info panel.
     /// </summary>
     /// <param name="performedMovementId">The performed movement identifier.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task OpenMovementRecordingInfoPanelAsync(int performedMovementId)
     {
-        await MovementRecordingInfo.LoadAsync(performedMovementId);
-        ActiveInfoPanel = MovementRecordingInfo;
-        IsWorkInfoPanelOpen = true;
+        await OpenInfoPanelAsync(LibraryItemType.MovementRecording, performedMovementId);
     }
 
     /// <summary>

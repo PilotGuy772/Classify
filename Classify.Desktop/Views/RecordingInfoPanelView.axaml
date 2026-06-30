@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+             xmlns:ti="using:TablerIcons"
              mc:Ignorable="d" d:DesignWidth="304" d:DesignHeight="776"
              x:Class="Classify.Desktop.Views.RecordingInfoPanelView"
              x:DataType="viewModels:RecordingInfoPanelViewModel">
@@ -16,8 +17,9 @@
                     <Button Grid.Column="0"
                             Classes="info-close"
                             Command="{Binding ClosePanelCommand}"
-                            Content="×"
-                            Margin="0,0,10,0" />
+                            Margin="0,0,10,0">
+                        <ti:TablerIcon Icon="IconX" Width="12" Height="12" />
+                    </Button>
                     <TextBlock Grid.Column="1"
                                Classes="info-piece-title"
                                Text="{Binding Title}"
@@ -49,8 +51,9 @@
                     <Button Classes="info-large-primary"
                             Width="58"
                             Height="35"
-                            Content="▶"
-                            IsEnabled="False" />
+                            IsEnabled="False">
+                        <ti:TablerIcon Icon="IconPlayerPlay" Width="16" Height="16" />
+                    </Button>
                     <Button Classes="info-large-outline"
                             Width="100"
                             Height="35"
@@ -74,12 +77,15 @@
                                 <DataTemplate DataType="{x:Type viewModels:RecordingWorkGroupViewModel}">
                                     <StackPanel Margin="0,0,0,12">
                                         <!-- Emphasized Work Title -->
-                                        <TextBlock FontSize="13"
-                                                   FontWeight="Bold"
-                                                   Foreground="{DynamicResource TextBrush}"
-                                                   Text="{Binding WorkTitle}"
-                                                   TextWrapping="Wrap"
-                                                   Margin="0,0,0,6" />
+                                        <Button Classes="info-link"
+                                                Command="{Binding ShowWorkCommand}"
+                                                Margin="0,0,0,6">
+                                            <TextBlock FontSize="13"
+                                                       FontWeight="Bold"
+                                                       Foreground="{DynamicResource TextBrush}"
+                                                       Text="{Binding WorkTitle}"
+                                                       TextWrapping="Wrap" />
+                                        </Button>
                                         <!-- Movement recordings under this Work -->
                                         <ItemsControl ItemsSource="{Binding Movements}">
                                             <ItemsControl.ItemTemplate>
@@ -94,23 +100,28 @@
                                                                    Foreground="{DynamicResource TextBrush}"
                                                                    Text="{Binding OrdinalLabel}"
                                                                    Width="28" />
-                                                        <TextBlock Grid.Column="1"
-                                                                   VerticalAlignment="Center"
-                                                                   FontSize="12"
-                                                                   Foreground="{DynamicResource TextBrush}"
-                                                                   Text="{Binding Name}"
-                                                                   TextWrapping="Wrap" />
+                                                        <Button Grid.Column="1"
+                                                                Classes="info-link"
+                                                                Command="{Binding ShowMovementRecordingCommand}">
+                                                            <TextBlock VerticalAlignment="Center"
+                                                                       FontSize="12"
+                                                                       Foreground="{DynamicResource TextBrush}"
+                                                                       Text="{Binding Name}"
+                                                                       TextWrapping="Wrap" />
+                                                        </Button>
                                                         <Button Grid.Column="2"
                                                                 Classes="info-small-accent"
                                                                 Margin="4,0,4,0"
                                                                 VerticalAlignment="Center"
-                                                                Command="{Binding PlayMovementRecordingRowCommand}"
-                                                                Content="▶" />
+                                                                Command="{Binding PlayMovementRecordingRowCommand}">
+                                                            <ti:TablerIcon Icon="IconPlayerPlay" Width="12" Height="12" />
+                                                        </Button>
                                                         <Button Grid.Column="3"
                                                                 Classes="info-small-outline"
                                                                 VerticalAlignment="Center"
-                                                                Command="{Binding EnqueueMovementRecordingRowCommand}"
-                                                                Content="⏎" />
+                                                                Command="{Binding EnqueueMovementRecordingRowCommand}">
+                                                            <ti:TablerIcon Icon="IconPlaylistAdd" Width="12" Height="12" />
+                                                        </Button>
                                                     </Grid>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
