@@ -46,7 +46,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="PlaylistsClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconPlaylist"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconPlaylist" VerticalAlignment="Center" HorizontalAlignment="Center" Width="21" Height="21" Brush="{DynamicResource AccentBrush}"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Playlists"/>
                                         </StackPanel>
                                 </Button>
@@ -55,7 +55,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="BrowseClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconLibrary"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconLibrary" VerticalAlignment="Center" HorizontalAlignment="Center" Width="21" Height="21" Brush="{DynamicResource AccentBrush}"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Browse"/>
                                         </StackPanel>
                                 </Button>
@@ -64,7 +64,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="ScanClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconScan"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconScan" VerticalAlignment="Center" HorizontalAlignment="Center" Width="21" Height="21" Brush="{DynamicResource AccentBrush}"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Scan"/>
                                         </StackPanel>
                                 </Button>
@@ -75,7 +75,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="FavoritesClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconHeart"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconHeart" VerticalAlignment="Center" HorizontalAlignment="Center" Width="21" Height="21" Brush="{DynamicResource AccentBrush}"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Favorites"/>
                                         </StackPanel>
                                 </Button>
@@ -84,7 +84,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="ExploreClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconCompass"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconCompass" VerticalAlignment="Center" HorizontalAlignment="Center" Width="21" Height="21" Brush="{DynamicResource AccentBrush}"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Explore"/>
                                         </StackPanel>
                                 </Button>
@@ -93,7 +93,7 @@
                                         Classes="sidebar-nav-button"
                                         Click="RadioClicked">
                                         <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconRadio"/>
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconRadio" VerticalAlignment="Center" HorizontalAlignment="Center" Width="21" Height="21" Brush="{DynamicResource AccentBrush}"/>
                                                 <TextBlock Classes="sidebar-nav-label" Text="Radio"/>
                                         </StackPanel>
                                 </Button>
