@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
              xmlns:ti="using:TablerIcons"
+             xmlns:controls="clr-namespace:Classify.Desktop.Controls"
              mc:Ignorable="d" d:DesignWidth="304" d:DesignHeight="776"
              x:Class="Classify.Desktop.Views.RecordingInfoPanelView"
              x:DataType="viewModels:RecordingInfoPanelViewModel">
@@ -90,39 +91,27 @@
                                         <ItemsControl ItemsSource="{Binding Movements}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate DataType="{x:Type viewModels:RecordingMovementRowViewModel}">
-                                                    <Grid Margin="0,0,0,4"
-                                                          ColumnDefinitions="Auto,*,Auto,Auto"
-                                                          MinHeight="28">
-                                                        <TextBlock Grid.Column="0"
-                                                                   VerticalAlignment="Center"
-                                                                   Margin="0,0,8,0"
-                                                                   FontSize="12"
-                                                                   Foreground="{DynamicResource TextBrush}"
-                                                                   Text="{Binding OrdinalLabel}"
-                                                                   Width="28" />
-                                                        <Button Grid.Column="1"
-                                                                Classes="info-link"
-                                                                Command="{Binding ShowMovementRecordingCommand}">
-                                                            <TextBlock VerticalAlignment="Center"
-                                                                       FontSize="12"
-                                                                       Foreground="{DynamicResource TextBrush}"
-                                                                       Text="{Binding Name}"
-                                                                       TextWrapping="Wrap" />
-                                                        </Button>
-                                                        <Button Grid.Column="2"
-                                                                Classes="info-small-accent"
-                                                                Margin="4,0,4,0"
-                                                                VerticalAlignment="Center"
-                                                                Command="{Binding PlayMovementRecordingRowCommand}">
-                                                            <ti:TablerIcon Icon="IconPlayerPlay" Width="12" Height="12" />
-                                                        </Button>
-                                                        <Button Grid.Column="3"
-                                                                Classes="info-small-outline"
-                                                                VerticalAlignment="Center"
-                                                                Command="{Binding EnqueueMovementRecordingRowCommand}">
-                                                            <ti:TablerIcon Icon="IconPlaylistAdd" Width="12" Height="12" />
-                                                        </Button>
-                                                    </Grid>
+                                                     <Grid Margin="0,0,0,4"
+                                                           ColumnDefinitions="Auto,*,Auto"
+                                                           MinHeight="28">
+                                                         <TextBlock Grid.Column="0"
+                                                                    VerticalAlignment="Center"
+                                                                    Margin="0,0,8,0"
+                                                                    FontSize="12"
+                                                                    Foreground="{DynamicResource TextBrush}"
+                                                                    Text="{Binding OrdinalLabel}"
+                                                                    Width="28" />
+                                                         <Button Grid.Column="1"
+                                                                 Classes="info-link"
+                                                                 Command="{Binding ShowMovementRecordingCommand}">
+                                                             <TextBlock VerticalAlignment="Center"
+                                                                        FontSize="12"
+                                                                        Foreground="{DynamicResource TextBrush}"
+                                                                        Text="{Binding Name}"
+                                                                        TextWrapping="Wrap" />
+                                                         </Button>
+                                                         <controls:OptionsButton Grid.Column="2" />
+                                                     </Grid>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>

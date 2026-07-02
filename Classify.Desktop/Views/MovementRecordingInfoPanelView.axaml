@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
              xmlns:ti="using:TablerIcons"
+             xmlns:controls="clr-namespace:Classify.Desktop.Controls"
              mc:Ignorable="d" d:DesignWidth="304" d:DesignHeight="776"
              x:Class="Classify.Desktop.Views.MovementRecordingInfoPanelView"
              x:DataType="viewModels:MovementRecordingInfoPanelViewModel">
@@ -80,7 +81,7 @@
                 <!-- Parent Recording Section -->
                 <StackPanel Spacing="4">
                     <TextBlock Classes="info-section-heading" Text="Recording" />
-                    <Grid ColumnDefinitions="*,Auto,Auto" MinHeight="28">
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="28">
                         <Button Grid.Column="0"
                                 Classes="info-link"
                                 Command="{Binding ShowRecordingCommand}">
@@ -89,19 +90,7 @@
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                         </Button>
-                        <Button Grid.Column="1"
-                                Classes="info-small-accent"
-                                Margin="4,0,4,0"
-                                VerticalAlignment="Center"
-                                Command="{Binding PlayRecordingCommand}">
-                            <ti:TablerIcon Icon="IconPlayerPlay" Width="12" Height="12" />
-                        </Button>
-                        <Button Grid.Column="2"
-                                Classes="info-small-outline"
-                                VerticalAlignment="Center"
-                                Command="{Binding EnqueueRecordingCommand}">
-                            <ti:TablerIcon Icon="IconPlaylistAdd" Width="12" Height="12" />
-                        </Button>
+                        <controls:OptionsButton Grid.Column="1" />
                     </Grid>
                 </StackPanel>
 

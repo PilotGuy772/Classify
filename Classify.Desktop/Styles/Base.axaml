@@ -1,7 +1,8 @@
 
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ti="using:TablerIcons">
+        xmlns:ti="using:TablerIcons"
+        xmlns:controls="clr-namespace:Classify.Desktop.Controls">
 
   <Styles.Resources>
     <ResourceDictionary>
@@ -306,10 +307,17 @@
     <Setter Property="TextBlock.Foreground" Value="{DynamicResource AccentBrush}" />
   </Style>
 
-  <Style Selector="GridSplitter.info-splitter">
+  <Style Selector="controls|OptionsButton">
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Width" Value="8" />
-    <Setter Property="Cursor" Value="SizeWestEast" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="controls|OptionsButton:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="controls|OptionsButton:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
   </Style>
 
 </Styles>
