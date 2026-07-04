@@ -64,5 +64,43 @@ public sealed class RecordingInfoRowViewModel : ViewModelBase
         EnqueueRecordingRowCommand = new AsyncRelayCommand(() => panel.EnqueueRecordingStubAsync(this));
         ToggleFavoriteRecordingRowCommand = new AsyncRelayCommand(() => panel.ToggleFavoriteRecordingStubAsync(this));
         ShowRecordingCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.Recording, recordingId));
+
+        MenuOptions.Clear();
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Now",
+            Icon = TablerIcons.Icons.IconPlayerPlay,
+            Command = PlayRecordingRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Next",
+            Icon = TablerIcons.Icons.IconCornerUpLeft,
+            Command = new AsyncRelayCommand(() => panel.PlayRecordingRowNextStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Enqueue",
+            Icon = TablerIcons.Icons.IconCornerDownLeft,
+            Command = EnqueueRecordingRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Make Default",
+            Icon = TablerIcons.Icons.IconStar,
+            Command = ToggleFavoriteRecordingRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Favorite",
+            Icon = TablerIcons.Icons.IconHeart,
+            Command = new AsyncRelayCommand(() => panel.FavoriteRecordingRowStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Manage Playlists",
+            Icon = TablerIcons.Icons.IconPlaylist,
+            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsRecordingRowStubAsync(this))
+        });
     }
 }

@@ -90,7 +90,75 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
         EnqueueRecordingCommand = new AsyncRelayCommand(EnqueueRecordingAsync);
         ShowMovementCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Movement, parentMovementId));
         ShowRecordingCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Recording, parentRecordingId));
+
+        MenuOptions.Clear();
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Now",
+            Icon = TablerIcons.Icons.IconPlayerPlay,
+            Command = PlayRecordingCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Next",
+            Icon = TablerIcons.Icons.IconCornerUpLeft,
+            Command = new AsyncRelayCommand(PlayRecordingNextStubAsync)
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Enqueue",
+            Icon = TablerIcons.Icons.IconCornerDownLeft,
+            Command = EnqueueRecordingCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Make Default",
+            Icon = TablerIcons.Icons.IconStar,
+            Command = new AsyncRelayCommand(MakeDefaultRecordingStubAsync)
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Favorite",
+            Icon = TablerIcons.Icons.IconHeart,
+            Command = new AsyncRelayCommand(FavoriteRecordingStubAsync)
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Manage Playlists",
+            Icon = TablerIcons.Icons.IconPlaylist,
+            Command = new AsyncRelayCommand(ManagePlaylistsRecordingStubAsync)
+        });
     }
+
+    /// <summary>
+    /// Invoked by parent recording Play Next options menu (stub).
+    /// </summary>
+    internal Task PlayRecordingNextStubAsync() => Task.CompletedTask;
+
+    /// <summary>
+    /// Makes the recording the default for the parent work.
+    /// </summary>
+    internal async Task MakeDefaultRecordingStubAsync()
+    {
+        if (parentRecordingId == 0) return;
+        Recording? recording = await unitOfWork.Recordings.GetByIdAsync(parentRecordingId);
+        if (recording == null) return;
+        Work? work = await unitOfWork.Works.GetByIdAsync(recording.WorkId);
+        if (work == null) return;
+        work.FavoriteRecordingId = recording.Id;
+        unitOfWork.Works.Update(work);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Invoked by parent recording Favorite options menu (stub).
+    /// </summary>
+    internal Task FavoriteRecordingStubAsync() => Task.CompletedTask;
+
+    /// <summary>
+    /// Invoked by parent recording Manage Playlists options menu (stub).
+    /// </summary>
+    internal Task ManagePlaylistsRecordingStubAsync() => Task.CompletedTask;
 
     /// <summary>
     /// Loads details of the performed movement, parent movement, parent recording, and audio file path.

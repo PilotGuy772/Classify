@@ -14,7 +14,7 @@
         <Border Classes="info-panel">
             <StackPanel Spacing="10">
                 <!-- Header: Close + Composer Name -->
-                <Grid ColumnDefinitions="Auto,*">
+                <Grid ColumnDefinitions="Auto,*,Auto">
                     <Button Grid.Column="0"
                             Classes="info-close"
                             Command="{Binding ClosePanelCommand}"
@@ -26,6 +26,7 @@
                                Text="{Binding Title}"
                                TextWrapping="Wrap"
                                VerticalAlignment="Center" />
+                    <controls:OptionsButton Grid.Column="2" MenuOptions="{Binding MenuOptions}" />
                 </Grid>
 
                 <!-- Quick Info Placeholder -->
@@ -85,7 +86,7 @@
                                                     Text="{Binding Name}"
                                                     TextWrapping="Wrap" />
                                      </Button>
-                                     <controls:OptionsButton Grid.Column="1" />
+                                     <controls:OptionsButton Grid.Column="1" MenuOptions="{Binding MenuOptions}" />
                                  </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

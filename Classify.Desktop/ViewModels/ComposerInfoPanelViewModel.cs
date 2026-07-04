@@ -25,6 +25,13 @@ public sealed class ComposerInfoPanelViewModel : InfoPanelViewModelBase
     /// <param name="unitOfWork">The database unit of work.</param>
     public ComposerInfoPanelViewModel(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
+        MenuOptions.Clear();
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Favorite",
+            Icon = TablerIcons.Icons.IconHeart,
+            Command = new AsyncRelayCommand(ToggleFavoriteComposerStubAsync)
+        });
     }
 
     /// <summary>
@@ -68,6 +75,38 @@ public sealed class ComposerInfoPanelViewModel : InfoPanelViewModelBase
     /// <param name="row">The work row model.</param>
     /// <returns>A completed task.</returns>
     internal Task EnqueueWorkRowStubAsync(WorkRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by composer Favorite options menu (stub).
+    /// </summary>
+    internal Task ToggleFavoriteComposerStubAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by work row Play Next options menu (stub).
+    /// </summary>
+    internal Task PlayWorkRowNextStubAsync(WorkRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by work row Favorite options menu (stub).
+    /// </summary>
+    internal Task FavoriteWorkRowStubAsync(WorkRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by work row Manage Playlists options menu (stub).
+    /// </summary>
+    internal Task ManagePlaylistsWorkRowStubAsync(WorkRowViewModel row)
     {
         return Task.CompletedTask;
     }
@@ -116,5 +155,37 @@ public sealed class WorkRowViewModel : ViewModelBase
         PlayWorkRowCommand = new AsyncRelayCommand(() => panel.PlayWorkRowStubAsync(this));
         EnqueueWorkRowCommand = new AsyncRelayCommand(() => panel.EnqueueWorkRowStubAsync(this));
         ShowWorkCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.Work, workId));
+
+        MenuOptions.Clear();
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Now",
+            Icon = TablerIcons.Icons.IconPlayerPlay,
+            Command = PlayWorkRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Next",
+            Icon = TablerIcons.Icons.IconCornerUpLeft,
+            Command = new AsyncRelayCommand(() => panel.PlayWorkRowNextStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Enqueue",
+            Icon = TablerIcons.Icons.IconCornerDownLeft,
+            Command = EnqueueWorkRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Favorite",
+            Icon = TablerIcons.Icons.IconHeart,
+            Command = new AsyncRelayCommand(() => panel.FavoriteWorkRowStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Manage Playlists",
+            Icon = TablerIcons.Icons.IconPlaylist,
+            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsWorkRowStubAsync(this))
+        });
     }
 }

@@ -118,6 +118,30 @@ public sealed class RecordingInfoPanelViewModel : InfoPanelViewModelBase
     {
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Invoked by movement recording row Play Next options menu (stub).
+    /// </summary>
+    internal Task PlayMovementRecordingRowNextStubAsync(RecordingMovementRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by movement recording row Favorite options menu (stub).
+    /// </summary>
+    internal Task FavoriteMovementRecordingRowStubAsync(RecordingMovementRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by movement recording row Manage Playlists options menu (stub).
+    /// </summary>
+    internal Task ManagePlaylistsMovementRecordingRowStubAsync(RecordingMovementRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
 }
 
 /// <summary>
@@ -214,5 +238,37 @@ public sealed class RecordingMovementRowViewModel : ViewModelBase
         PlayMovementRecordingRowCommand = new AsyncRelayCommand(() => panel.PlayMovementRecordingStubAsync(this));
         EnqueueMovementRecordingRowCommand = new AsyncRelayCommand(() => panel.EnqueueMovementRecordingStubAsync(this));
         ShowMovementRecordingCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.MovementRecording, performedMovementId));
+
+        MenuOptions.Clear();
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Now",
+            Icon = TablerIcons.Icons.IconPlayerPlay,
+            Command = PlayMovementRecordingRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Next",
+            Icon = TablerIcons.Icons.IconCornerUpLeft,
+            Command = new AsyncRelayCommand(() => panel.PlayMovementRecordingRowNextStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Enqueue",
+            Icon = TablerIcons.Icons.IconCornerDownLeft,
+            Command = EnqueueMovementRecordingRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Favorite",
+            Icon = TablerIcons.Icons.IconHeart,
+            Command = new AsyncRelayCommand(() => panel.FavoriteMovementRecordingRowStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Manage Playlists",
+            Icon = TablerIcons.Icons.IconPlaylist,
+            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsMovementRecordingRowStubAsync(this))
+        });
     }
 }

@@ -90,7 +90,7 @@
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center" />
                         </Button>
-                        <controls:OptionsButton Grid.Column="1" />
+                        <controls:OptionsButton Grid.Column="1" MenuOptions="{Binding MenuOptions}" />
                     </Grid>
                 </StackPanel>
 

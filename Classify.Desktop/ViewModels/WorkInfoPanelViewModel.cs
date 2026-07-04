@@ -17,8 +17,8 @@ namespace Classify.Desktop.ViewModels;
 /// </summary>
 public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
 {
-    private string composerLine = string.Empty;
-    private string secondaryLine = string.Empty;
+    private string _composerLine = string.Empty;
+    private string _secondaryLine = string.Empty;
 
     /// <summary>
     /// Creates the panel view model with direct database access via <see cref="IUnitOfWork"/>.
@@ -44,11 +44,11 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     /// </summary>
     public string ComposerLine
     {
-        get => composerLine;
+        get => _composerLine;
         private set
         {
-            if (composerLine == value) return;
-            composerLine = value;
+            if (_composerLine == value) return;
+            _composerLine = value;
             RaisePropertyChanged();
         }
     }
@@ -58,11 +58,11 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     /// </summary>
     public string SecondaryLine
     {
-        get => secondaryLine;
+        get => _secondaryLine;
         private set
         {
-            if (secondaryLine == value) return;
-            secondaryLine = value;
+            if (_secondaryLine == value) return;
+            _secondaryLine = value;
             RaisePropertyChanged();
         }
     }
@@ -178,6 +178,54 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     internal Task ToggleFavoriteRecordingStubAsync(RecordingInfoRowViewModel row)
     {
         return ToggleFavoriteRecordingAsync(row);
+    }
+
+    /// <summary>
+    /// Invoked by movement row Play Next options menu (stub).
+    /// </summary>
+    internal Task PlayMovementRowNextStubAsync(MovementInfoRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by movement row Favorite options menu (stub).
+    /// </summary>
+    internal Task FavoriteMovementRowStubAsync(MovementInfoRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by movement row Manage Playlists options menu (stub).
+    /// </summary>
+    internal Task ManagePlaylistsMovementRowStubAsync(MovementInfoRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by recording row Play Next options menu (stub).
+    /// </summary>
+    internal Task PlayRecordingRowNextStubAsync(RecordingInfoRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by recording row Favorite options menu (stub).
+    /// </summary>
+    internal Task FavoriteRecordingRowStubAsync(RecordingInfoRowViewModel row)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Invoked by recording row Manage Playlists options menu (stub).
+    /// </summary>
+    internal Task ManagePlaylistsRecordingRowStubAsync(RecordingInfoRowViewModel row)
+    {
+        return Task.CompletedTask;
     }
 
     private static IEnumerable<Movement> OrderMovements(IEnumerable<Movement> movements)

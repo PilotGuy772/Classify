@@ -83,6 +83,38 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
         EnqueueWorkCommand = new AsyncRelayCommand(EnqueueWorkAsync);
         ShowComposerCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Composer, parentComposerId));
         ShowWorkCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Work, parentWorkId));
+
+        MenuOptions.Clear();
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Now",
+            Icon = TablerIcons.Icons.IconPlayerPlay,
+            Command = PlayWorkCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Next",
+            Icon = TablerIcons.Icons.IconCornerUpLeft,
+            Command = new AsyncRelayCommand(PlayWorkNextStubAsync)
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Enqueue",
+            Icon = TablerIcons.Icons.IconCornerDownLeft,
+            Command = EnqueueWorkCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Favorite",
+            Icon = TablerIcons.Icons.IconHeart,
+            Command = new AsyncRelayCommand(FavoriteWorkStubAsync)
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Manage Playlists",
+            Icon = TablerIcons.Icons.IconPlaylist,
+            Command = new AsyncRelayCommand(ManagePlaylistsWorkStubAsync)
+        });
     }
 
     /// <summary>
@@ -170,6 +202,36 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     {
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Invoked by parent work Play Next options menu (stub).
+    /// </summary>
+    internal Task PlayWorkNextStubAsync() => Task.CompletedTask;
+
+    /// <summary>
+    /// Invoked by parent work Favorite options menu (stub).
+    /// </summary>
+    internal Task FavoriteWorkStubAsync() => Task.CompletedTask;
+
+    /// <summary>
+    /// Invoked by parent work Manage Playlists options menu (stub).
+    /// </summary>
+    internal Task ManagePlaylistsWorkStubAsync() => Task.CompletedTask;
+
+    /// <summary>
+    /// Invoked by recording row Play Next options menu (stub).
+    /// </summary>
+    internal Task PlayRecordingNextStubAsync(MovementRecordingRowViewModel row) => Task.CompletedTask;
+
+    /// <summary>
+    /// Invoked by recording row Favorite options menu (stub).
+    /// </summary>
+    internal Task FavoriteRecordingStubAsync(MovementRecordingRowViewModel row) => Task.CompletedTask;
+
+    /// <summary>
+    /// Invoked by recording row Manage Playlists options menu (stub).
+    /// </summary>
+    internal Task ManagePlaylistsRecordingStubAsync(MovementRecordingRowViewModel row) => Task.CompletedTask;
 
     /// <summary>
     /// Invoked by recording row Favorite toggles.
@@ -283,11 +345,48 @@ public sealed class MovementRecordingRowViewModel : ViewModelBase
         DisplayText = displayText;
         RecordingId = recordingId;
         PerformedMovementId = performedMovementId;
-        this.isFavorite = isFavorite;
-
+        IsFavorite = isFavorite;
         PlayRecordingRowCommand = new AsyncRelayCommand(() => panel.PlayRecordingStubAsync(this));
         EnqueueRecordingRowCommand = new AsyncRelayCommand(() => panel.EnqueueRecordingStubAsync(this));
         ToggleFavoriteRecordingRowCommand = new AsyncRelayCommand(() => panel.ToggleFavoriteRecordingStubAsync(this));
         ShowMovementRecordingCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.MovementRecording, performedMovementId));
+
+        MenuOptions.Clear();
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Now",
+            Icon = TablerIcons.Icons.IconPlayerPlay,
+            Command = PlayRecordingRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Next",
+            Icon = TablerIcons.Icons.IconCornerUpLeft,
+            Command = new AsyncRelayCommand(() => panel.PlayRecordingNextStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Enqueue",
+            Icon = TablerIcons.Icons.IconCornerDownLeft,
+            Command = EnqueueRecordingRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Make Default",
+            Icon = TablerIcons.Icons.IconStar,
+            Command = ToggleFavoriteRecordingRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Favorite",
+            Icon = TablerIcons.Icons.IconHeart,
+            Command = new AsyncRelayCommand(() => panel.FavoriteRecordingStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Manage Playlists",
+            Icon = TablerIcons.Icons.IconPlaylist,
+            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsRecordingStubAsync(this))
+        });
     }
 }

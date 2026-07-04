@@ -92,7 +92,7 @@
                                                        Text="{Binding Name}"
                                                        TextWrapping="Wrap" />
                                         </Button>
-                                        <controls:OptionsButton Grid.Column="2" />
+                                        <controls:OptionsButton Grid.Column="2" MenuOptions="{Binding MenuOptions}" />
                                     </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -120,7 +120,7 @@
                                                        Text="{Binding DisplayInfo}"
                                                        TextWrapping="Wrap" />
                                         </Button>
-                                        <controls:OptionsButton Grid.Column="1" />
+                                        <controls:OptionsButton Grid.Column="1" MenuOptions="{Binding MenuOptions}" />
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

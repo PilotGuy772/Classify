@@ -110,7 +110,7 @@
                                                                         Text="{Binding Name}"
                                                                         TextWrapping="Wrap" />
                                                          </Button>
-                                                         <controls:OptionsButton Grid.Column="2" />
+                                                         <controls:OptionsButton Grid.Column="2" MenuOptions="{Binding MenuOptions}" />
                                                      </Grid>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>

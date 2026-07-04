@@ -49,5 +49,37 @@ public sealed class MovementInfoRowViewModel : ViewModelBase
         PlayMovementRowCommand = new AsyncRelayCommand(() => panel.PlayMovementStubAsync(this));
         EnqueueMovementRowCommand = new AsyncRelayCommand(() => panel.EnqueueMovementStubAsync(this));
         ShowMovementCommand = new AsyncRelayCommand(() => panel.OpenInfoPanelAsync(LibraryItemType.Movement, movementId));
+
+        MenuOptions.Clear();
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Now",
+            Icon = TablerIcons.Icons.IconPlayerPlay,
+            Command = PlayMovementRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Play Next",
+            Icon = TablerIcons.Icons.IconCornerUpLeft,
+            Command = new AsyncRelayCommand(() => panel.PlayMovementRowNextStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Enqueue",
+            Icon = TablerIcons.Icons.IconCornerDownLeft,
+            Command = EnqueueMovementRowCommand
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Favorite",
+            Icon = TablerIcons.Icons.IconHeart,
+            Command = new AsyncRelayCommand(() => panel.FavoriteMovementRowStubAsync(this))
+        });
+        MenuOptions.Add(new MenuOptionViewModel
+        {
+            Header = "Manage Playlists",
+            Icon = TablerIcons.Icons.IconPlaylist,
+            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsMovementRowStubAsync(this))
+        });
     }
 }

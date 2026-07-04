@@ -9,8 +9,8 @@
       <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
           <SolidColorBrush x:Key="MainBackgroundBrush">#FFFFFF</SolidColorBrush>
-          <SolidColorBrush x:Key="SecondaryBackgroundBrush">#F7F7F7</SolidColorBrush>
-          <SolidColorBrush x:Key="SelectedBackgroundBrush">#E6E6E6</SolidColorBrush>
+          <SolidColorBrush x:Key="SecondaryBackgroundBrush">#F5F5F7</SolidColorBrush>
+          <SolidColorBrush x:Key="SelectedBackgroundBrush">#E6E6E8</SolidColorBrush>
           <SolidColorBrush x:Key="OutlineBrush">#D2D2D2</SolidColorBrush>
           <SolidColorBrush x:Key="TextBrush">#000000</SolidColorBrush>
           <SolidColorBrush x:Key="SecondaryTextBrush">#8E8E93</SolidColorBrush>
