@@ -3,65 +3,190 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:ti="using:TablerIcons"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="Classify.Desktop.Views.LibraryView"
              x:DataType="viewModels:LibraryViewModel">
-    <DockPanel Margin="12">
+    <Grid RowDefinitions="Auto,Auto,*">
 
-        <!-- Selector -->
-        <DockPanel DockPanel.Dock="Top"
-                   LastChildFill="False"
-                   Margin="0,0,0,8">
+        <!-- Row 0: Filters Tray Header -->
+        <Border Grid.Row="0" Classes="filter-header-bar">
+            <Button Classes="info-link"
+                    Command="{Binding ToggleFiltersTrayCommand}"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <ti:TablerIcon Icon="{Binding FilterMenuCaretIcon}" Width="18" Height="18" />
+                    <TextBlock Text="Filters" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </Border>
 
-            <!-- Radio buttons (left-aligned) -->
-            <StackPanel Orientation="Horizontal"
-                        Spacing="12">
+        <!-- Row 1: Filters Container (Toggled) -->
+        <Border Grid.Row="1" Classes="filter-container" IsVisible="{Binding IsFiltersTrayOpen}">
+            <Grid ColumnDefinitions="*,*,*">
+                <!-- Column 1: Piece -->
+                <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,10,0">
+                    <TextBlock Classes="filter-section-title" Text="Piece" Margin="0,0,0,4" />
+                    
+                    <StackPanel Spacing="2">
+                        <Label Classes="filter-input-label" Content="Composer" />
+                        <TextBox Classes="filter-input" Text="{Binding ComposerQuery, Mode=TwoWay}" Watermark="Search..." />
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="2">
+                        <Label Classes="filter-input-label" Content="Piece Title" />
+                        <TextBox Classes="filter-input" Text="{Binding PieceTitleQuery, Mode=TwoWay}" Watermark="Search..." />
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="2">
+                        <Label Classes="filter-input-label" Content="Form" />
+                        <ComboBox Classes="filter-dropdown"
+                                  HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding FormOptions}"
+                                  SelectedItem="{Binding FormQuery, Mode=TwoWay}" />
+                    </StackPanel>
 
-                <RadioButton Content="Composers"
-                             GroupName="Library"
-                             IsChecked="{Binding SelectedType,
-                                 Converter={StaticResource EnumEquals},
-                                 ConverterParameter=Composer}" />
+                    <StackPanel Spacing="2">
+                        <Label Classes="filter-input-label" Content="Era" />
+                        <ComboBox Classes="filter-dropdown"
+                                  HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding EraOptions}"
+                                  SelectedItem="{Binding EraQuery, Mode=TwoWay}" />
+                    </StackPanel>
+                </StackPanel>
 
-                <RadioButton Content="Works"
-                             GroupName="Library"
-                             IsChecked="{Binding SelectedType,
-                                 Converter={StaticResource EnumEquals},
-                                 ConverterParameter=Work}" />
+                <!-- Column 2: Performance -->
+                <StackPanel Grid.Column="1" Spacing="4" Margin="10,0,10,0">
+                    <TextBlock Classes="filter-section-title" Text="Performance" Margin="0,0,0,4" />
+                    
+                    <StackPanel Spacing="2">
+                        <Label Classes="filter-input-label" Content="Conductor" />
+                        <TextBox Classes="filter-input" Text="{Binding ConductorQuery, Mode=TwoWay}" Watermark="Search..." />
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="2">
+                        <Label Classes="filter-input-label" Content="Soloist" />
+                        <TextBox Classes="filter-input" Text="{Binding SoloistQuery, Mode=TwoWay}" Watermark="Search..." />
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="2">
+                        <Label Classes="filter-input-label" Content="Ensemble Name" />
+                        <TextBox Classes="filter-input" Text="{Binding EnsembleNameQuery, Mode=TwoWay}" Watermark="Search..." />
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="2">
+                        <Label Classes="filter-input-label" Content="Ensemble Type" />
+                        <ComboBox Classes="filter-dropdown"
+                                  HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding EnsembleTypeOptions}"
+                                  SelectedItem="{Binding EnsembleTypeQuery, Mode=TwoWay}" />
+                    </StackPanel>
+                </StackPanel>
 
-                <RadioButton Content="Movements"
-                             GroupName="Library"
-                             IsChecked="{Binding SelectedType,
-                                 Converter={StaticResource EnumEquals},
-                                 ConverterParameter=Movement}" />
+                <!-- Column 3: Recording -->
+                <StackPanel Grid.Column="2" Spacing="4" Margin="10,0,0,0">
+                    <TextBlock Classes="filter-section-title" Text="Recording" Margin="0,0,0,4" />
+                    
+                    <StackPanel Spacing="2">
+                        <Label Classes="filter-input-label" Content="Recording Year" />
+                        <Grid ColumnDefinitions="*,Auto,*">
+                            <TextBox Grid.Column="0" Classes="filter-input" Text="{Binding RecordingYearFromQuery, Mode=TwoWay}" Watermark="From..." />
+                            <TextBlock Grid.Column="1" Text="-" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0" FontSize="14" Foreground="{DynamicResource TextBrush}" />
+                            <TextBox Grid.Column="2" Classes="filter-input" Text="{Binding RecordingYearToQuery, Mode=TwoWay}" Watermark="To..." />
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
 
-                <RadioButton Content="Recordings"
-                             GroupName="Library"
-                             IsChecked="{Binding SelectedType,
-                                 Converter={StaticResource EnumEquals},
-                                 ConverterParameter=Recording}" />
-
-                <RadioButton Content="Audio Files"
-                             GroupName="Library"
-                             IsChecked="{Binding SelectedType,
-                                 Converter={StaticResource EnumEquals},
-                                 ConverterParameter=AudioFile}" />
-            </StackPanel>
-
-        </DockPanel>
-
-
-        <!-- List -->
-        <ListBox ItemsSource="{Binding Items}"
+        <!-- Row 2: Hierarchical Tree ListBox -->
+        <ListBox Grid.Row="2"
+                 ItemsSource="{Binding Items}"
                  SelectedItem="{Binding SelectedLibraryItem, Mode=TwoWay}"
                  SelectionMode="Single"
-                 DoubleTapped="ItemDoubleTapped">
+                 DoubleTapped="ItemDoubleTapped"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Padding="0"
+                 Margin="6,8,6,8">
+            <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Margin" Value="0,1" />
+                </Style>
+                <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+                <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+                <Style Selector="ListBoxItem:selected Border.library-row">
+                    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                </Style>
+                <Style Selector="ListBoxItem:selected TextBlock">
+                    <Setter Property="Foreground" Value="{DynamicResource OnAccentGlyphBrush}" />
+                </Style>
+                <Style Selector="ListBoxItem:selected Button.library-caret">
+                    <Setter Property="Foreground" Value="{DynamicResource OnAccentGlyphBrush}" />
+                </Style>
+            </ListBox.Styles>
             <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding DisplayText}" />
+                <DataTemplate DataType="{x:Type viewModels:LibraryItemViewModel}">
+                    <!-- Row Border with alternating background -->
+                    <Border Classes="library-row" Classes.alternate="{Binding IsAlternate}">
+                        <Grid Margin="{Binding IndentMargin}" ColumnDefinitions="Auto,Auto,*,Auto" Height="25">
+                            
+                            <!-- Expand/Collapse Caret Button (only for expandable levels) -->
+                            <Button Grid.Column="0"
+                                    Classes="library-caret"
+                                    Command="{Binding ToggleExpandCommand}"
+                                    IsVisible="{Binding IsExpandable}"
+                                    VerticalAlignment="Center">
+                                <ti:TablerIcon Icon="{Binding CaretIcon}" Width="14" Height="14" />
+                            </Button>
+                            
+                            <!-- Indent Spacer for non-expandable levels -->
+                            <Rectangle Grid.Column="0"
+                                       Width="24"
+                                       Height="24"
+                                       IsVisible="{Binding !IsExpandable}" />
+
+                            <!-- Cover Image Placeholder (only for Recordings: Level == 2) -->
+                            <Border Grid.Column="1"
+                                    Width="21"
+                                    Height="21"
+                                    Background="{DynamicResource CoverPlaceholderBrush}"
+                                    CornerRadius="5"
+                                    Margin="0,0,8,0"
+                                    VerticalAlignment="Center"
+                                    IsVisible="{Binding Type, Converter={StaticResource EnumEquals}, ConverterParameter=Recording}" />
+
+                            <!-- Ordinal Column (only for Movement Recordings: Level == 3) -->
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Ordinal}"
+                                       FontFamily="Charter, Georgia, serif"
+                                       FontSize="14"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
+                                       Width="18"
+                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"
+                                       IsVisible="{Binding Type, Converter={StaticResource EnumEquals}, ConverterParameter=MovementRecording}" />
+
+                            <!-- Display Text -->
+                            <TextBlock Grid.Column="2"
+                                       Classes="library-row-text"
+                                       Text="{Binding DisplayText}"
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" />
+
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-
-    </DockPanel>
+    </Grid>
 </UserControl>
