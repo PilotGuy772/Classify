@@ -19,7 +19,7 @@
                             Classes="info-close"
                             Command="{Binding ClosePanelCommand}"
                             Margin="0,0,10,0">
-                        <ti:TablerIcon Icon="IconX" Width="12" Height="12" />
+                        <ti:TablerIcon Icon="IconX" Width="17" Height="17" />
                     </Button>
                     <TextBlock Grid.Column="1"
                                Classes="info-piece-title"
@@ -47,24 +47,28 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- Large Actions Placeholder -->
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Button Classes="info-large-primary"
-                            Width="58"
-                            Height="35"
+                <!-- Large Actions -->
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button Classes="info-play-button"
                             IsEnabled="False">
-                        <ti:TablerIcon Icon="IconPlayerPlay" Width="16" Height="16" />
+                        <ti:TablerIcon Icon="IconPlayerPlay" Width="20" Height="20" />
                     </Button>
-                    <Button Classes="info-large-outline"
-                            Width="100"
-                            Height="35"
-                            Content="Enqueue"
-                            IsEnabled="False" />
-                    <Button Classes="info-large-outline"
-                            Width="100"
-                            Height="35"
-                            Content="Add to Playlist"
-                            IsEnabled="False" />
+                    <Button Classes="info-square-outline"
+                            IsEnabled="False">
+                        <ti:TablerIcon Icon="IconCornerUpLeft" Width="21" Height="21" />
+                    </Button>
+                    <Button Classes="info-square-outline"
+                            IsEnabled="False">
+                        <ti:TablerIcon Icon="IconCornerDownLeft" Width="21" Height="21" />
+                    </Button>
+                    <Button Classes="info-square-outline"
+                            IsEnabled="False">
+                        <ti:TablerIcon Icon="IconPlaylist" Width="21" Height="21" />
+                    </Button>
+                    <Button Classes="info-square-outline"
+                            IsEnabled="False">
+                        <ti:TablerIcon Icon="IconHeart" Width="21" Height="21" />
+                    </Button>
                 </StackPanel>
 
                 <!-- Movements List grouped by Work -->
@@ -81,9 +85,7 @@
                                         <Button Classes="info-link"
                                                 Command="{Binding ShowWorkCommand}"
                                                 Margin="0,0,0,6">
-                                            <TextBlock FontSize="13"
-                                                       FontWeight="Bold"
-                                                       Foreground="{DynamicResource TextBrush}"
+                                            <TextBlock Classes="info-work-subtitle"
                                                        Text="{Binding WorkTitle}"
                                                        TextWrapping="Wrap" />
                                         </Button>
@@ -92,25 +94,20 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate DataType="{x:Type viewModels:RecordingMovementRowViewModel}">
                                                      <Grid Margin="0,0,0,4"
-                                                           ColumnDefinitions="Auto,*,Auto"
+                                                           ColumnDefinitions="20,*,Auto"
                                                            MinHeight="28">
                                                          <TextBlock Grid.Column="0"
-                                                                    VerticalAlignment="Center"
-                                                                    Margin="0,0,8,0"
-                                                                    FontSize="12"
-                                                                    Foreground="{DynamicResource TextBrush}"
-                                                                    Text="{Binding OrdinalLabel}"
-                                                                    Width="28" />
+                                                                    Classes="info-ordinal"
+                                                                    Text="{Binding OrdinalLabel}" />
                                                          <Button Grid.Column="1"
                                                                  Classes="info-link"
+                                                                 Margin="4,0,8,0"
                                                                  Command="{Binding ShowMovementRecordingCommand}">
-                                                             <TextBlock VerticalAlignment="Center"
-                                                                        FontSize="12"
-                                                                        Foreground="{DynamicResource TextBrush}"
+                                                             <TextBlock Classes="info-movement-name"
                                                                         Text="{Binding Name}"
                                                                         TextWrapping="Wrap" />
                                                          </Button>
-                                                         <controls:OptionsButton Grid.Column="2" MenuOptions="{Binding MenuOptions}" />
+                                                         <controls:OptionsButton Grid.Column="2" MenuOptions="{Binding MenuOptions}" Width="24" Height="24" />
                                                      </Grid>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>

@@ -211,7 +211,60 @@
     <Setter Property="Width" Value="128" />
     <Setter Property="Height" Value="128" />
     <Setter Property="Background" Value="{DynamicResource CoverPlaceholderBrush}" />
-    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="BoxShadow" Value="4 4 8 1 #40000000" />
+  </Style>
+
+  <Style Selector="Button.info-play-button">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnAccentGlyphBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Width" Value="58" />
+    <Setter Property="Height" Value="35" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.info-square-outline">
+    <Setter Property="Background" Value="{DynamicResource MainBackgroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource OutlineBrush}" />
+    <Setter Property="BorderThickness" Value="2" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Width" Value="35" />
+    <Setter Property="Height" Value="35" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="TextBlock.info-ordinal">
+    <Setter Property="FontFamily" Value="Charter, Times New Roman, serif" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Foreground" Value="#656565" />
+    <Setter Property="Width" Value="20" />
+    <Setter Property="TextAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="TextBlock.info-recording-title">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="FontWeight" Value="Normal" />
+  </Style>
+
+  <Style Selector="TextBlock.info-recording-subtitle">
+    <Setter Property="FontSize" Value="10" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    <Setter Property="FontWeight" Value="Normal" />
+  </Style>
+
+  <Style Selector="TextBlock.info-work-subtitle">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
   </Style>
 
   <Style Selector="TextBlock.info-meta-text">

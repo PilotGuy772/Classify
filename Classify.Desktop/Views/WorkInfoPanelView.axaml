@@ -20,7 +20,7 @@
                             Classes="info-close"
                             Command="{Binding ClosePanelCommand}"
                             Margin="0,0,10,0">
-                        <ti:TablerIcon Icon="IconX" Width="12" Height="12" />
+                        <ti:TablerIcon Icon="IconX" Width="17" Height="17" />
                     </Button>
                     <TextBlock Grid.Column="1"
                                Classes="info-piece-title"
@@ -48,23 +48,27 @@
                 </Grid>
 
                 <!-- Large actions -->
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Button Classes="info-large-primary"
-                            Width="58"
-                            Height="35"
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button Classes="info-play-button"
                             Command="{Binding PlayWorkCommand}">
-                        <ti:TablerIcon Icon="IconPlayerPlay" Width="16" Height="16" />
+                        <ti:TablerIcon Icon="IconPlayerPlay" Width="20" Height="20" />
                     </Button>
-                    <Button Classes="info-large-outline"
-                            Width="100"
-                            Height="35"
-                            Command="{Binding EnqueueWorkCommand}"
-                            Content="Enqueue" />
-                    <Button Classes="info-large-outline"
-                            Width="100"
-                            Height="35"
-                            Command="{Binding AddWorkToPlaylistCommand}"
-                            Content="Add to Playlist" />
+                    <Button Classes="info-square-outline"
+                            IsEnabled="False">
+                        <ti:TablerIcon Icon="IconCornerUpLeft" Width="21" Height="21" />
+                    </Button>
+                    <Button Classes="info-square-outline"
+                            Command="{Binding EnqueueWorkCommand}">
+                        <ti:TablerIcon Icon="IconCornerDownLeft" Width="21" Height="21" />
+                    </Button>
+                    <Button Classes="info-square-outline"
+                            Command="{Binding AddWorkToPlaylistCommand}">
+                        <ti:TablerIcon Icon="IconPlaylist" Width="21" Height="21" />
+                    </Button>
+                    <Button Classes="info-square-outline"
+                            IsEnabled="False">
+                        <ti:TablerIcon Icon="IconHeart" Width="21" Height="21" />
+                    </Button>
                 </StackPanel>
 
                 <!-- Movements -->
@@ -74,25 +78,20 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type viewModels:MovementInfoRowViewModel}">
                                     <Grid Margin="0,0,0,4"
-                                          ColumnDefinitions="Auto,*,Auto"
+                                          ColumnDefinitions="20,*,Auto"
                                           MinHeight="28">
                                         <TextBlock Grid.Column="0"
-                                                   VerticalAlignment="Center"
-                                                   Margin="0,0,8,0"
-                                                   FontSize="12"
-                                                   Foreground="{DynamicResource TextBrush}"
-                                                   Text="{Binding OrdinalLabel}"
-                                                   Width="28" />
+                                                   Classes="info-ordinal"
+                                                   Text="{Binding OrdinalLabel}" />
                                         <Button Grid.Column="1"
                                                 Classes="info-link"
+                                                Margin="4,0,8,0"
                                                 Command="{Binding ShowMovementCommand}">
-                                            <TextBlock VerticalAlignment="Center"
-                                                       FontSize="12"
-                                                       Foreground="{DynamicResource TextBrush}"
+                                            <TextBlock Classes="info-movement-name"
                                                        Text="{Binding Name}"
                                                        TextWrapping="Wrap" />
                                         </Button>
-                                        <controls:OptionsButton Grid.Column="2" MenuOptions="{Binding MenuOptions}" />
+                                        <controls:OptionsButton Grid.Column="2" MenuOptions="{Binding MenuOptions}" Width="24" Height="24" />
                                     </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -110,17 +109,27 @@
                                 <DataTemplate DataType="{x:Type viewModels:RecordingInfoRowViewModel}">
                                     <Grid Margin="0,0,0,4"
                                           ColumnDefinitions="*,Auto"
-                                          MinHeight="31">
+                                          MinHeight="46">
                                         <Button Grid.Column="0"
                                                 Classes="info-link"
                                                 Margin="0,0,8,0"
                                                 Command="{Binding ShowRecordingCommand}">
-                                            <TextBlock FontSize="12"
-                                                       Foreground="{DynamicResource TextBrush}"
-                                                       Text="{Binding DisplayInfo}"
-                                                       TextWrapping="Wrap" />
+                                            <StackPanel Spacing="0">
+                                                <TextBlock Classes="info-recording-title"
+                                                           Text="{Binding ConductorOrArtist}"
+                                                           TextWrapping="NoWrap"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Classes="info-recording-subtitle"
+                                                           Text="{Binding EnsembleName}"
+                                                           TextWrapping="NoWrap"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Classes="info-recording-subtitle"
+                                                           Text="{Binding YearLine}"
+                                                           TextWrapping="NoWrap"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
                                         </Button>
-                                        <controls:OptionsButton Grid.Column="1" MenuOptions="{Binding MenuOptions}" />
+                                        <controls:OptionsButton Grid.Column="1" MenuOptions="{Binding MenuOptions}" Width="24" Height="24" />
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

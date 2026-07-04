@@ -284,6 +284,21 @@ public sealed class MovementRecordingRowViewModel : ViewModelBase
     public string DisplayText { get; }
 
     /// <summary>
+    /// Gets the conductor or soloist artist name.
+    /// </summary>
+    public string ConductorOrArtist { get; }
+
+    /// <summary>
+    /// Gets the ensemble name.
+    /// </summary>
+    public string EnsembleName { get; }
+
+    /// <summary>
+    /// Gets the recording year line.
+    /// </summary>
+    public string YearLine { get; }
+
+    /// <summary>
     /// Gets the domain recording identifier.
     /// </summary>
     public int RecordingId { get; }
@@ -346,6 +361,39 @@ public sealed class MovementRecordingRowViewModel : ViewModelBase
         RecordingId = recordingId;
         PerformedMovementId = performedMovementId;
         IsFavorite = isFavorite;
+
+        string[] parts = displayText.Split(" \u00B7 ", System.StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 4)
+        {
+            ConductorOrArtist = parts[0] + " / " + parts[1];
+            EnsembleName = parts[2];
+            YearLine = parts[3];
+        }
+        else if (parts.Length == 3)
+        {
+            ConductorOrArtist = parts[0];
+            EnsembleName = parts[1];
+            YearLine = parts[2];
+        }
+        else if (parts.Length == 2)
+        {
+            ConductorOrArtist = parts[0];
+            EnsembleName = parts[1];
+            YearLine = string.Empty;
+        }
+        else if (parts.Length == 1)
+        {
+            ConductorOrArtist = parts[0];
+            EnsembleName = string.Empty;
+            YearLine = string.Empty;
+        }
+        else
+        {
+            ConductorOrArtist = string.Empty;
+            EnsembleName = string.Empty;
+            YearLine = string.Empty;
+        }
+
         PlayRecordingRowCommand = new AsyncRelayCommand(() => panel.PlayRecordingStubAsync(this));
         EnqueueRecordingRowCommand = new AsyncRelayCommand(() => panel.EnqueueRecordingStubAsync(this));
         ToggleFavoriteRecordingRowCommand = new AsyncRelayCommand(() => panel.ToggleFavoriteRecordingStubAsync(this));
