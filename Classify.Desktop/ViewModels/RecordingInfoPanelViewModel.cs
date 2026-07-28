@@ -134,14 +134,6 @@ public sealed class RecordingInfoPanelViewModel : InfoPanelViewModelBase
     {
         return Task.CompletedTask;
     }
-
-    /// <summary>
-    /// Invoked by movement recording row Manage Playlists options menu (stub).
-    /// </summary>
-    internal Task ManagePlaylistsMovementRecordingRowStubAsync(RecordingMovementRowViewModel row)
-    {
-        return Task.CompletedTask;
-    }
 }
 
 /// <summary>
@@ -263,12 +255,6 @@ public sealed class RecordingMovementRowViewModel : ViewModelBase
             Header = "Favorite",
             Icon = TablerIcons.Icons.IconHeart,
             Command = new AsyncRelayCommand(() => panel.FavoriteMovementRecordingRowStubAsync(this))
-        });
-        MenuOptions.Add(new MenuOptionViewModel
-        {
-            Header = "Manage Playlists",
-            Icon = TablerIcons.Icons.IconPlaylist,
-            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsMovementRecordingRowStubAsync(this))
         });
     }
 }

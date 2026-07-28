@@ -122,12 +122,6 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
             Icon = TablerIcons.Icons.IconHeart,
             Command = new AsyncRelayCommand(FavoriteRecordingStubAsync)
         });
-        MenuOptions.Add(new MenuOptionViewModel
-        {
-            Header = "Manage Playlists",
-            Icon = TablerIcons.Icons.IconPlaylist,
-            Command = new AsyncRelayCommand(ManagePlaylistsRecordingStubAsync)
-        });
     }
 
     /// <summary>
@@ -154,11 +148,6 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     /// Invoked by parent recording Favorite options menu (stub).
     /// </summary>
     internal Task FavoriteRecordingStubAsync() => Task.CompletedTask;
-
-    /// <summary>
-    /// Invoked by parent recording Manage Playlists options menu (stub).
-    /// </summary>
-    internal Task ManagePlaylistsRecordingStubAsync() => Task.CompletedTask;
 
     /// <summary>
     /// Loads details of the performed movement, parent movement, parent recording, and audio file path.

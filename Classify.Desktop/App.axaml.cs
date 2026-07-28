@@ -131,6 +131,9 @@ public class App : Application
         services.AddScoped<IRecordingRepository, RecordingRepository>();
         services.AddScoped<IPerformedMovementRepository, PerformedMovementRepository>();
         services.AddScoped<IProposedMatchRepository, ProposedMatchRepository>();
+        services.AddScoped<IWorkRecordingRepository, WorkRecordingRepository>();
+        services.AddScoped<INibbleRepository, NibbleRepository>();
+        services.AddScoped<INibbleMovementRepository, NibbleMovementRepository>();
         services.AddTransient<IUnitOfWork, UnitOfWork>();
 
         // Application services / use cases
@@ -138,10 +141,6 @@ public class App : Application
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
         services.AddScoped<IIngestionOrchestrationService, LibraryIngestionOrchestrationService>();
 
-        // Playables
-        services.AddScoped<IPlayableResolutionService, Classify.Data.Services.PlayableResolutionService>();
-        services.AddScoped<IPlayablePlaylistService, Classify.Data.Services.PlayablePlaylistService>();
-        
         // Search services (concrete per-entity)
         services.AddTransient<Classify.Data.Services.ComposerSearchService>();
         services.AddTransient<Classify.Data.Services.WorkSearchService>();
@@ -162,7 +161,6 @@ public class App : Application
         services.AddTransient<LibraryViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<LibraryScanViewModel>();
-        services.AddTransient<PlaylistsViewModel>();
         services.AddTransient<BrowseViewModel>();
         services.AddTransient<FavoritesViewModel>();
         services.AddTransient<ExploreViewModel>();

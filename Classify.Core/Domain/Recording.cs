@@ -3,7 +3,7 @@ namespace Classify.Core.Domain;
 /// <summary>
 /// Represents a recording of a musical work.
 /// </summary>
-public class Recording : IPlayable
+public class Recording
 {
     /// <summary>
     /// Gets or sets the unique identifier for the recording.
@@ -59,9 +59,4 @@ public class Recording : IPlayable
     /// Gets the photo key for the recording, if any.
     /// </summary>
     public string? PhotoKey => null;
-
-    /// <summary>
-    /// Gets the base object for IPlayable implementation.
-    /// </summary>
-    public object BaseObject => this;
 }

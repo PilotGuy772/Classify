@@ -27,7 +27,6 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     {
         PlayWorkCommand = new AsyncRelayCommand(PlayWorkAsync);
         EnqueueWorkCommand = new AsyncRelayCommand(EnqueueWorkAsync);
-        AddWorkToPlaylistCommand = new AsyncRelayCommand(AddWorkToPlaylistAsync);
     }
 
     /// <summary>
@@ -86,11 +85,6 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     /// Main header action: Enqueue this work.
     /// </summary>
     public ICommand EnqueueWorkCommand { get; }
-
-    /// <summary>
-    /// Main header action: Add this work to a playlist.
-    /// </summary>
-    public ICommand AddWorkToPlaylistCommand { get; }
 
     private int currentWorkId;
 
@@ -197,14 +191,6 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     }
 
     /// <summary>
-    /// Invoked by movement row Manage Playlists options menu (stub).
-    /// </summary>
-    internal Task ManagePlaylistsMovementRowStubAsync(MovementInfoRowViewModel row)
-    {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
     /// Invoked by recording row Play Next options menu (stub).
     /// </summary>
     internal Task PlayRecordingRowNextStubAsync(RecordingInfoRowViewModel row)
@@ -216,14 +202,6 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     /// Invoked by recording row Favorite options menu (stub).
     /// </summary>
     internal Task FavoriteRecordingRowStubAsync(RecordingInfoRowViewModel row)
-    {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Invoked by recording row Manage Playlists options menu (stub).
-    /// </summary>
-    internal Task ManagePlaylistsRecordingRowStubAsync(RecordingInfoRowViewModel row)
     {
         return Task.CompletedTask;
     }
@@ -262,11 +240,6 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     }
 
     private Task EnqueueWorkAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task AddWorkToPlaylistAsync()
     {
         return Task.CompletedTask;
     }

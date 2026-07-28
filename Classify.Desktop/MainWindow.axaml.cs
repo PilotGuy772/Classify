@@ -22,7 +22,7 @@ public partial class MainWindow : Window
         {
             if (System.OperatingSystem.IsMacOS())
             {
-                var spacer = this.FindControl<Border>("MacTrafficLightsSpacer");
+                Border? spacer = this.FindControl<Border>("MacTrafficLightsSpacer");
                 if (spacer is not null)
                 {
                     spacer.IsVisible = true;
@@ -30,7 +30,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                var spacer = this.FindControl<Border>("MacTrafficLightsSpacer");
+                Border? spacer = this.FindControl<Border>("MacTrafficLightsSpacer");
                 if (spacer is not null)
                 {
                     spacer.IsVisible = false;
@@ -54,12 +54,6 @@ public partial class MainWindow : Window
     private void HomeClicked(object? sender, RoutedEventArgs e)
     {
         Vm.ShowHome();
-        UpdateSelection();
-    }
-
-    private void PlaylistsClicked(object? sender, RoutedEventArgs e)
-    {
-        Vm.ShowPlaylists();
         UpdateSelection();
     }
 
@@ -163,16 +157,14 @@ public partial class MainWindow : Window
     {
         try
         {
-            var home = this.FindControl<Button>("HomeButton");
-            var playlists = this.FindControl<Button>("PlaylistsButton");
-            var browse = this.FindControl<Button>("BrowseButton");
-            var scan = this.FindControl<Button>("ScanButton");
-            var favorites = this.FindControl<Button>("FavoritesButton");
-            var explore = this.FindControl<Button>("ExploreButton");
-            var radio = this.FindControl<Button>("RadioButton");
+            Button? home = this.FindControl<Button>("HomeButton");
+            Button? browse = this.FindControl<Button>("BrowseButton");
+            Button? scan = this.FindControl<Button>("ScanButton");
+            Button? favorites = this.FindControl<Button>("FavoritesButton");
+            Button? explore = this.FindControl<Button>("ExploreButton");
+            Button? radio = this.FindControl<Button>("RadioButton");
 
             SetSelected(home, Vm.CurrentPage is HomeViewModel);
-            SetSelected(playlists, Vm.CurrentPage is PlaylistsViewModel);
             SetSelected(browse, Vm.CurrentPage is LibraryViewModel);
             SetSelected(scan, Vm.CurrentPage is LibraryScanViewModel);
             SetSelected(favorites, Vm.CurrentPage is FavoritesViewModel);
@@ -202,10 +194,10 @@ public partial class MainWindow : Window
     private void MacTrafficLightsSpacer_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
         if (e is null) return;
-        var args = e;
+        Avalonia.Input.PointerPressedEventArgs args = e;
         try
         {
-            var current = args.GetCurrentPoint(this);
+            Avalonia.Input.PointerPoint current = args.GetCurrentPoint(this);
             if (current.Properties.IsLeftButtonPressed)
             {
                 BeginMoveDrag(args);

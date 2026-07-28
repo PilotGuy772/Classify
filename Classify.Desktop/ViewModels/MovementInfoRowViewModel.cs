@@ -75,11 +75,5 @@ public sealed class MovementInfoRowViewModel : ViewModelBase
             Icon = TablerIcons.Icons.IconHeart,
             Command = new AsyncRelayCommand(() => panel.FavoriteMovementRowStubAsync(this))
         });
-        MenuOptions.Add(new MenuOptionViewModel
-        {
-            Header = "Manage Playlists",
-            Icon = TablerIcons.Icons.IconPlaylist,
-            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsMovementRowStubAsync(this))
-        });
     }
 }

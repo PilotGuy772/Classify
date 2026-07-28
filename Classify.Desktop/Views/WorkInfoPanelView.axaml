@@ -62,10 +62,6 @@
                         <ti:TablerIcon Icon="IconCornerDownLeft" Width="21" Height="21" />
                     </Button>
                     <Button Classes="info-square-outline"
-                            Command="{Binding AddWorkToPlaylistCommand}">
-                        <ti:TablerIcon Icon="IconPlaylist" Width="21" Height="21" />
-                    </Button>
-                    <Button Classes="info-square-outline"
                             IsEnabled="False">
                         <ti:TablerIcon Icon="IconHeart" Width="21" Height="21" />
                     </Button>

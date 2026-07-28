@@ -109,12 +109,6 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
             Icon = TablerIcons.Icons.IconHeart,
             Command = new AsyncRelayCommand(FavoriteWorkStubAsync)
         });
-        MenuOptions.Add(new MenuOptionViewModel
-        {
-            Header = "Manage Playlists",
-            Icon = TablerIcons.Icons.IconPlaylist,
-            Command = new AsyncRelayCommand(ManagePlaylistsWorkStubAsync)
-        });
     }
 
     /// <summary>
@@ -214,11 +208,6 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     internal Task FavoriteWorkStubAsync() => Task.CompletedTask;
 
     /// <summary>
-    /// Invoked by parent work Manage Playlists options menu (stub).
-    /// </summary>
-    internal Task ManagePlaylistsWorkStubAsync() => Task.CompletedTask;
-
-    /// <summary>
     /// Invoked by recording row Play Next options menu (stub).
     /// </summary>
     internal Task PlayRecordingNextStubAsync(MovementRecordingRowViewModel row) => Task.CompletedTask;
@@ -227,11 +216,6 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     /// Invoked by recording row Favorite options menu (stub).
     /// </summary>
     internal Task FavoriteRecordingStubAsync(MovementRecordingRowViewModel row) => Task.CompletedTask;
-
-    /// <summary>
-    /// Invoked by recording row Manage Playlists options menu (stub).
-    /// </summary>
-    internal Task ManagePlaylistsRecordingStubAsync(MovementRecordingRowViewModel row) => Task.CompletedTask;
 
     /// <summary>
     /// Invoked by recording row Favorite toggles.
@@ -429,12 +413,6 @@ public sealed class MovementRecordingRowViewModel : ViewModelBase
             Header = "Favorite",
             Icon = TablerIcons.Icons.IconHeart,
             Command = new AsyncRelayCommand(() => panel.FavoriteRecordingStubAsync(this))
-        });
-        MenuOptions.Add(new MenuOptionViewModel
-        {
-            Header = "Manage Playlists",
-            Icon = TablerIcons.Icons.IconPlaylist,
-            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsRecordingStubAsync(this))
         });
     }
 }

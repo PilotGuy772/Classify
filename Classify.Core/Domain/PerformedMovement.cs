@@ -3,7 +3,7 @@ namespace Classify.Core.Domain;
 /// <summary>
 /// Join type between Recording and Movement
 /// </summary>
-public class PerformedMovement : IPlayable
+public class PerformedMovement
 {
     public int Id { get; set; }
     public int RecordingId { get; set; }
@@ -14,6 +14,4 @@ public class PerformedMovement : IPlayable
     public string Name => $"Performed Movement #{Id}";
 
     public string? PhotoKey => null;
-
-    public object BaseObject => this;
 }

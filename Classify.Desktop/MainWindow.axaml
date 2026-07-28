@@ -9,7 +9,6 @@
         x:Class="Classify.Desktop.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
         ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaChromeHints="PreferSystemChrome"
         Title="Classify.Desktop">
 
         <Grid RowDefinitions="Auto,*">
@@ -41,15 +40,6 @@
                                 </Button>
 
                                 <TextBlock Classes="sidebar-category-title" Text="Library"/>
-
-                                <Button x:Name="PlaylistsButton"
-                                        Classes="sidebar-nav-button"
-                                        Click="PlaylistsClicked">
-                                        <StackPanel Orientation="Horizontal" Spacing="12">
-                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconPlaylist" VerticalAlignment="Center" HorizontalAlignment="Center" Width="21" Height="21" Brush="{DynamicResource AccentBrush}"/>
-                                                <TextBlock Classes="sidebar-nav-label" Text="Playlists"/>
-                                        </StackPanel>
-                                </Button>
 
                                 <Button x:Name="BrowseButton"
                                         Classes="sidebar-nav-button"

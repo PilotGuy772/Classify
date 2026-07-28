@@ -102,14 +102,6 @@ public sealed class ComposerInfoPanelViewModel : InfoPanelViewModelBase
     {
         return Task.CompletedTask;
     }
-
-    /// <summary>
-    /// Invoked by work row Manage Playlists options menu (stub).
-    /// </summary>
-    internal Task ManagePlaylistsWorkRowStubAsync(WorkRowViewModel row)
-    {
-        return Task.CompletedTask;
-    }
 }
 
 /// <summary>
@@ -180,12 +172,6 @@ public sealed class WorkRowViewModel : ViewModelBase
             Header = "Favorite",
             Icon = TablerIcons.Icons.IconHeart,
             Command = new AsyncRelayCommand(() => panel.FavoriteWorkRowStubAsync(this))
-        });
-        MenuOptions.Add(new MenuOptionViewModel
-        {
-            Header = "Manage Playlists",
-            Icon = TablerIcons.Icons.IconPlaylist,
-            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsWorkRowStubAsync(this))
         });
     }
 }
