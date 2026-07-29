@@ -17,6 +17,7 @@ using Classify.Desktop.Views;
 using Classify.Services;
 using Classify.Services.Ingestion;
 using Classify.Services.Ingestion.File;
+using Classify.Services.Queue;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -140,6 +141,8 @@ public class App : Application
         services.AddScoped<IIngestionService, LibraryIngestionService>();
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
         services.AddScoped<IIngestionOrchestrationService, LibraryIngestionOrchestrationService>();
+        services.AddSingleton<IQueueService, QueueService>();
+        services.AddScoped<INibbleBuilderService, NibbleBuilderService>();
 
         // Search services (concrete per-entity)
         services.AddTransient<Classify.Data.Services.ComposerSearchService>();

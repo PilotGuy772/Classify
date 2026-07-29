@@ -17,21 +17,21 @@ public class NibbleRepositoryTests
     public async Task CanAddAndRetrieveNibble()
     {
         using ClassifyContext context = SqliteInMemory.CreateDbContext();
-        NibbleRepository nibbleRepo = new NibbleRepository(context);
+        NibbleRepository nibbleRepo = new(context);
 
-        Composer composer = new Composer { Name = "Ludwig van Beethoven" };
+        Composer composer = new() { Name = "Ludwig van Beethoven" };
         await context.Composers.AddAsync(composer);
         await context.SaveChangesAsync();
 
-        Work work = new Work { ComposerId = composer.Id, Name = "Symphony No. 5", CatalogNumber = "Op. 67" };
+        Work work = new() { ComposerId = composer.Id, Name = "Symphony No. 5", CatalogNumber = "Op. 67" };
         await context.Works.AddAsync(work);
         await context.SaveChangesAsync();
 
-        Recording recording = new Recording { WorkId = work.Id, Conductor = "Carlos Kleiber", Year = 1975 };
+        Recording recording = new() { WorkId = work.Id, Conductor = "Carlos Kleiber", Year = 1975 };
         await context.Recordings.AddAsync(recording);
         await context.SaveChangesAsync();
 
-        Nibble nibble = new Nibble
+        Nibble nibble = new()
         {
             WorkId = work.Id,
             RecordingId = recording.Id
@@ -59,33 +59,33 @@ public class NibbleRepositoryTests
     public async Task CanAddAndRetrieveOrderedNibbleMovements()
     {
         using ClassifyContext context = SqliteInMemory.CreateDbContext();
-        NibbleRepository nibbleRepo = new NibbleRepository(context);
-        NibbleMovementRepository movementRepo = new NibbleMovementRepository(context);
+        NibbleRepository nibbleRepo = new(context);
+        NibbleMovementRepository movementRepo = new(context);
 
-        Composer composer = new Composer { Name = "J.S. Bach" };
+        Composer composer = new() { Name = "J.S. Bach" };
         await context.Composers.AddAsync(composer);
         await context.SaveChangesAsync();
 
-        Work work = new Work { ComposerId = composer.Id, Name = "Brandenburg Concerto No. 3", CatalogNumber = "BWV 1048" };
+        Work work = new() { ComposerId = composer.Id, Name = "Brandenburg Concerto No. 3", CatalogNumber = "BWV 1048" };
         await context.Works.AddAsync(work);
         await context.SaveChangesAsync();
 
-        Movement m1 = new Movement { WorkId = work.Id, Name = "Allegro", Order = 1 };
-        Movement m2 = new Movement { WorkId = work.Id, Name = "Adagio", Order = 2 };
-        Movement m3 = new Movement { WorkId = work.Id, Name = "Allegro", Order = 3 };
+        Movement m1 = new() { WorkId = work.Id, Name = "Allegro", Order = 1 };
+        Movement m2 = new() { WorkId = work.Id, Name = "Adagio", Order = 2 };
+        Movement m3 = new() { WorkId = work.Id, Name = "Allegro", Order = 3 };
         await context.Movements.AddRangeAsync(m1, m2, m3);
         await context.SaveChangesAsync();
 
-        Recording recording = new Recording { WorkId = work.Id, Conductor = "Trevor Pinnock" };
+        Recording recording = new() { WorkId = work.Id, Conductor = "Trevor Pinnock" };
         await context.Recordings.AddAsync(recording);
         await context.SaveChangesAsync();
 
-        Nibble nibble = new Nibble { WorkId = work.Id, RecordingId = recording.Id };
+        Nibble nibble = new() { WorkId = work.Id, RecordingId = recording.Id };
         await nibbleRepo.AddAsync(nibble);
         await context.SaveChangesAsync();
 
-        NibbleMovement nm1 = new NibbleMovement { NibbleId = nibble.Id, MovementId = m1.Id, Order = 1 };
-        NibbleMovement nm2 = new NibbleMovement { NibbleId = nibble.Id, MovementId = m3.Id, Order = 2 };
+        NibbleMovement nm1 = new() { NibbleId = nibble.Id, MovementId = m1.Id, Order = 1 };
+        NibbleMovement nm2 = new() { NibbleId = nibble.Id, MovementId = m3.Id, Order = 2 };
         await movementRepo.AddAsync(nm1);
         await movementRepo.AddAsync(nm2);
         await context.SaveChangesAsync();
@@ -105,21 +105,21 @@ public class NibbleRepositoryTests
     public async Task CascadeDeleteOnWorkAndRecordingDeletesNibbles()
     {
         using ClassifyContext context = SqliteInMemory.CreateDbContext();
-        NibbleRepository nibbleRepo = new NibbleRepository(context);
+        NibbleRepository nibbleRepo = new(context);
 
-        Composer composer = new Composer { Name = "W.A. Mozart" };
+        Composer composer = new() { Name = "W.A. Mozart" };
         await context.Composers.AddAsync(composer);
         await context.SaveChangesAsync();
 
-        Work work = new Work { ComposerId = composer.Id, Name = "Symphony No. 40", CatalogNumber = "K. 550" };
+        Work work = new() { ComposerId = composer.Id, Name = "Symphony No. 40", CatalogNumber = "K. 550" };
         await context.Works.AddAsync(work);
         await context.SaveChangesAsync();
 
-        Recording recording = new Recording { WorkId = work.Id, Conductor = "Karl Böhm" };
+        Recording recording = new() { WorkId = work.Id, Conductor = "Karl Böhm" };
         await context.Recordings.AddAsync(recording);
         await context.SaveChangesAsync();
 
-        Nibble nibble = new Nibble { WorkId = work.Id, RecordingId = recording.Id };
+        Nibble nibble = new() { WorkId = work.Id, RecordingId = recording.Id };
         await nibbleRepo.AddAsync(nibble);
         await context.SaveChangesAsync();
 

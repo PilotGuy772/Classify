@@ -68,7 +68,7 @@ public partial class EntitySearchControl : UserControl
         RemovePillCommand = new Core.Domain.Infrastructure.RelayCommand(RemovePill);
 
         // Defaults
-        SelectedItems ??= new ObservableCollection<object>();
+        SelectedItems ??= [];
 
         // wire up UI: locate named controls from XAML
         _searchBox = this.FindControl<TextBox>("SearchBox");

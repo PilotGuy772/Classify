@@ -26,7 +26,7 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
     private readonly IDialogService _dialogService;
     private CancellationTokenSource? _cts;
 
-    public ObservableCollection<ScannedFileViewModel> ScannedFiles { get; } = new();
+    public ObservableCollection<ScannedFileViewModel> ScannedFiles { get; } = [];
 
     public ICommand ScanLibraryCommand { get; }
 

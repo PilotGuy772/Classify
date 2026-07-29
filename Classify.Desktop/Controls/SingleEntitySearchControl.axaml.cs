@@ -23,7 +23,7 @@ public partial class SingleEntitySearchControl : EntitySearchControlBase
 
         // ensure single-selection semantics: SelectedItems contains exactly one item
         if (SelectedItems == null)
-            SelectedItems = new System.Collections.ObjectModel.ObservableCollection<object>();
+            SelectedItems = [];
         else
             SelectedItems.Clear();
 
@@ -35,7 +35,7 @@ public partial class SingleEntitySearchControl : EntitySearchControlBase
 
     protected override void OnSelectedItemChanged(object? item)
     {
-        if (SelectedItems == null) SelectedItems = new System.Collections.ObjectModel.ObservableCollection<object>();
+        if (SelectedItems == null) SelectedItems = [];
         SelectedItems.Clear();
         if (item != null) SelectedItems.Add(item);
     }

@@ -28,7 +28,7 @@ public class AudioFileRepository(ClassifyContext context) : Repository<AudioFile
 
     public async Task<IReadOnlyList<AudioFile>> GetByIdsOrderedAsync(IReadOnlyList<int> ids, CancellationToken ct = default)
     {
-        if (ids.Count == 0) return Array.Empty<AudioFile>();
+        if (ids.Count == 0) return [];
 
         List<AudioFile> files = await DbSet.AsNoTracking()
             .Where(a => ids.Contains(a.Id))

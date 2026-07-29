@@ -22,7 +22,7 @@ public class SeederTests
         IServiceProvider services = SqliteInMemory.BuildTestServices();
         using IServiceScope scope = services.CreateScope();
         IUnitOfWork uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        DemoLibrarySeeder seeder = new DemoLibrarySeeder(uow);
+        DemoLibrarySeeder seeder = new(uow);
 
         // Act
         await seeder.SeedAsync();
@@ -100,19 +100,19 @@ public class SeederTests
         using IServiceScope scope = services.CreateScope();
         IUnitOfWork uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        Composer composer = new Composer { Name = "Test Composer" };
+        Composer composer = new() { Name = "Test Composer" };
         await uow.Composers.AddAsync(composer);
         await uow.SaveChangesAsync();
 
-        Work work = new Work { ComposerId = composer.Id, Name = "Test Work", CatalogNumber = "Op. 99" };
+        Work work = new() { ComposerId = composer.Id, Name = "Test Work", CatalogNumber = "Op. 99" };
         await uow.Works.AddAsync(work);
         await uow.SaveChangesAsync();
 
-        Recording recording = new Recording { WorkId = work.Id, Conductor = "Test Conductor" };
+        Recording recording = new() { WorkId = work.Id, Conductor = "Test Conductor" };
         await uow.Recordings.AddAsync(recording);
         await uow.SaveChangesAsync();
 
-        WorkRecording workRecording = new WorkRecording
+        WorkRecording workRecording = new()
         {
             WorkId = work.Id,
             RecordingId = recording.Id

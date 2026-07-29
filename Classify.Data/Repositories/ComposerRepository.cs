@@ -11,7 +11,7 @@ public class ComposerRepository(ClassifyContext context) : Repository<Composer>(
 	{
 		if (string.IsNullOrWhiteSpace(query))
 		{
-			return Enumerable.Empty<Composer>();
+			return [];
 		}
 
 		string q = query.Trim();

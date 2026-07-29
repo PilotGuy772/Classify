@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Classify.Core.Domain;
 using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Interfaces.Infrastructure;
+using Classify.Core.Interfaces.Service;
 
 namespace Classify.Desktop.ViewModels;
 
@@ -17,6 +18,8 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     private string audioFilePath = string.Empty;
     private int parentRecordingId;
     private int parentMovementId;
+    private readonly IQueueService _queueService;
+    private readonly INibbleBuilderService _nibbleBuilder;
 
     /// <summary>
     /// Gets the parent movement name.
@@ -66,6 +69,11 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     public ICommand PlayRecordingCommand { get; }
 
     /// <summary>
+    /// Gets the command to play next the parent recording.
+    /// </summary>
+    public ICommand PlayNextRecordingCommand { get; }
+
+    /// <summary>
     /// Gets the command to enqueue the parent recording.
     /// </summary>
     public ICommand EnqueueRecordingCommand { get; }
@@ -81,12 +89,18 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     public ICommand ShowRecordingCommand { get; }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="MovementRecordingInfoPanelViewModel"/> with direct database access.
+    /// Initializes a new instance of <see cref="MovementRecordingInfoPanelViewModel"/> with direct database access and queue services.
     /// </summary>
     /// <param name="unitOfWork">The database unit of work.</param>
-    public MovementRecordingInfoPanelViewModel(IUnitOfWork unitOfWork) : base(unitOfWork)
+    /// <param name="queueService">The queue service.</param>
+    /// <param name="nibbleBuilder">The nibble builder service.</param>
+    public MovementRecordingInfoPanelViewModel(IUnitOfWork unitOfWork, IQueueService queueService, INibbleBuilderService nibbleBuilder) : base(unitOfWork)
     {
+        _queueService = queueService ?? throw new ArgumentNullException(nameof(queueService));
+        _nibbleBuilder = nibbleBuilder ?? throw new ArgumentNullException(nameof(nibbleBuilder));
+
         PlayRecordingCommand = new AsyncRelayCommand(PlayRecordingAsync);
+        PlayNextRecordingCommand = new AsyncRelayCommand(PlayRecordingNextStubAsync);
         EnqueueRecordingCommand = new AsyncRelayCommand(EnqueueRecordingAsync);
         ShowMovementCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Movement, parentMovementId));
         ShowRecordingCommand = new AsyncRelayCommand(() => OpenInfoPanelAsync(LibraryItemType.Recording, parentRecordingId));
@@ -125,9 +139,17 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     }
 
     /// <summary>
-    /// Invoked by parent recording Play Next options menu (stub).
+    /// Invoked by parent recording Play Next options menu.
     /// </summary>
-    internal Task PlayRecordingNextStubAsync() => Task.CompletedTask;
+    internal async Task PlayRecordingNextStubAsync()
+    {
+        if (parentRecordingId == 0) return;
+        QueueItem? item = await _nibbleBuilder.BuildForRecordingAsync(parentRecordingId);
+        if (item != null)
+        {
+            _queueService.EnqueueNext(item);
+        }
+    }
 
     /// <summary>
     /// Makes the recording the default for the parent work.
@@ -195,8 +217,14 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
         return Task.CompletedTask;
     }
 
-    private Task EnqueueRecordingAsync()
+    private async Task EnqueueRecordingAsync()
     {
-        return Task.CompletedTask;
+        if (parentRecordingId == 0) return;
+        QueueItem? item = await _nibbleBuilder.BuildForRecordingAsync(parentRecordingId);
+        if (item != null)
+        {
+            _queueService.Enqueue(item);
+        }
     }
 }
+

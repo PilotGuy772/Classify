@@ -54,7 +54,7 @@
                         <ti:TablerIcon Icon="IconPlayerPlay" Width="20" Height="20" />
                     </Button>
                     <Button Classes="info-square-outline"
-                            IsEnabled="False">
+                            Command="{Binding PlayNextWorkCommand}">
                         <ti:TablerIcon Icon="IconCornerUpLeft" Width="21" Height="21" />
                     </Button>
                     <Button Classes="info-square-outline"

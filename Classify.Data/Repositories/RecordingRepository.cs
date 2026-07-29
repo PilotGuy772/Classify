@@ -14,7 +14,7 @@ public class RecordingRepository(ClassifyContext context) : Repository<Recording
 
     public async Task<IEnumerable<Recording>> FindByTextAsync(string query, int limit = 15, CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(query)) return Enumerable.Empty<Recording>();
+        if (string.IsNullOrWhiteSpace(query)) return [];
         string q = query.Trim();
         return await DbSet.AsNoTracking()
             .Where(r => EF.Functions.Like(r.Conductor, $"%{q}%"))
