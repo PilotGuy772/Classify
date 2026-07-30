@@ -12,6 +12,7 @@ using Classify.Data;
 using Classify.Data.Context;
 using Classify.Data.Repositories;
 using Classify.Data.Seeders;
+using Classify.Desktop.Services;
 using Classify.Desktop.ViewModels;
 using Classify.Desktop.Views;
 using Classify.Services;
@@ -83,6 +84,9 @@ public class App : Application
 
             desktop.MainWindow = mainWindow;
             vm.Initialize();
+
+            IPlayerWindowManager playerWindowManager = Services.GetRequiredService<IPlayerWindowManager>();
+            playerWindowManager.Initialize();
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -143,6 +147,7 @@ public class App : Application
         services.AddScoped<IIngestionOrchestrationService, LibraryIngestionOrchestrationService>();
         services.AddSingleton<IQueueService, QueueService>();
         services.AddScoped<INibbleBuilderService, NibbleBuilderService>();
+        services.AddSingleton<IPlayerWindowManager, PlayerWindowManager>();
 
         // Search services (concrete per-entity)
         services.AddTransient<Classify.Data.Services.ComposerSearchService>();

@@ -22,7 +22,7 @@
                         <ti:TablerIcon Icon="IconX" Width="17" Height="17" />
                     </Button>
                     <TextBlock Grid.Column="1"
-                               Classes="info-piece-title"
+                               Classes="info-piece-title movement-serif"
                                Text="{Binding Title}"
                                TextWrapping="Wrap"
                                VerticalAlignment="Center" />
