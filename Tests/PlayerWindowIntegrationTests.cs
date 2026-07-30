@@ -125,6 +125,47 @@ public class PlayerWindowIntegrationTests
     }
 
     /// <summary>
+    /// Verifies that when a single-movement nibble is enqueued, the movement's overall work order is used for Roman numeral formatting.
+    /// </summary>
+    [Fact]
+    public async Task RefreshAsync_SingleMovementNibble_UsesOverallMovementOrderForRomanOrdinal()
+    {
+        using ClassifyContext context = SqliteInMemory.CreateDbContext();
+        UnitOfWork uow = new UnitOfWork(new DbContextFactoryMock(context));
+
+        Composer composer = new Composer { Name = "Mahler" };
+        await uow.Composers.AddAsync(composer);
+        await uow.SaveChangesAsync();
+
+        Work work = new Work { ComposerId = composer.Id, Name = "Symphony No. 5" };
+        await uow.Works.AddAsync(work);
+        await uow.SaveChangesAsync();
+
+        Recording recording = new Recording { WorkId = work.Id, Conductor = "Bernstein" };
+        await uow.Recordings.AddAsync(recording);
+        await uow.SaveChangesAsync();
+
+        Movement m3 = new Movement { WorkId = work.Id, Name = "Scherzo", Order = 3 };
+        await uow.Movements.AddAsync(m3);
+        await uow.SaveChangesAsync();
+
+        NibbleBuilderService builder = new NibbleBuilderService(uow);
+        QueueItem? item = await builder.BuildForMovementAsync(m3.Id, recording.Id);
+        Assert.NotNull(item);
+
+        QueueService queueService = new QueueService();
+        queueService.Clear();
+
+        PlayerWindowViewModel vm = new PlayerWindowViewModel(queueService, uow);
+        queueService.Enqueue(item.Nibble, item.Movements);
+        await vm.RefreshAsync();
+
+        Assert.Equal("III.", vm.CurrentMovementOrdinal);
+        Assert.Equal("Scherzo", vm.CurrentMovementName);
+        Assert.Equal("III.", vm.QueueItems[0].Movements[0].OrdinalLabel);
+    }
+
+    /// <summary>
     /// Mock IDbContextFactory for UnitOfWork testing.
     /// </summary>
     private sealed class DbContextFactoryMock(ClassifyContext context) : Microsoft.EntityFrameworkCore.IDbContextFactory<ClassifyContext>

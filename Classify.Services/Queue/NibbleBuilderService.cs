@@ -148,7 +148,7 @@ public class NibbleBuilderService(IUnitOfWork unitOfWork) : INibbleBuilderServic
             {
                 NibbleId = 0,
                 MovementId = movement.Id,
-                Order = 1
+                Order = movement.Order
             }
         ];
 

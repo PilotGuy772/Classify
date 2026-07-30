@@ -15,6 +15,7 @@
         <entry key="Classify.Desktop/Styles/Platform/macos.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Styles/Platform/windows.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/AudioFileDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/BrowseView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/ComposerDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/ComposerInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/ExploreView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
@@ -24,6 +25,7 @@
         <entry key="Classify.Desktop/Views/MovementDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/MovementInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/MovementRecordingInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/PlayerWindow.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/ProposedMatchDialog.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/ProposedMatchesDialog.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/RadioView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />

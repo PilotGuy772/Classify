@@ -262,7 +262,8 @@ public sealed class PlayerWindowViewModel : ViewModelBase
                 NibbleMovement nm = item.Movements[movementIdx];
                 Movement? mv = await _unitOfWork.Movements.GetByIdAsync(nm.MovementId);
 
-                string ordinalLabel = FormatRomanOrdinal(nm.Order);
+                int displayOrder = mv?.Order ?? nm.Order;
+                string ordinalLabel = FormatRomanOrdinal(displayOrder);
                 string mvName = mv?.Name ?? $"Movement #{nm.MovementId}";
                 bool isPlaying = (nibbleIdx == activeNibbleIdx && movementIdx == activeMovementIdx);
 
@@ -298,7 +299,7 @@ public sealed class PlayerWindowViewModel : ViewModelBase
             Movement? activeMv = activeMovement != null ? await _unitOfWork.Movements.GetByIdAsync(activeMovement.MovementId) : null;
 
             CurrentWorkTitle = activeWork?.Name ?? "—";
-            CurrentMovementOrdinal = activeMovement != null ? FormatRomanOrdinal(activeMovement.Order) : "";
+            CurrentMovementOrdinal = activeMv != null ? FormatRomanOrdinal(activeMv.Order) : (activeMovement != null ? FormatRomanOrdinal(activeMovement.Order) : "");
             CurrentMovementName = activeMv?.Name ?? "—";
             CurrentComposerName = activeComposer?.Name ?? "—";
             CurrentPerformersLine = FormatPerformersLine(activeRec);

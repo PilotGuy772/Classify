@@ -20,6 +20,7 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     private string workName = string.Empty;
     private int parentWorkId;
     private int parentComposerId;
+    private int currentMovementId;
     private readonly IQueueService _queueService;
     private readonly INibbleBuilderService _nibbleBuilder;
 
@@ -133,6 +134,7 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     public override async Task LoadAsync(int movementId)
     {
         RecordingRows.Clear();
+        currentMovementId = movementId;
 
         Movement? movement = await unitOfWork.Movements.GetByIdAsync(movementId);
         if (movement is null)
@@ -142,6 +144,7 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
             WorkName = string.Empty;
             parentWorkId = 0;
             parentComposerId = 0;
+            currentMovementId = 0;
             return;
         }
 
@@ -213,7 +216,8 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     /// </summary>
     internal async Task EnqueueRecordingStubAsync(MovementRecordingRowViewModel row)
     {
-        QueueItem? item = await _nibbleBuilder.BuildForRecordingAsync(row.RecordingId);
+        if (currentMovementId == 0) return;
+        QueueItem? item = await _nibbleBuilder.BuildForMovementAsync(currentMovementId, row.RecordingId);
         if (item != null)
         {
             _queueService.Enqueue(item);
@@ -243,7 +247,8 @@ public sealed class MovementInfoPanelViewModel : InfoPanelViewModelBase
     /// </summary>
     internal async Task PlayRecordingNextStubAsync(MovementRecordingRowViewModel row)
     {
-        QueueItem? item = await _nibbleBuilder.BuildForRecordingAsync(row.RecordingId);
+        if (currentMovementId == 0) return;
+        QueueItem? item = await _nibbleBuilder.BuildForMovementAsync(currentMovementId, row.RecordingId);
         if (item != null)
         {
             _queueService.EnqueueNext(item);

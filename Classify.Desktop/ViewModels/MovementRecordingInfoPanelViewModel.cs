@@ -143,8 +143,8 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     /// </summary>
     internal async Task PlayRecordingNextStubAsync()
     {
-        if (parentRecordingId == 0) return;
-        QueueItem? item = await _nibbleBuilder.BuildForRecordingAsync(parentRecordingId);
+        if (parentMovementId == 0) return;
+        QueueItem? item = await _nibbleBuilder.BuildForMovementAsync(parentMovementId, parentRecordingId != 0 ? parentRecordingId : null);
         if (item != null)
         {
             _queueService.EnqueueNext(item);
@@ -219,8 +219,8 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
 
     private async Task EnqueueRecordingAsync()
     {
-        if (parentRecordingId == 0) return;
-        QueueItem? item = await _nibbleBuilder.BuildForRecordingAsync(parentRecordingId);
+        if (parentMovementId == 0) return;
+        QueueItem? item = await _nibbleBuilder.BuildForMovementAsync(parentMovementId, parentRecordingId != 0 ? parentRecordingId : null);
         if (item != null)
         {
             _queueService.Enqueue(item);

@@ -131,6 +131,42 @@ public class NibbleBuilderServiceTests
     }
 
     /// <summary>
+    /// Verifies that BuildForMovementAsync constructs a queue item containing only the specified movement.
+    /// </summary>
+    [Fact]
+    public async Task BuildForMovementAsync_CreatesItemWithSingleMovementOnly()
+    {
+        using ClassifyContext context = SqliteInMemory.CreateDbContext();
+        UnitOfWork uow = new(new DbContextFactoryMock(context));
+
+        Composer composer = new() { Name = "Brahms" };
+        await uow.Composers.AddAsync(composer);
+        await uow.SaveChangesAsync();
+
+        Work work = new() { ComposerId = composer.Id, Name = "Symphony No. 1" };
+        await uow.Works.AddAsync(work);
+        await uow.SaveChangesAsync();
+
+        Recording rec = new() { WorkId = work.Id, Conductor = "Karajan" };
+        await uow.Recordings.AddAsync(rec);
+        await uow.SaveChangesAsync();
+
+        Movement m1 = new() { WorkId = work.Id, Name = "Un poco sostenuto", Order = 1 };
+        Movement m2 = new() { WorkId = work.Id, Name = "Andante sostenuto", Order = 2 };
+        await uow.Movements.AddAsync(m1);
+        await uow.Movements.AddAsync(m2);
+        await uow.SaveChangesAsync();
+
+        NibbleBuilderService builder = new(uow);
+        QueueItem? item = await builder.BuildForMovementAsync(m2.Id, rec.Id);
+
+        Assert.NotNull(item);
+        Assert.Equal(rec.Id, item.Nibble.RecordingId);
+        Assert.Single(item.Movements);
+        Assert.Equal(m2.Id, item.Movements[0].MovementId);
+    }
+
+    /// <summary>
     /// Mock IDbContextFactory for UnitOfWork testing.
     /// </summary>
     private sealed class DbContextFactoryMock(ClassifyContext context) : Microsoft.EntityFrameworkCore.IDbContextFactory<ClassifyContext>
