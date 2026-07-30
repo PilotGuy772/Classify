@@ -61,7 +61,7 @@
                         VerticalAlignment="Center"
                         Width="32" Height="32"
                         ToolTip.Tip="Toggle Queue Sidebar">
-                    <ti:TablerIcon Icon="IconLayoutSidebarLeftCollapse" Width="20" Height="20" />
+                    <ti:TablerIcon Icon="{Binding SidebarToggleIcon}" Width="20" Height="20" />
                 </Button>
             </Grid>
 

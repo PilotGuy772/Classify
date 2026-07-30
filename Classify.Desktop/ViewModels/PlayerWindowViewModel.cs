@@ -43,8 +43,16 @@ public sealed class PlayerWindowViewModel : ViewModelBase
             if (_isSidebarExpanded == value) return;
             _isSidebarExpanded = value;
             RaisePropertyChanged();
+            RaisePropertyChanged(nameof(SidebarToggleIcon));
         }
     }
+
+    /// <summary>
+    /// Gets the icon for the queue sidebar toggle button depending on expansion state.
+    /// </summary>
+    public TablerIcons.Icons SidebarToggleIcon => IsSidebarExpanded
+        ? TablerIcons.Icons.IconLayoutSidebarLeftCollapse
+        : TablerIcons.Icons.IconLayoutSidebarLeftExpand;
 
     /// <summary>
     /// Gets or sets the target width of the window depending on sidebar expansion state.
