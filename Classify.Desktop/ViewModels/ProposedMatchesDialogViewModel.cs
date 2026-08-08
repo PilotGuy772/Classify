@@ -21,7 +21,7 @@ public class ProposedMatchesDialogViewModel : ViewModelBase, IDialog<int>
     private readonly IDialogService _dialogService;
 
     public string AudioFilePath { get; private set; }
-    public ObservableCollection<ProposedMatch> ProposedMatches { get; } = new();
+    public ObservableCollection<ProposedMatch> ProposedMatches { get; } = [];
 
     public ICommand AddMatchCommand { get; }
     public ICommand EditMatchCommand { get; }

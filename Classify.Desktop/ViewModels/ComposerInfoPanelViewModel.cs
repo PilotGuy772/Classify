@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Classify.Core.Domain;
 using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Interfaces.Infrastructure;
+using Classify.Core.Interfaces.Service;
 
 namespace Classify.Desktop.ViewModels;
 
@@ -17,14 +18,42 @@ public sealed class ComposerInfoPanelViewModel : InfoPanelViewModelBase
     /// <summary>
     /// Gets the collection of works written by this composer.
     /// </summary>
-    public ObservableCollection<WorkRowViewModel> WorkRows { get; } = new();
+    public ObservableCollection<WorkRowViewModel> WorkRows { get; } = [];
+
+    private readonly IQueueService _queueService;
+    private readonly INibbleBuilderService _nibbleBuilder;
+    private int currentComposerId;
 
     /// <summary>
-    /// Initializes a new instance of <see cref="ComposerInfoPanelViewModel"/> with direct database access.
+    /// Main header action: Play all works by composer.
+    /// </summary>
+    public ICommand PlayComposerCommand { get; }
+
+    /// <summary>
+    /// Main header action: Play Next all works by composer.
+    /// </summary>
+    public ICommand PlayNextComposerCommand { get; }
+
+    /// <summary>
+    /// Main header action: Enqueue all works by composer.
+    /// </summary>
+    public ICommand EnqueueComposerCommand { get; }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="ComposerInfoPanelViewModel"/> with direct database access and queue services.
     /// </summary>
     /// <param name="unitOfWork">The database unit of work.</param>
-    public ComposerInfoPanelViewModel(IUnitOfWork unitOfWork) : base(unitOfWork)
+    /// <param name="queueService">The queue service.</param>
+    /// <param name="nibbleBuilder">The nibble builder service.</param>
+    public ComposerInfoPanelViewModel(IUnitOfWork unitOfWork, IQueueService queueService, INibbleBuilderService nibbleBuilder) : base(unitOfWork)
     {
+        _queueService = queueService ?? throw new ArgumentNullException(nameof(queueService));
+        _nibbleBuilder = nibbleBuilder ?? throw new ArgumentNullException(nameof(nibbleBuilder));
+
+        PlayComposerCommand = new AsyncRelayCommand(PlayComposerAsync);
+        PlayNextComposerCommand = new AsyncRelayCommand(PlayNextComposerAsync);
+        EnqueueComposerCommand = new AsyncRelayCommand(EnqueueComposerAsync);
+
         MenuOptions.Clear();
         MenuOptions.Add(new MenuOptionViewModel
         {
@@ -41,6 +70,7 @@ public sealed class ComposerInfoPanelViewModel : InfoPanelViewModelBase
     /// <returns>A task representing the asynchronous operation.</returns>
     public override async Task LoadAsync(int composerId)
     {
+        currentComposerId = composerId;
         WorkRows.Clear();
 
         Composer? composer = await unitOfWork.Composers.GetByIdAsync(composerId);
@@ -59,6 +89,49 @@ public sealed class ComposerInfoPanelViewModel : InfoPanelViewModelBase
         }
     }
 
+    private Task PlayComposerAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private async Task PlayNextComposerAsync()
+    {
+        if (currentComposerId == 0) return;
+        IEnumerable<Work> works = await unitOfWork.Works.GetWorksByComposerIdAsync(currentComposerId);
+        List<QueueItem> items = [];
+        foreach (Work work in works)
+        {
+            QueueItem? item = await _nibbleBuilder.BuildForWorkAsync(work.Id);
+            if (item != null)
+            {
+                items.Add(item);
+            }
+        }
+        if (items.Count > 0)
+        {
+            _queueService.EnqueueNextRange(items);
+        }
+    }
+
+    private async Task EnqueueComposerAsync()
+    {
+        if (currentComposerId == 0) return;
+        IEnumerable<Work> works = await unitOfWork.Works.GetWorksByComposerIdAsync(currentComposerId);
+        List<QueueItem> items = [];
+        foreach (Work work in works)
+        {
+            QueueItem? item = await _nibbleBuilder.BuildForWorkAsync(work.Id);
+            if (item != null)
+            {
+                items.Add(item);
+            }
+        }
+        if (items.Count > 0)
+        {
+            _queueService.EnqueueRange(items);
+        }
+    }
+
     /// <summary>
     /// Invoked by work row Play buttons (stub).
     /// </summary>
@@ -70,13 +143,17 @@ public sealed class ComposerInfoPanelViewModel : InfoPanelViewModelBase
     }
 
     /// <summary>
-    /// Invoked by work row Enqueue buttons (stub).
+    /// Invoked by work row Enqueue buttons.
     /// </summary>
     /// <param name="row">The work row model.</param>
-    /// <returns>A completed task.</returns>
-    internal Task EnqueueWorkRowStubAsync(WorkRowViewModel row)
+    /// <returns>A task representing the operation.</returns>
+    internal async Task EnqueueWorkRowStubAsync(WorkRowViewModel row)
     {
-        return Task.CompletedTask;
+        QueueItem? item = await _nibbleBuilder.BuildForWorkAsync(row.WorkId);
+        if (item != null)
+        {
+            _queueService.Enqueue(item);
+        }
     }
 
     /// <summary>
@@ -88,25 +165,23 @@ public sealed class ComposerInfoPanelViewModel : InfoPanelViewModelBase
     }
 
     /// <summary>
-    /// Invoked by work row Play Next options menu (stub).
+    /// Invoked by work row Play Next options menu.
     /// </summary>
-    internal Task PlayWorkRowNextStubAsync(WorkRowViewModel row)
+    /// <param name="row">The work row model.</param>
+    /// <returns>A task representing the operation.</returns>
+    internal async Task PlayWorkRowNextStubAsync(WorkRowViewModel row)
     {
-        return Task.CompletedTask;
+        QueueItem? item = await _nibbleBuilder.BuildForWorkAsync(row.WorkId);
+        if (item != null)
+        {
+            _queueService.EnqueueNext(item);
+        }
     }
 
     /// <summary>
     /// Invoked by work row Favorite options menu (stub).
     /// </summary>
     internal Task FavoriteWorkRowStubAsync(WorkRowViewModel row)
-    {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Invoked by work row Manage Playlists options menu (stub).
-    /// </summary>
-    internal Task ManagePlaylistsWorkRowStubAsync(WorkRowViewModel row)
     {
         return Task.CompletedTask;
     }
@@ -180,12 +255,6 @@ public sealed class WorkRowViewModel : ViewModelBase
             Header = "Favorite",
             Icon = TablerIcons.Icons.IconHeart,
             Command = new AsyncRelayCommand(() => panel.FavoriteWorkRowStubAsync(this))
-        });
-        MenuOptions.Add(new MenuOptionViewModel
-        {
-            Header = "Manage Playlists",
-            Icon = TablerIcons.Icons.IconPlaylist,
-            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsWorkRowStubAsync(this))
         });
     }
 }

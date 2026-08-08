@@ -54,16 +54,12 @@
                         <ti:TablerIcon Icon="IconPlayerPlay" Width="20" Height="20" />
                     </Button>
                     <Button Classes="info-square-outline"
-                            IsEnabled="False">
+                            Command="{Binding PlayNextWorkCommand}">
                         <ti:TablerIcon Icon="IconCornerUpLeft" Width="21" Height="21" />
                     </Button>
                     <Button Classes="info-square-outline"
                             Command="{Binding EnqueueWorkCommand}">
                         <ti:TablerIcon Icon="IconCornerDownLeft" Width="21" Height="21" />
-                    </Button>
-                    <Button Classes="info-square-outline"
-                            Command="{Binding AddWorkToPlaylistCommand}">
-                        <ti:TablerIcon Icon="IconPlaylist" Width="21" Height="21" />
                     </Button>
                     <Button Classes="info-square-outline"
                             IsEnabled="False">

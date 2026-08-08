@@ -144,11 +144,5 @@ public sealed class RecordingInfoRowViewModel : ViewModelBase
             Icon = TablerIcons.Icons.IconHeart,
             Command = new AsyncRelayCommand(() => panel.FavoriteRecordingRowStubAsync(this))
         });
-        MenuOptions.Add(new MenuOptionViewModel
-        {
-            Header = "Manage Playlists",
-            Icon = TablerIcons.Icons.IconPlaylist,
-            Command = new AsyncRelayCommand(() => panel.ManagePlaylistsRecordingRowStubAsync(this))
-        });
     }
 }

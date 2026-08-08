@@ -86,7 +86,6 @@ public class MainWindowViewModel : ViewModelBase
     public MovementRecordingInfoPanelViewModel MovementRecordingInfo { get; }
 
     public System.Windows.Input.ICommand ShowLibraryScanCommand { get; }
-    public System.Windows.Input.ICommand ShowPlaylistsCommand { get; }
     public System.Windows.Input.ICommand ShowBrowseCommand { get; }
     public System.Windows.Input.ICommand ShowFavoritesCommand { get; }
     public System.Windows.Input.ICommand ShowExploreCommand { get; }
@@ -117,7 +116,6 @@ public class MainWindowViewModel : ViewModelBase
         MovementRecordingInfo.AttachHost(this);
 
         ShowLibraryScanCommand = new RelayCommand(_ => ShowLibraryScan());
-        ShowPlaylistsCommand = new RelayCommand(_ => ShowPlaylists());
         ShowBrowseCommand = new RelayCommand(_ => ShowBrowse());
         ShowFavoritesCommand = new RelayCommand(_ => ShowFavorites());
         ShowExploreCommand = new RelayCommand(_ => ShowExplore());
@@ -234,14 +232,6 @@ public class MainWindowViewModel : ViewModelBase
     public void ShowLibraryScan()
     {
         CurrentPage = serviceProvider.GetRequiredService<LibraryScanViewModel>();
-    }
-
-    /// <summary>
-    /// Shows Playlists placeholder page.
-    /// </summary>
-    public void ShowPlaylists()
-    {
-        CurrentPage = serviceProvider.GetRequiredService<PlaylistsViewModel>();
     }
 
     /// <summary>

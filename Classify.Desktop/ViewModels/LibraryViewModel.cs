@@ -38,22 +38,23 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
     /// <summary>
     /// Gets the list of form options.
     /// </summary>
-    public List<string> FormOptions { get; } = new() { "Any", "Symphony", "Concerto", "Sonata", "Suite" };
+    public List<string> FormOptions { get; } = ["Any", "Symphony", "Concerto", "Sonata", "Suite"];
 
     /// <summary>
     /// Gets the list of era options.
     /// </summary>
-    public List<string> EraOptions { get; } = new() { "Any", "Baroque", "Classical", "Romantic", "Modern" };
+    public List<string> EraOptions { get; } = ["Any", "Baroque", "Classical", "Romantic", "Modern"];
 
     /// <summary>
     /// Gets the list of ensemble type options.
     /// </summary>
-    public List<string> EnsembleTypeOptions { get; } = new() { "Any", "Symphony Orchestra", "Chamber Ensemble", "String Quartet", "Solo Instrument" };
+    public List<string> EnsembleTypeOptions { get; } =
+        ["Any", "Symphony Orchestra", "Chamber Ensemble", "String Quartet", "Solo Instrument"];
 
     /// <summary>
     /// Gets the collection of currently visible library rows in the list.
     /// </summary>
-    public ObservableCollection<LibraryItemViewModel> Items { get; } = new();
+    public ObservableCollection<LibraryItemViewModel> Items { get; } = [];
 
     /// <summary>
     /// Gets or sets the currently selected library row item.
@@ -218,7 +219,7 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
         get => _yearFromQuery;
         set
         {
-            string cleaned = new string((value ?? string.Empty).Where(char.IsDigit).ToArray());
+            string cleaned = new((value ?? string.Empty).Where(char.IsDigit).ToArray());
             if (_yearFromQuery == cleaned)
             {
                 if (value != cleaned)
@@ -240,7 +241,7 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
         get => _yearToQuery;
         set
         {
-            string cleaned = new string((value ?? string.Empty).Where(char.IsDigit).ToArray());
+            string cleaned = new((value ?? string.Empty).Where(char.IsDigit).ToArray());
             if (_yearToQuery == cleaned)
             {
                 if (value != cleaned)
@@ -282,7 +283,7 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
         IEnumerable<Composer> composers = await _unitOfWork.Composers.GetAllAsync();
         foreach (Composer c in composers.OrderBy(x => x.Name))
         {
-            LibraryItemViewModel item = new LibraryItemViewModel(c.Id, c.Name, LibraryItemType.Composer, level: 0);
+            LibraryItemViewModel item = new(c.Id, c.Name, LibraryItemType.Composer, level: 0);
             item.ToggleExpandCallback = (n) => _ = ToggleExpandNodeAsync(n);
             Items.Add(item);
         }
@@ -305,7 +306,7 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
             int index = Items.IndexOf(node);
             if (index >= 0)
             {
-                List<LibraryItemViewModel> descendants = new List<LibraryItemViewModel>();
+                List<LibraryItemViewModel> descendants = [];
                 GetVisibleDescendants(node, descendants);
                 for (int i = 0; i < descendants.Count; i++)
                 {
@@ -318,7 +319,7 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
             int index = Items.IndexOf(node);
             if (index >= 0)
             {
-                List<LibraryItemViewModel> descendants = new List<LibraryItemViewModel>();
+                List<LibraryItemViewModel> descendants = [];
                 GetDescendantsToCollapse(node, descendants);
                 foreach (LibraryItemViewModel desc in descendants)
                 {
@@ -369,14 +370,14 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
     /// </summary>
     private async Task<List<LibraryItemViewModel>> LoadChildrenAsync(LibraryItemViewModel node)
     {
-        List<LibraryItemViewModel> list = new List<LibraryItemViewModel>();
+        List<LibraryItemViewModel> list = [];
 
         if (node.Type == LibraryItemType.Composer)
         {
             IEnumerable<Work> works = await _unitOfWork.Works.GetWorksByComposerIdAsync(node.Id);
             foreach (Work w in works.OrderBy(x => x.Name))
             {
-                LibraryItemViewModel item = new LibraryItemViewModel(w.Id, w.Name, LibraryItemType.Work, level: 1);
+                LibraryItemViewModel item = new(w.Id, w.Name, LibraryItemType.Work, level: 1);
                 item.ToggleExpandCallback = (n) => _ = ToggleExpandNodeAsync(n);
                 list.Add(item);
             }
@@ -386,7 +387,7 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
             IEnumerable<Recording> recordings = await _unitOfWork.Recordings.GetRecordingsByWorkIdAsync(node.Id);
             foreach (Recording r in recordings)
             {
-                List<string> parts = new List<string>();
+                List<string> parts = [];
                 if (!string.IsNullOrWhiteSpace(r.Soloist)) parts.Add(r.Soloist);
                 if (!string.IsNullOrWhiteSpace(r.Conductor)) parts.Add(r.Conductor);
                 if (!string.IsNullOrWhiteSpace(r.Ensemble)) parts.Add(r.Ensemble);
@@ -395,7 +396,7 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
                 string labelYear = r.Year.HasValue ? $"([Label], {r.Year.Value})" : "([Label])";
                 string disp = string.IsNullOrWhiteSpace(artistLine) ? $"Recording #{r.Id} {labelYear}" : $"{artistLine} ({labelYear.Trim('(', ')')})";
 
-                LibraryItemViewModel item = new LibraryItemViewModel(r.Id, disp, LibraryItemType.Recording, level: 2);
+                LibraryItemViewModel item = new(r.Id, disp, LibraryItemType.Recording, level: 2);
                 item.ToggleExpandCallback = (n) => _ = ToggleExpandNodeAsync(n);
                 list.Add(item);
             }
@@ -403,7 +404,7 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
         else if (node.Type == LibraryItemType.Recording)
         {
             IEnumerable<PerformedMovement> pms = await _unitOfWork.PerformedMovements.GetByRecordingId(node.Id);
-            List<(PerformedMovement Pm, Movement Mv)> temp = new List<(PerformedMovement Pm, Movement Mv)>();
+            List<(PerformedMovement Pm, Movement Mv)> temp = [];
 
             foreach (PerformedMovement pm in pms)
             {
@@ -422,7 +423,7 @@ public sealed class LibraryViewModel : ViewModelBase, IDisposable, IAsyncDisposa
             foreach ((PerformedMovement Pm, Movement Mv) pair in sorted)
             {
                 string roman = FormatRomanOrdinal(pair.Mv.Order);
-                LibraryItemViewModel item = new LibraryItemViewModel(pair.Pm.Id, pair.Mv.Name, LibraryItemType.MovementRecording, level: 3);
+                LibraryItemViewModel item = new(pair.Pm.Id, pair.Mv.Name, LibraryItemType.MovementRecording, level: 3);
                 item.Ordinal = roman;
                 list.Add(item);
             }

@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Classify.Core.Domain;
 using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Interfaces.Infrastructure;
+using Classify.Core.Interfaces.Service;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Classify.Desktop.ViewModels;
@@ -19,15 +20,23 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
 {
     private string _composerLine = string.Empty;
     private string _secondaryLine = string.Empty;
+    private readonly IQueueService _queueService;
+    private readonly INibbleBuilderService _nibbleBuilder;
 
     /// <summary>
-    /// Creates the panel view model with direct database access via <see cref="IUnitOfWork"/>.
+    /// Creates the panel view model with direct database access and queue services.
     /// </summary>
-    public WorkInfoPanelViewModel(IUnitOfWork unitOfWork) : base(unitOfWork)
+    /// <param name="unitOfWork">The database unit of work.</param>
+    /// <param name="queueService">The queue service.</param>
+    /// <param name="nibbleBuilder">The nibble builder service.</param>
+    public WorkInfoPanelViewModel(IUnitOfWork unitOfWork, IQueueService queueService, INibbleBuilderService nibbleBuilder) : base(unitOfWork)
     {
+        _queueService = queueService ?? throw new ArgumentNullException(nameof(queueService));
+        _nibbleBuilder = nibbleBuilder ?? throw new ArgumentNullException(nameof(nibbleBuilder));
+
         PlayWorkCommand = new AsyncRelayCommand(PlayWorkAsync);
+        PlayNextWorkCommand = new AsyncRelayCommand(PlayNextWorkAsync);
         EnqueueWorkCommand = new AsyncRelayCommand(EnqueueWorkAsync);
-        AddWorkToPlaylistCommand = new AsyncRelayCommand(AddWorkToPlaylistAsync);
     }
 
     /// <summary>
@@ -70,12 +79,12 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     /// <summary>
     /// Rows for the movements section.
     /// </summary>
-    public ObservableCollection<MovementInfoRowViewModel> MovementRows { get; } = new();
+    public ObservableCollection<MovementInfoRowViewModel> MovementRows { get; } = [];
 
     /// <summary>
     /// Rows for the recordings section.
     /// </summary>
-    public ObservableCollection<RecordingInfoRowViewModel> RecordingRows { get; } = new();
+    public ObservableCollection<RecordingInfoRowViewModel> RecordingRows { get; } = [];
 
     /// <summary>
     /// Main header action: Play this work.
@@ -83,14 +92,14 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     public ICommand PlayWorkCommand { get; }
 
     /// <summary>
+    /// Main header action: Play Next this work.
+    /// </summary>
+    public ICommand PlayNextWorkCommand { get; }
+
+    /// <summary>
     /// Main header action: Enqueue this work.
     /// </summary>
     public ICommand EnqueueWorkCommand { get; }
-
-    /// <summary>
-    /// Main header action: Add this work to a playlist.
-    /// </summary>
-    public ICommand AddWorkToPlaylistCommand { get; }
 
     private int currentWorkId;
 
@@ -126,7 +135,7 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
         }
 
         IEnumerable<Recording> recordings = await unitOfWork.Recordings.GetRecordingsByWorkIdAsync(workId);
-        List<RecordingInfoRowViewModel> rows = new();
+        List<RecordingInfoRowViewModel> rows = [];
 
         foreach (Recording recording in recordings)
         {
@@ -181,11 +190,15 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     }
 
     /// <summary>
-    /// Invoked by movement row Play Next options menu (stub).
+    /// Invoked by movement row Play Next options menu.
     /// </summary>
-    internal Task PlayMovementRowNextStubAsync(MovementInfoRowViewModel row)
+    internal async Task PlayMovementRowNextStubAsync(MovementInfoRowViewModel row)
     {
-        return Task.CompletedTask;
+        QueueItem? item = await _nibbleBuilder.BuildForMovementAsync(row.MovementId);
+        if (item != null)
+        {
+            _queueService.EnqueueNext(item);
+        }
     }
 
     /// <summary>
@@ -197,33 +210,21 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
     }
 
     /// <summary>
-    /// Invoked by movement row Manage Playlists options menu (stub).
+    /// Invoked by recording row Play Next options menu.
     /// </summary>
-    internal Task ManagePlaylistsMovementRowStubAsync(MovementInfoRowViewModel row)
+    internal async Task PlayRecordingRowNextStubAsync(RecordingInfoRowViewModel row)
     {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Invoked by recording row Play Next options menu (stub).
-    /// </summary>
-    internal Task PlayRecordingRowNextStubAsync(RecordingInfoRowViewModel row)
-    {
-        return Task.CompletedTask;
+        QueueItem? item = await _nibbleBuilder.BuildForRecordingAsync(row.RecordingId);
+        if (item != null)
+        {
+            _queueService.EnqueueNext(item);
+        }
     }
 
     /// <summary>
     /// Invoked by recording row Favorite options menu (stub).
     /// </summary>
     internal Task FavoriteRecordingRowStubAsync(RecordingInfoRowViewModel row)
-    {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Invoked by recording row Manage Playlists options menu (stub).
-    /// </summary>
-    internal Task ManagePlaylistsRecordingRowStubAsync(RecordingInfoRowViewModel row)
     {
         return Task.CompletedTask;
     }
@@ -254,21 +255,27 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
         return table[indexOneBased] + ".";
     }
 
-
-
     private Task PlayWorkAsync()
     {
         return Task.CompletedTask;
     }
 
-    private Task EnqueueWorkAsync()
+    private async Task PlayNextWorkAsync()
     {
-        return Task.CompletedTask;
+        QueueItem? item = await _nibbleBuilder.BuildForWorkAsync(currentWorkId);
+        if (item != null)
+        {
+            _queueService.EnqueueNext(item);
+        }
     }
 
-    private Task AddWorkToPlaylistAsync()
+    private async Task EnqueueWorkAsync()
     {
-        return Task.CompletedTask;
+        QueueItem? item = await _nibbleBuilder.BuildForWorkAsync(currentWorkId);
+        if (item != null)
+        {
+            _queueService.Enqueue(item);
+        }
     }
 
     private Task PlayMovementAsync(MovementInfoRowViewModel row)
@@ -276,9 +283,13 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
         return Task.CompletedTask;
     }
 
-    private Task EnqueueMovementAsync(MovementInfoRowViewModel row)
+    private async Task EnqueueMovementAsync(MovementInfoRowViewModel row)
     {
-        return Task.CompletedTask;
+        QueueItem? item = await _nibbleBuilder.BuildForMovementAsync(row.MovementId);
+        if (item != null)
+        {
+            _queueService.Enqueue(item);
+        }
     }
 
     private Task PlayRecordingAsync(RecordingInfoRowViewModel row)
@@ -286,9 +297,13 @@ public sealed class WorkInfoPanelViewModel : InfoPanelViewModelBase
         return Task.CompletedTask;
     }
 
-    private Task EnqueueRecordingAsync(RecordingInfoRowViewModel row)
+    private async Task EnqueueRecordingAsync(RecordingInfoRowViewModel row)
     {
-        return Task.CompletedTask;
+        QueueItem? item = await _nibbleBuilder.BuildForRecordingAsync(row.RecordingId);
+        if (item != null)
+        {
+            _queueService.Enqueue(item);
+        }
     }
 
     private async Task ToggleFavoriteRecordingAsync(RecordingInfoRowViewModel row)

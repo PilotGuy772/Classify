@@ -14,7 +14,7 @@ namespace Classify.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
 
             modelBuilder.Entity("Classify.Core.Domain.AudioFile", b =>
                 {
@@ -73,6 +73,51 @@ namespace Classify.Data.Migrations
                     b.HasIndex("WorkId");
 
                     b.ToTable("Movements");
+                });
+
+            modelBuilder.Entity("Classify.Core.Domain.Nibble", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RecordingId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WorkId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecordingId");
+
+                    b.HasIndex("WorkId");
+
+                    b.ToTable("Nibbles");
+                });
+
+            modelBuilder.Entity("Classify.Core.Domain.NibbleMovement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MovementId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("NibbleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovementId");
+
+                    b.HasIndex("NibbleId", "Order");
+
+                    b.ToTable("NibbleMovements");
                 });
 
             modelBuilder.Entity("Classify.Core.Domain.PerformedMovement", b =>
@@ -242,6 +287,27 @@ namespace Classify.Data.Migrations
                     b.ToTable("Works");
                 });
 
+            modelBuilder.Entity("Classify.Core.Domain.WorkRecording", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RecordingId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WorkId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecordingId");
+
+                    b.HasIndex("WorkId");
+
+                    b.ToTable("WorkRecordings");
+                });
+
             modelBuilder.Entity("MovementRecording", b =>
                 {
                     b.Property<int>("MovementId")
@@ -262,6 +328,36 @@ namespace Classify.Data.Migrations
                     b.HasOne("Classify.Core.Domain.Work", null)
                         .WithMany()
                         .HasForeignKey("WorkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Classify.Core.Domain.Nibble", b =>
+                {
+                    b.HasOne("Classify.Core.Domain.Recording", null)
+                        .WithMany()
+                        .HasForeignKey("RecordingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Classify.Core.Domain.Work", null)
+                        .WithMany()
+                        .HasForeignKey("WorkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Classify.Core.Domain.NibbleMovement", b =>
+                {
+                    b.HasOne("Classify.Core.Domain.Movement", null)
+                        .WithMany()
+                        .HasForeignKey("MovementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Classify.Core.Domain.Nibble", null)
+                        .WithMany()
+                        .HasForeignKey("NibbleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -337,6 +433,21 @@ namespace Classify.Data.Migrations
                         .WithMany()
                         .HasForeignKey("FavoriteRecordingId")
                         .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Classify.Core.Domain.WorkRecording", b =>
+                {
+                    b.HasOne("Classify.Core.Domain.Recording", null)
+                        .WithMany()
+                        .HasForeignKey("RecordingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Classify.Core.Domain.Work", null)
+                        .WithMany()
+                        .HasForeignKey("WorkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MovementRecording", b =>

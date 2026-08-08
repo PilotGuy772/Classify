@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="Classify.Desktop/App.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Controls/EntitySearchControl.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Controls/IconControl.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Controls/MultiEntitySearchControl.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Controls/SingleEntitySearchControl.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/MainWindow.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Styles/Base.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Styles/Icons.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Styles/Platform/linux.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Styles/Platform/macos.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Styles/Platform/windows.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/AudioFileDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/BrowseView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/ComposerDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/ComposerInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/ExploreView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/HomeView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/LibraryScanView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/LibraryView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/MovementDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/MovementInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/MovementRecordingInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/PlayerWindow.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/ProposedMatchDialog.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/ProposedMatchesDialog.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/RadioView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/RecordingDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/RecordingInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/SettingsViewModel.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/WorkDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/WorkInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

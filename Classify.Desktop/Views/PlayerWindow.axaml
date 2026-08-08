@@ -1,0 +1,272 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
+        xmlns:ti="using:TablerIcons"
+        mc:Ignorable="d" d:DesignWidth="899" d:DesignHeight="532"
+        x:Class="Classify.Desktop.Views.PlayerWindow"
+        x:DataType="viewModels:PlayerWindowViewModel"
+        Title="Classify Player"
+        Width="899" Height="532"
+        MinWidth="775" MinHeight="380"
+        ExtendClientAreaToDecorationsHint="True"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource MainBackgroundBrush}">
+
+    <Window.Styles>
+        <Style Selector="Border.movement-row">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="8,4" />
+        </Style>
+
+        <Style Selector="Border.movement-row TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        </Style>
+
+        <Style Selector="Border.movement-row TextBlock.ordinal">
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+        </Style>
+
+        <Style Selector="Border.movement-row.active">
+            <Setter Property="Background" Value="#0088FF" />
+        </Style>
+
+        <Style Selector="Border.movement-row.active TextBlock">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <Style Selector="Border.movement-row.active TextBlock.ordinal">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </Window.Styles>
+
+    <Grid ColumnDefinitions="*,Auto" Margin="10,28,10,10">
+        <!-- Player Main View -->
+        <Grid Grid.Column="0" RowDefinitions="Auto,Auto,*,Auto,140" Margin="0,0,10,0">
+            <!-- Row 0: Work Title Header + Sidebar Toggle (Centered across full window) -->
+            <Grid Grid.Row="0" MinHeight="39" Margin="0,0,0,4">
+                <TextBlock Text="{Binding CurrentWorkTitle}"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           TextAlignment="Center"
+                           Margin="40,0" />
+                <Button Command="{Binding ToggleSidebarCommand}"
+                        Classes="info-close"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Width="32" Height="32"
+                        ToolTip.Tip="Toggle Queue Sidebar">
+                    <ti:TablerIcon Icon="{Binding SidebarToggleIcon}" Width="20" Height="20" />
+                </Button>
+            </Grid>
+
+            <!-- Row 1: Movement Line -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,8" Spacing="6">
+                <TextBlock Classes="movement-serif"
+                           Text="{Binding CurrentMovementOrdinal}"
+                           FontSize="15"
+                           Foreground="{DynamicResource SecondaryTextBrush}" />
+                <TextBlock Classes="movement-serif"
+                           Text="{Binding CurrentMovementName}"
+                           FontSize="15"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Row 2: Dynamic Resizable Cover Image Box (Fills space, hides below 50x50) -->
+            <Grid Grid.Row="2" x:Name="CoverContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8">
+                <Border x:Name="CoverBorder"
+                        CornerRadius="12"
+                        Background="{DynamicResource SecondaryBackgroundBrush}"
+                        BorderBrush="{DynamicResource OutlineBrush}"
+                        BorderThickness="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        ClipToBounds="True">
+                    <Grid RowDefinitions="*,Auto">
+                        <ti:TablerIcon Grid.Row="0"
+                                       Icon="IconDisc"
+                                       Width="72" Height="72"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Brush="{DynamicResource SecondaryTextBrush}" />
+                        <Border Grid.Row="1"
+                                Background="#1A000000"
+                                Padding="6">
+                            <TextBlock Text="Classify Player"
+                                       FontSize="11"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource SecondaryTextBrush}" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Row 3: Metadata (Composer, Performers, Recording) -->
+            <StackPanel Grid.Row="3" HorizontalAlignment="Center" Margin="0,8,0,8" Spacing="2">
+                <TextBlock Text="{Binding CurrentComposerName}"
+                           FontSize="15"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding CurrentPerformersLine}"
+                           FontSize="14"
+                           Foreground="{DynamicResource SecondaryTextBrush}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding CurrentRecordingDetailsLine}"
+                           FontSize="13"
+                           Foreground="{DynamicResource SecondaryTextBrush}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Row 4: Player Controls Bar (Fixed 140px height) -->
+            <Grid Grid.Row="4" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+                <!-- Seek Bar Track -->
+                <ProgressBar Grid.Row="0"
+                             Value="0" Minimum="0" Maximum="100"
+                             Height="6" CornerRadius="3"
+                             Foreground="{DynamicResource AccentBrush}"
+                             Background="{DynamicResource OutlineBrush}"
+                             Margin="0,4" />
+
+                <!-- Time Counters -->
+                <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="0,2">
+                    <TextBlock Grid.Column="0" Text="{Binding CurrentPositionText}" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                    <TextBlock Grid.Column="2" Text="{Binding TotalDurationText}" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+                </Grid>
+
+                <!-- Control Buttons -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,6">
+                    <Button Classes="info-close" Width="36" Height="36">
+                        <ti:TablerIcon Icon="IconRewindBackward15" Width="20" Height="20" />
+                    </Button>
+                    <Button Classes="info-close" Width="40" Height="40">
+                        <ti:TablerIcon Icon="IconPlayerSkipBack" Width="24" Height="24" />
+                    </Button>
+                    <Button Classes="info-play-button" Width="48" Height="48">
+                        <ti:TablerIcon Icon="IconPlayerPlay" Width="26" Height="26" />
+                    </Button>
+                    <Button Classes="info-close" Width="40" Height="40">
+                        <ti:TablerIcon Icon="IconPlayerSkipForward" Width="24" Height="24" />
+                    </Button>
+                    <Button Classes="info-close" Width="36" Height="36">
+                        <ti:TablerIcon Icon="IconRewindForward15" Width="20" Height="20" />
+                    </Button>
+                </StackPanel>
+
+                <!-- Bottom Icon Actions -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" Spacing="12" Margin="4,4,0,0">
+                    <Button Classes="info-close" Width="28" Height="28">
+                        <ti:TablerIcon Icon="IconHeart" Width="18" Height="18" />
+                    </Button>
+                    <Button Classes="info-close" Width="28" Height="28">
+                        <ti:TablerIcon Icon="IconPlaylist" Width="18" Height="18" />
+                    </Button>
+                    <Button Classes="info-close" Width="28" Height="28">
+                        <ti:TablerIcon Icon="IconInfoCircle" Width="18" Height="18" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <!-- Queue Sidebar -->
+        <Border Grid.Column="1"
+                Width="275"
+                IsVisible="{Binding IsSidebarExpanded}"
+                BorderBrush="{DynamicResource OutlineBrush}"
+                BorderThickness="1,0,0,0"
+                Padding="10,0,0,0">
+            <Grid RowDefinitions="Auto,*">
+                <!-- Sidebar Header -->
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,10">
+                    <TextBlock Grid.Column="0"
+                               Text="Queue"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center" />
+                    <Button Grid.Column="1"
+                            Classes="info-close"
+                            Width="28" Height="28"
+                            Margin="0,0,4,0"
+                            ToolTip.Tip="Edit Queue">
+                        <ti:TablerIcon Icon="IconPencil" Width="16" Height="16" />
+                    </Button>
+                    <Button Grid.Column="2"
+                            Command="{Binding ClearQueueCommand}"
+                            Classes="info-close"
+                            Width="28" Height="28"
+                            ToolTip.Tip="Clear Queue">
+                        <ti:TablerIcon Icon="IconTrash" Width="16" Height="16" />
+                    </Button>
+                </Grid>
+
+                <!-- Queue Nibbles & Movements List -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding QueueItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:PlayerQueueItemViewModel}">
+                                <StackPanel Margin="0,0,0,12">
+                                    <!-- Nibble Work Container Header -->
+                                    <Button Command="{Binding SelectNibbleCommand}"
+                                            Classes="info-link"
+                                            HorizontalAlignment="Stretch">
+                                        <Grid ColumnDefinitions="Auto,*" Margin="0,2">
+                                            <ti:TablerIcon Grid.Column="0"
+                                                           Icon="IconCaretDown"
+                                                           Width="16" Height="16"
+                                                           Margin="0,2,6,0"
+                                                           VerticalAlignment="Top"
+                                                           Brush="{DynamicResource SecondaryTextBrush}" />
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding WorkTitle}"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding ConductorAndEnsemble}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Button>
+
+                                    <!-- Nibble Movement Rows -->
+                                    <ItemsControl ItemsSource="{Binding Movements}" Margin="16,4,0,0">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type viewModels:PlayerMovementItemViewModel}">
+                                                <Button Command="{Binding SelectMovementCommand}"
+                                                        Classes="info-link"
+                                                        HorizontalAlignment="Stretch"
+                                                        Margin="0,1">
+                                                    <Border Classes="movement-row"
+                                                            Classes.active="{Binding IsCurrentlyPlaying}">
+                                                        <Grid ColumnDefinitions="24,*">
+                                                            <TextBlock Grid.Column="0"
+                                                                       Classes="ordinal movement-serif"
+                                                                       Text="{Binding OrdinalLabel}"
+                                                                       FontSize="13"
+                                                                       VerticalAlignment="Center" />
+                                                            <TextBlock Grid.Column="1"
+                                                                       Classes="movement-serif"
+                                                                       Text="{Binding MovementName}"
+                                                                       FontSize="13"
+                                                                       TextWrapping="Wrap"
+                                                                       VerticalAlignment="Center" />
+                                                        </Grid>
+                                                    </Border>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -22,7 +22,7 @@
                         <ti:TablerIcon Icon="IconX" Width="17" Height="17" />
                     </Button>
                     <TextBlock Grid.Column="1"
-                               Classes="info-piece-title"
+                               Classes="info-piece-title movement-serif"
                                Text="{Binding Title}"
                                TextWrapping="Wrap"
                                VerticalAlignment="Center" />
@@ -50,20 +50,16 @@
                 <!-- Large Actions -->
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <Button Classes="info-play-button"
-                            IsEnabled="False">
+                            Command="{Binding PlayWorkCommand}">
                         <ti:TablerIcon Icon="IconPlayerPlay" Width="20" Height="20" />
                     </Button>
                     <Button Classes="info-square-outline"
-                            IsEnabled="False">
+                            Command="{Binding PlayNextWorkCommand}">
                         <ti:TablerIcon Icon="IconCornerUpLeft" Width="21" Height="21" />
                     </Button>
                     <Button Classes="info-square-outline"
-                            IsEnabled="False">
+                            Command="{Binding EnqueueWorkCommand}">
                         <ti:TablerIcon Icon="IconCornerDownLeft" Width="21" Height="21" />
-                    </Button>
-                    <Button Classes="info-square-outline"
-                            IsEnabled="False">
-                        <ti:TablerIcon Icon="IconPlaylist" Width="21" Height="21" />
                     </Button>
                     <Button Classes="info-square-outline"
                             IsEnabled="False">

@@ -13,6 +13,11 @@ public class RelayCommand : ICommand
         _canExecute = canExecute;
     }
 
+    public RelayCommand(Action execute, Func<bool>? canExecute = null)
+        : this(_ => execute(), canExecute == null ? null : _ => canExecute())
+    {
+    }
+
     public event EventHandler? CanExecuteChanged;
 
     public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;

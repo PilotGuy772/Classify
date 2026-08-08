@@ -55,15 +55,14 @@ public static class SqliteInMemory
         services.AddScoped<IRecordingRepository, RecordingRepository>();
         services.AddScoped<IPerformedMovementRepository, PerformedMovementRepository>();
         services.AddScoped<IProposedMatchRepository, ProposedMatchRepository>();
+        services.AddScoped<IWorkRecordingRepository, WorkRecordingRepository>();
+        services.AddScoped<INibbleRepository, NibbleRepository>();
+        services.AddScoped<INibbleMovementRepository, NibbleMovementRepository>();
         services.AddTransient<IUnitOfWork, UnitOfWork>();
 
         // Application services / use cases
         services.AddScoped<IIngestionService, LibraryIngestionService>();
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
-
-        // Playables
-        services.AddScoped<IPlayableResolutionService, Classify.Data.Services.PlayableResolutionService>();
-        services.AddScoped<IPlayablePlaylistService, Classify.Data.Services.PlayablePlaylistService>();
 
         ServiceProvider provider = services.BuildServiceProvider();
 

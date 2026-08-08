@@ -22,7 +22,7 @@ public class SeederTests
         IServiceProvider services = SqliteInMemory.BuildTestServices();
         using IServiceScope scope = services.CreateScope();
         IUnitOfWork uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        DemoLibrarySeeder seeder = new DemoLibrarySeeder(uow);
+        DemoLibrarySeeder seeder = new(uow);
 
         // Act
         await seeder.SeedAsync();
@@ -85,5 +85,49 @@ public class SeederTests
             Assert.True(pm.RecordingId > 0, $"Performed movement #{pm.Id} is not linked to a valid recording");
             Assert.True(pm.MovementId > 0, $"Performed movement #{pm.Id} is not linked to a valid movement");
         }
+    }
+
+    /// <summary>
+    /// Verifies that a WorkRecording entity can be successfully created, saved to the database,
+    /// and retrieved back through the repository.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test execution.</returns>
+    [Fact]
+    public async Task WorkRecording_CanBeSavedAndRetrieved()
+    {
+        // Arrange
+        IServiceProvider services = SqliteInMemory.BuildTestServices();
+        using IServiceScope scope = services.CreateScope();
+        IUnitOfWork uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        Composer composer = new() { Name = "Test Composer" };
+        await uow.Composers.AddAsync(composer);
+        await uow.SaveChangesAsync();
+
+        Work work = new() { ComposerId = composer.Id, Name = "Test Work", CatalogNumber = "Op. 99" };
+        await uow.Works.AddAsync(work);
+        await uow.SaveChangesAsync();
+
+        Recording recording = new() { WorkId = work.Id, Conductor = "Test Conductor" };
+        await uow.Recordings.AddAsync(recording);
+        await uow.SaveChangesAsync();
+
+        WorkRecording workRecording = new()
+        {
+            WorkId = work.Id,
+            RecordingId = recording.Id
+        };
+
+        // Act
+        await uow.WorkRecordings.AddAsync(workRecording);
+        await uow.SaveChangesAsync();
+
+        // Assert
+        List<WorkRecording> retrieved = (await uow.WorkRecordings.GetAllAsync()).ToList();
+        Assert.Single(retrieved);
+        Assert.Equal(work.Id, retrieved[0].WorkId);
+        Assert.Equal(recording.Id, retrieved[0].RecordingId);
+        Assert.Equal($"WorkRecording #{retrieved[0].Id}", retrieved[0].Name);
+        Assert.Null(retrieved[0].PhotoKey);
     }
 }

@@ -167,7 +167,7 @@
                             <!-- Ordinal Column (only for Movement Recordings: Level == 3) -->
                             <TextBlock Grid.Column="1"
                                        Text="{Binding Ordinal}"
-                                       FontFamily="Charter, Georgia, serif"
+                                       FontFamily="{StaticResource SerifFontFamily}"
                                        FontSize="14"
                                        Foreground="{DynamicResource SecondaryTextBrush}"
                                        Width="18"

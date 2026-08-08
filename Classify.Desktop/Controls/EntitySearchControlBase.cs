@@ -79,7 +79,7 @@ public class EntitySearchControlBase : UserControl
 		_searchBox = this.FindControl<TextBox>("SearchBox");
 		_suggestionsListControl = this.FindControl<ListBox>("SuggestionsList");
 
-		SelectedItems ??= new ObservableCollection<object>();
+		SelectedItems ??= [];
 
 		if (_searchbox_supports_subscription(_searchBox))
 		{
@@ -201,7 +201,7 @@ public class EntitySearchControlBase : UserControl
 	protected virtual void OnSelectedItemChanged(object? item)
 	{
 		if (item == null) return;
-		if (SelectedItems == null) SelectedItems = new ObservableCollection<object>();
+		if (SelectedItems == null) SelectedItems = [];
 		if (!SelectedItems.Contains(item))
 		{
 			SelectedItems.Add(item);
