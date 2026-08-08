@@ -15,7 +15,7 @@ public partial class MainWindow : Window
 
         // Hint to Avalonia the titlebar height when using extended client area.
         // Use an explicit int to follow repo style.
-        ExtendClientAreaTitleBarHeightHint = 36;
+        ExtendClientAreaTitleBarHeightHint = 56;
 
         // Show/hide the macOS spacer only on macOS.
         try

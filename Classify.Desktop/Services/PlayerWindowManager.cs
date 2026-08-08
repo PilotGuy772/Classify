@@ -58,6 +58,10 @@ public sealed class PlayerWindowManager : IPlayerWindowManager
     {
         if (_playerWindow != null)
         {
+            if (_playerWindow.WindowState == Avalonia.Controls.WindowState.Minimized)
+            {
+                _playerWindow.WindowState = Avalonia.Controls.WindowState.Normal;
+            }
             _playerWindow.Activate();
             return;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Classify.Core.Domain.Infrastructure;
+using Classify.Core.Interfaces.Service;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Classify.Desktop.ViewModels;
@@ -92,6 +93,11 @@ public class MainWindowViewModel : ViewModelBase
     public System.Windows.Input.ICommand ShowRadioCommand { get; }
 
     /// <summary>
+    /// Gets the command to open or focus the standalone player window.
+    /// </summary>
+    public System.Windows.Input.ICommand ShowPlayerWindowCommand { get; }
+
+    /// <summary>
     /// Initializes shell navigation with injected services and all Info Panels.
     /// </summary>
     public MainWindowViewModel(
@@ -120,6 +126,7 @@ public class MainWindowViewModel : ViewModelBase
         ShowFavoritesCommand = new RelayCommand(_ => ShowFavorites());
         ShowExploreCommand = new RelayCommand(_ => ShowExplore());
         ShowRadioCommand = new RelayCommand(_ => ShowRadio());
+        ShowPlayerWindowCommand = new RelayCommand(_ => ShowPlayerWindow());
     }
 
     /// <summary>
@@ -264,6 +271,15 @@ public class MainWindowViewModel : ViewModelBase
     public void ShowRadio()
     {
         CurrentPage = serviceProvider.GetRequiredService<RadioViewModel>();
+    }
+
+    /// <summary>
+    /// Opens the player window or brings it to the front if already open.
+    /// </summary>
+    public void ShowPlayerWindow()
+    {
+        IPlayerWindowManager playerWindowManager = serviceProvider.GetRequiredService<IPlayerWindowManager>();
+        playerWindowManager.ShowPlayerWindow();
     }
 
     /// <summary>
