@@ -191,7 +191,12 @@ public partial class MainWindow : Window
         }
     }
 
-    private void MacTrafficLightsSpacer_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    /// <summary>
+    /// Handles the pointer pressed event on the titlebar drag area to initiate window dragging.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The pointer pressed event arguments.</param>
+    private void TitleBarDrag_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
         if (e is null) return;
         Avalonia.Input.PointerPressedEventArgs args = e;

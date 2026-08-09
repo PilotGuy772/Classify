@@ -128,8 +128,13 @@
                                         Height="56"
                                         Background="Transparent"
                                         HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        PointerPressed="MacTrafficLightsSpacer_PointerPressed" />
+                                        VerticalAlignment="Center" />
+
+                                <!-- Drag/Grab Area: covers from left edge of custom toolbar to right edge of search box (Column 0 and 1) -->
+                                <Border Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        Background="Transparent"
+                                        PointerPressed="TitleBarDrag_PointerPressed" />
 
                                 <TextBox Grid.Column="1"
                                          Height="36"
