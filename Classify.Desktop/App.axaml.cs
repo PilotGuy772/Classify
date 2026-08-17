@@ -19,8 +19,8 @@ using Classify.Services;
 using Classify.Services.Ingestion;
 using Classify.Services.Ingestion.File;
 using Classify.Services.Queue;
+using Config.Net;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Classify.Desktop;
@@ -184,21 +184,17 @@ public class App : Application
         services.AddTransient<ProposedMatchesDialog>();
         
         // App Configuration
-        string settingsPath =
-            Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "Classify",
-                "settings.json");
+        string settingsPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "classify",
+            "settings.json");
 
-        ConfigurationBuilder builder = new();
-        builder.SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile(settingsPath, optional: true);
+        IAppSettings settings = new ConfigurationBuilder<IAppSettings>()
+            .UseCommandLineArgs()
+            .UseJsonFile(settingsPath)
+            .Build();
 
-        IConfiguration config = builder.Build();
-
-        services.AddSingleton(config);
-        services.Configure<AppSettings>(config.GetSection("AppSettings"));
+        services.AddSingleton(settings);
 
 
 #if (DEBUG)
