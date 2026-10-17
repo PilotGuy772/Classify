@@ -49,17 +49,17 @@ public class ClassifyContext : DbContext
     public DbSet<NibbleMovement> NibbleMovements => Set<NibbleMovement>();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ClassifyContext"/> class.
+    /// Initializes a new instance of the <see cref="ClassifyContext"/> class with strongly-typed options.
     /// </summary>
-    /// <param name="options">The context options.</param>
-    public ClassifyContext(DbContextOptions options) : base(options)
+    /// <param name="options">The typed context options.</param>
+    public ClassifyContext(DbContextOptions<ClassifyContext> options) : base(options)
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ClassifyContext"/> class with default settings.
     /// </summary>
-    public ClassifyContext() : this(new DbContextOptionsBuilder().UseSqlite("Data Source=library.db").Options)
+    public ClassifyContext() : this(new DbContextOptionsBuilder<ClassifyContext>().UseSqlite("Data Source=library.db").Options)
     {
     }
 

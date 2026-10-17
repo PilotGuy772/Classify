@@ -15,6 +15,8 @@ using Classify.Data.Seeders;
 using Classify.Desktop.Services;
 using Classify.Desktop.ViewModels;
 using Classify.Desktop.Views;
+using Classify.Data.Services;
+using Classify.Infrastructure;
 using Classify.Services;
 using Classify.Services.Ingestion;
 using Classify.Services.Ingestion.File;
@@ -98,9 +100,10 @@ public class App : Application
     private static async Task SeedIfEmptyAsync()
     {
         Console.WriteLine("Seeding database...");
+        IDatabaseConnectionService dbConnectionService = Services.GetRequiredService<IDatabaseConnectionService>();
+        await dbConnectionService.ConnectAsync();
+
         IUnitOfWork uow = Services.GetRequiredService<IUnitOfWork>();
-        ClassifyContext context = Services.GetRequiredService<ClassifyContext>();
-        await context.Database.MigrateAsync();
         
         if (await uow.AudioFiles.AnyAsync() ||
             await uow.PerformedMovements.AnyAsync() ||
@@ -111,6 +114,7 @@ public class App : Application
             await uow.Works.AnyAsync())
         {
             Console.WriteLine("Seed not necessary.");
+            return;
         }
         
         IDatabaseSeeder seed = Services.GetRequiredService<IDatabaseSeeder>();
@@ -120,13 +124,26 @@ public class App : Application
     
     private static void ConfigureServices(IServiceCollection services)
     {
-        // EF Core
-        services.AddDbContextFactory<ClassifyContext>(options =>
-        {
-            options.UseSqlite("Data Source=library.db");
-        });
+        // App Configuration
+        string settingsPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "classify",
+            "settings.json");
 
-        //services.AddDbContext<ClassifyContext>(options => options.UseSqlite("DataSource=library.db"));
+        IAppSettings rawSettings = new ConfigurationBuilder<IAppSettings>()
+            .UseCommandLineArgs()
+            .UseJsonFile(settingsPath)
+            .Build();
+
+        ObservableAppSettings settings = new(rawSettings);
+
+        services.AddSingleton<IAppSettings>(settings);
+        services.AddSingleton(settings);
+
+        // EF Core and Database Connection
+        services.AddSingleton<IDbContextFactory<ClassifyContext>, ClassifyDbContextFactory>();
+        services.AddScoped<ClassifyContext>(sp => sp.GetRequiredService<IDbContextFactory<ClassifyContext>>().CreateDbContext());
+        services.AddSingleton<IDatabaseConnectionService, DatabaseConnectionService>();
         
         // Repositories
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
@@ -182,20 +199,6 @@ public class App : Application
         services.AddTransient<ProposedMatchDialogViewModel>();
         services.AddTransient<ProposedMatchDialog>();
         services.AddTransient<ProposedMatchesDialog>();
-        
-        // App Configuration
-        string settingsPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "classify",
-            "settings.json");
-
-        IAppSettings settings = new ConfigurationBuilder<IAppSettings>()
-            .UseCommandLineArgs()
-            .UseJsonFile(settingsPath)
-            .Build();
-
-        services.AddSingleton(settings);
-
 
 #if (DEBUG)
         // DEV only
