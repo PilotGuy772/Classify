@@ -34,6 +34,20 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
     public ObservableAppSettings(IAppSettings inner)
     {
         _inner = inner ?? throw new ArgumentNullException(nameof(inner));
+
+        if (string.IsNullOrWhiteSpace(_inner.DatabasePath) && !string.IsNullOrWhiteSpace(_inner.CurrentLibraryPath))
+        {
+            string computedDatabasePath = Path.Combine(_inner.CurrentLibraryPath, "library.db");
+            _databasePath = computedDatabasePath;
+            try
+            {
+                _inner.DatabasePath = computedDatabasePath;
+            }
+            catch
+            {
+                // Ignore store write errors if the inner provider is read-only
+            }
+        }
     }
 
     /// <summary>
@@ -58,6 +72,12 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentLibraryPath)));
                 CurrentLibraryPathChanged?.Invoke(this, value);
+
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    string computedDatabasePath = Path.Combine(value, "library.db");
+                    DatabasePath = computedDatabasePath;
+                }
             }
         }
     }
