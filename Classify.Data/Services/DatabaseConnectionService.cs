@@ -110,13 +110,22 @@ public class DatabaseConnectionService : IDatabaseConnectionService, IDisposable
     }
 
     /// <summary>
-    /// Handles external database path updates triggered directly on the observable settings instance.
+    /// Handles external database path updates triggered directly on the observable settings instance, disconnecting the previous data source, connecting to the new one, and initializing the schema.
     /// </summary>
     /// <param name="sender">The sender of the event.</param>
     /// <param name="newPath">The new database path.</param>
-    private void HandleSettingsDatabasePathChanged(object? sender, string newPath)
+    private async void HandleSettingsDatabasePathChanged(object? sender, string newPath)
     {
         Disconnect();
+        try
+        {
+            await ConnectAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to connect and initialize database at '{newPath}': {ex}");
+        }
+
         DatabasePathChanged?.Invoke(this, newPath);
     }
 

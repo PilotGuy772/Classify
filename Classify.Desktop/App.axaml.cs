@@ -45,7 +45,7 @@ public class App : Application
 
         try
         {
-            await SeedIfEmptyAsync();
+            await InitializeDatabaseAsync();
         }
         catch (Exception e)
         {
@@ -91,6 +91,18 @@ public class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>
+    /// Initializes the database by applying all pending EF Core migrations and ensuring all tables exist, leaving the database empty without seeding demo data.
+    /// </summary>
+    /// <returns>A task representing the initialization operation.</returns>
+    private static async Task InitializeDatabaseAsync()
+    {
+        Console.WriteLine("Initializing database schema...");
+        IDatabaseConnectionService dbConnectionService = Services.GetRequiredService<IDatabaseConnectionService>();
+        await dbConnectionService.ConnectAsync();
+        Console.WriteLine("Database schema initialized.");
     }
 
     /// <summary>

@@ -155,10 +155,10 @@ public class DatabaseConnectionServiceTests : IDisposable
     }
 
     /// <summary>
-    /// Verifies that updating <see cref="ObservableAppSettings.DatabasePath"/> directly triggers disconnection and notifies listeners.
+    /// Verifies that updating <see cref="ObservableAppSettings.DatabasePath"/> directly triggers disconnection, connects to and initializes the new database, and notifies listeners.
     /// </summary>
     [Fact]
-    public void ObservableAppSettings_DatabasePathPropertyChange_NotifiesSubscribers()
+    public async Task ObservableAppSettings_DatabasePathPropertyChange_ConnectsAndInitializesNewDatabase()
     {
         string dbPath1 = Path.Combine(_testDirectory, "initial.db");
         string dbPath2 = Path.Combine(_testDirectory, "updated.db");
@@ -171,12 +171,24 @@ public class DatabaseConnectionServiceTests : IDisposable
         ClassifyDbContextFactory factory = new(settings);
         using DatabaseConnectionService dbService = new(settings, factory);
 
-        string? notifiedPathFromService = null;
-        dbService.DatabasePathChanged += (sender, newPath) => notifiedPathFromService = newPath;
+        TaskCompletionSource<string> pathChangedSource = new();
+        dbService.DatabasePathChanged += (sender, newPath) => pathChangedSource.TrySetResult(newPath);
 
         settings.DatabasePath = dbPath2;
 
+        string notifiedPathFromService = await pathChangedSource.Task;
         notifiedPathFromService.Should().Be(dbPath2);
+
+        using ClassifyContext context = factory.CreateDbContext();
+        bool canConnect = await context.Database.CanConnectAsync();
+        canConnect.Should().BeTrue();
+
+        Composer composer = new() { Name = "Antonio Vivaldi" };
+        await context.Composers.AddAsync(composer);
+        await context.SaveChangesAsync();
+
+        Composer? saved = await context.Composers.FirstOrDefaultAsync(c => c.Name == "Antonio Vivaldi");
+        saved.Should().NotBeNull();
     }
 
     /// <summary>
