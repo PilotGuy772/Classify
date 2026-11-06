@@ -19,6 +19,11 @@ public interface IAppSettings
     public string DatabasePath { get; set; }
 
     /// <summary>
+    /// Gets or sets the preferred appearance of the application.
+    /// </summary>
+    public AppAppearance Appearance { get; set; }
+
+    /// <summary>
     /// Occurs when the <see cref="DatabasePath"/> property is updated.
     /// </summary>
     public event EventHandler<string>? DatabasePathChanged;
@@ -28,4 +33,14 @@ public interface IAppSettings
     /// </summary>
     [DefaultValue(".mp3,.wav,.flac,.ogg")]
     public string AcceptedFileExtensions { get; set; }
+}
+
+/// <summary>
+/// Represents the application's visual appearance preference.
+/// </summary>
+public enum AppAppearance
+{
+    System,
+    Light,
+    Dark
 }

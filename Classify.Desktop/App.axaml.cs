@@ -43,6 +43,9 @@ public class App : Application
 
         Services = services.BuildServiceProvider();
 
+        IAppSettings appSettings = Services.GetRequiredService<IAppSettings>();
+        Classify.Desktop.Services.AppThemeService.Apply(appSettings);
+
         try
         {
             await InitializeDatabaseAsync();
@@ -148,6 +151,8 @@ public class App : Application
 
         ObservableAppSettings settings = new(rawSettings);
 
+        services.AddSingleton<IPlatformService, PlatformService>();
+        services.AddSingleton<IFileSystemService, FileSystemService>();
         services.AddSingleton<IAppSettings>(settings);
         services.AddSingleton(settings);
 

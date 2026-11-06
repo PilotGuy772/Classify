@@ -12,6 +12,7 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
     private string? _currentLibraryPath;
     private string? _databasePath;
     private string _acceptedFileExtensions;
+    private AppAppearance _appearance;
 
     /// <summary>
     /// Occurs when a property value changes.
@@ -79,6 +80,19 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
         _acceptedFileExtensions = string.IsNullOrWhiteSpace(_inner.AcceptedFileExtensions)
             ? ".mp3,.wav,.flac,.ogg"
             : _inner.AcceptedFileExtensions;
+
+        _appearance = _inner.Appearance == default ? AppAppearance.System : _inner.Appearance;
+        if (string.IsNullOrWhiteSpace(_inner.AcceptedFileExtensions))
+        {
+            try
+            {
+                _inner.AcceptedFileExtensions = _acceptedFileExtensions;
+            }
+            catch
+            {
+                // Ignore store write errors if the inner provider is read-only
+            }
+        }
     }
 
     /// <summary>
@@ -135,6 +149,32 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DatabasePath)));
                 DatabasePathChanged?.Invoke(this, value);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the preferred appearance of the application.
+    /// </summary>
+    public AppAppearance Appearance
+    {
+        get => _appearance;
+        set
+        {
+            AppAppearance normalized = value;
+            if (_appearance != normalized)
+            {
+                _appearance = normalized;
+                try
+                {
+                    _inner.Appearance = normalized;
+                }
+                catch
+                {
+                    // Ignore store write errors if the inner provider is read-only
+                }
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Appearance)));
             }
         }
     }

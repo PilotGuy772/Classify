@@ -31,6 +31,7 @@
         <entry key="Classify.Desktop/Views/RadioView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/RecordingDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/RecordingInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
+        <entry key="Classify.Desktop/Views/SettingsView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/SettingsViewModel.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/WorkDetailView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />
         <entry key="Classify.Desktop/Views/WorkInfoPanelView.axaml" value="Classify.Desktop/Classify.Desktop.csproj" />

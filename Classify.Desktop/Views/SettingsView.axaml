@@ -96,30 +96,58 @@
                                                TextWrapping="Wrap" />
                                 </StackPanel>
 
-                                <!-- Input row with TextBox and Save/Reset buttons -->
+                                <!-- Input row with TextBox and action buttons -->
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <TextBox Grid.Column="0"
-                                             Classes="setting-input"
-                                             Text="{Binding Value, Mode=TwoWay}"
-                                             HorizontalAlignment="Stretch" />
+                                    <Grid Grid.Column="0" ColumnDefinitions="*">
+                                        <ComboBox ItemsSource="{Binding Options}"
+                                                  SelectedItem="{Binding Value, Mode=TwoWay}"
+                                                  IsVisible="{Binding Options.Count}"
+                                                  HorizontalAlignment="Stretch" />
 
-                                    <!-- Save (primary) and Reset (secondary with icon) appear to the right when edited -->
+                                        <TextBox Classes="setting-input"
+                                                 Text="{Binding Value, Mode=TwoWay}"
+                                                 HorizontalAlignment="Stretch"
+                                                 IsVisible="{Binding !Options.Count}" />
+                                    </Grid>
+
                                     <StackPanel Grid.Column="1"
                                                 Orientation="Horizontal"
                                                 Spacing="8"
-                                                Margin="10,0,0,0"
-                                                IsVisible="{Binding IsModified}">
-                                        <Button Classes="setting-save-button"
-                                                Command="{Binding SaveCommand}"
-                                                Content="Save" />
+                                                Margin="10,0,0,0">
                                         <Button Classes="setting-reset-button"
-                                                Command="{Binding ResetCommand}"
-                                                ToolTip.Tip="Reset to saved value">
-                                            <ti:TablerIcon Icon="IconRotate"
+                                                Command="{Binding RevealInFileManagerCommand}"
+                                                ToolTip.Tip="Reveal in file manager"
+                                                IsVisible="{Binding PathValue}">
+                                            <ti:TablerIcon Icon="IconFolderOpen"
                                                            Width="18"
                                                            Height="18"
                                                            Brush="{DynamicResource SecondaryTextBrush}" />
                                         </Button>
+                                        <Button Classes="setting-reset-button"
+                                                Command="{Binding PickValueCommand}"
+                                                ToolTip.Tip="Choose a new value"
+                                                IsVisible="{Binding PickerSupported}">
+                                            <ti:TablerIcon Icon="IconFolderPlus"
+                                                           Width="18"
+                                                           Height="18"
+                                                           Brush="{DynamicResource SecondaryTextBrush}" />
+                                        </Button>
+
+                                        <StackPanel Orientation="Horizontal"
+                                                    Spacing="8"
+                                                    IsVisible="{Binding IsModified}">
+                                            <Button Classes="setting-save-button"
+                                                    Command="{Binding SaveCommand}"
+                                                    Content="Save" />
+                                            <Button Classes="setting-reset-button"
+                                                    Command="{Binding ResetCommand}"
+                                                    ToolTip.Tip="Reset to saved value">
+                                                <ti:TablerIcon Icon="IconRotate"
+                                                               Width="18"
+                                                               Height="18"
+                                                               Brush="{DynamicResource SecondaryTextBrush}" />
+                                            </Button>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
