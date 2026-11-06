@@ -29,6 +29,11 @@ public class SettingsViewModel : ViewModelBase, IDisposable
     public SettingFieldViewModel DatabasePathField { get; }
 
     /// <summary>
+    /// Gets the field model for the accepted file extensions setting.
+    /// </summary>
+    public SettingFieldViewModel AcceptedFileExtensionsField { get; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SettingsViewModel"/> class with injected application settings.
     /// </summary>
     /// <param name="settings">The application settings singleton.</param>
@@ -50,8 +55,16 @@ public class SettingsViewModel : ViewModelBase, IDisposable
             _settings.DatabasePath,
             newValue => _settings.DatabasePath = newValue);
 
+        AcceptedFileExtensionsField = new SettingFieldViewModel(
+            nameof(IAppSettings.AcceptedFileExtensions),
+            "Supported File Extensions",
+            "Comma-delimited list of extension values to include when scanning the library.",
+            _settings.AcceptedFileExtensions,
+            newValue => _settings.AcceptedFileExtensions = newValue);
+
         Fields.Add(CurrentLibraryPathField);
         Fields.Add(DatabasePathField);
+        Fields.Add(AcceptedFileExtensionsField);
 
         _settings.DatabasePathChanged += OnDatabasePathChanged;
 
@@ -85,6 +98,10 @@ public class SettingsViewModel : ViewModelBase, IDisposable
         else if (e.PropertyName == nameof(IAppSettings.DatabasePath))
         {
             DatabasePathField.UpdateSavedValue(_settings.DatabasePath);
+        }
+        else if (e.PropertyName == nameof(IAppSettings.AcceptedFileExtensions))
+        {
+            AcceptedFileExtensionsField.UpdateSavedValue(_settings.AcceptedFileExtensions);
         }
     }
 

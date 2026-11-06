@@ -16,7 +16,7 @@ public class LibraryIngestion
 {
     [Fact]
     public async Task ScanLibrary_WhenFilesAreNew_WithSeenStatus()
-    {
+    { 
         // Arrange
         AudioFile[] fakeFiles =
         [
@@ -26,15 +26,16 @@ public class LibraryIngestion
 
         Mock<IAudioFileScanner> scanner = new();
         scanner
-            .Setup(s => s.ScanAudioFilesAsync(It.IsAny<string>()))
+            .Setup(s => s.ScanAudioFilesAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(fakeFiles);
 
         IServiceProvider services = SqliteInMemory.BuildTestServices();
         IUnitOfWork unitOfWork = services.GetRequiredService<IUnitOfWork>();
+        IAppSettings appSettings = services.GetRequiredService<IAppSettings>();
 
-        LibraryIngestionService service = new(scanner.Object, unitOfWork);
+        LibraryIngestionService service = new(scanner.Object, unitOfWork, appSettings);
 
-        // Act`
+        // Act
         await service.ScanLibraryAsync("/music");
 
         // Assert
@@ -56,13 +57,14 @@ public class LibraryIngestion
         
         Mock<IAudioFileScanner> scanner = new();
         scanner
-            .Setup(s => s.ScanAudioFilesAsync(It.IsAny<string>()))
+            .Setup(s => s.ScanAudioFilesAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(fakeFiles);
 
         IServiceProvider services = SqliteInMemory.BuildTestServices();
         IUnitOfWork unitOfWork = services.GetRequiredService<IUnitOfWork>();
+        IAppSettings appSettings = services.GetRequiredService<IAppSettings>();
 
-        LibraryIngestionService service = new(scanner.Object, unitOfWork);
+        LibraryIngestionService service = new(scanner.Object, unitOfWork, appSettings);
 
         // add one to the DB
         await unitOfWork.AudioFiles.AddAsync(fakeFiles[0]);

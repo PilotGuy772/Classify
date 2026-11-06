@@ -11,6 +11,7 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
     private readonly IAppSettings _inner;
     private string? _currentLibraryPath;
     private string? _databasePath;
+    private string _acceptedFileExtensions;
 
     /// <summary>
     /// Occurs when a property value changes.
@@ -26,6 +27,32 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
     /// Occurs when the <see cref="CurrentLibraryPath"/> property changes.
     /// </summary>
     public event EventHandler<string>? CurrentLibraryPathChanged;
+
+    /// <summary>
+    /// Gets or sets the accepted file extensions when scanning for library folders.
+    /// </summary>
+    public string AcceptedFileExtensions
+    {
+        get => _acceptedFileExtensions;
+        set
+        {
+            string newValue = value ?? string.Empty;
+            if (!string.Equals(_acceptedFileExtensions, newValue, StringComparison.Ordinal))
+            {
+                _acceptedFileExtensions = newValue;
+                try
+                {
+                    _inner.AcceptedFileExtensions = newValue;
+                }
+                catch
+                {
+                    // Ignore store write errors if the inner provider is read-only
+                }
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AcceptedFileExtensions)));
+            }
+        }
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableAppSettings"/> class wrapping an existing settings instance.
@@ -48,6 +75,10 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
                 // Ignore store write errors if the inner provider is read-only
             }
         }
+
+        _acceptedFileExtensions = string.IsNullOrWhiteSpace(_inner.AcceptedFileExtensions)
+            ? ".mp3,.wav,.flac,.ogg"
+            : _inner.AcceptedFileExtensions;
     }
 
     /// <summary>

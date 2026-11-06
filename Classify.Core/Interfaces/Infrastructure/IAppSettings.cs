@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace Classify.Core.Interfaces.Infrastructure;
 
@@ -21,4 +22,10 @@ public interface IAppSettings
     /// Occurs when the <see cref="DatabasePath"/> property is updated.
     /// </summary>
     public event EventHandler<string>? DatabasePathChanged;
+
+    /// <summary>
+    /// Comma-delimited list with all file extensions accepted as audio files, case-insensitive.
+    /// </summary>
+    [DefaultValue(".mp3,.wav,.flac,.ogg")]
+    public string AcceptedFileExtensions { get; set; }
 }

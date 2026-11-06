@@ -11,6 +11,7 @@ public class FileScanning
     [Fact]
     public async Task ScanFiles_FromFileSystem_CreateNewAudioFileObjects()
     {
+        const string fileExtensions = ".mp3,.wav,.flac,.ogg";
         // Arrange
         string filePath = Path.Join(Directory.GetParent(Directory
             .GetParent(Directory.GetParent(Path.GetFullPath("."))!.FullName)!.FullName)!.FullName, "/Services/Ingestion/TestFiles/");
@@ -18,14 +19,15 @@ public class FileScanning
         [
             "beethoven_5th_symphony_mvmt_1.mp3",
             "Sibelius Violin_Concerto Hilary Hahn.flac",
-            "VivaldiFourSeasonsWinterMvmt1ApollosFire.wav"
+            "VivaldiFourSeasonsWinterMvmt1ApollosFire.wav",
+            "library.db" // should ignore this file
         ];
 
         IAudioFileScanner scanner = new FileSystemAudioFileScanner();
         // no database or additional services needed for this
         
         // Act
-        AudioFile[] audioFiles = (await scanner.ScanAudioFilesAsync(filePath)).ToArray();
+        AudioFile[] audioFiles = (await scanner.ScanAudioFilesAsync(filePath, fileExtensions)).ToArray();
         
         // Assert
         audioFiles.Should().HaveCount(3);

@@ -7,9 +7,9 @@ namespace Classify.Services.Ingestion.File;
 
 public class FileSystemAudioFileScanner : IAudioFileScanner
 {
-    public async Task<IEnumerable<AudioFile>> ScanAudioFilesAsync(string path)
+    public async Task<IEnumerable<AudioFile>> ScanAudioFilesAsync(string path, string extensions)
     {
-        string[] files = Directory.GetFiles(path);
+        IEnumerable<string> files = Directory.GetFiles(path).Where(f => extensions.Contains(Path.GetExtension(f)));
         List<AudioFile> audioFiles = [];
         
         foreach (string f in files)
