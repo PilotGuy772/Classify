@@ -65,7 +65,7 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
 
         if (string.IsNullOrWhiteSpace(_inner.DatabasePath) && !string.IsNullOrWhiteSpace(_inner.CurrentLibraryPath))
         {
-            string computedDatabasePath = Path.Combine(_inner.CurrentLibraryPath, "library.db");
+            string computedDatabasePath = GetDefaultDatabasePath(_inner.CurrentLibraryPath);
             _databasePath = computedDatabasePath;
             try
             {
@@ -120,11 +120,18 @@ public class ObservableAppSettings : IAppSettings, INotifyPropertyChanged
 
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    string computedDatabasePath = Path.Combine(value, "library.db");
+                    string computedDatabasePath = GetDefaultDatabasePath(value);
                     DatabasePath = computedDatabasePath;
                 }
             }
         }
+    }
+
+    private static string GetDefaultDatabasePath(string libraryPath)
+    {
+        string libraryFolder = libraryPath.Trim();
+        string classifyDirectory = Path.Combine(libraryFolder, ".classify");
+        return Path.Combine(classifyDirectory, "library.db");
     }
 
     /// <summary>

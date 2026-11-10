@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -12,6 +13,7 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
 {
     private readonly IUnitOfWork _uow;
     private readonly IIngestionOrchestrationService _ingestionOrchestrationService;
+    private readonly IAppSettings _appSettings;
     private int _audioFileId;
 
     public string AudioFilePath { get; private set; }
@@ -94,6 +96,7 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
     public ProposedMatchDialogViewModel(
         IUnitOfWork uow,
         IIngestionOrchestrationService ingestionOrchestrationService,
+        IAppSettings appSettings,
         Classify.Data.Services.ComposerSearchService composerSearchService,
         Classify.Data.Services.WorkSearchService workSearchService,
         Classify.Data.Services.MovementSearchService movementSearchService,
@@ -101,6 +104,7 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
     {
         _uow = uow;
         _ingestionOrchestrationService = ingestionOrchestrationService;
+        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
 
         ComposerSearchService = composerSearchService;
         WorkSearchService = workSearchService;
@@ -236,6 +240,6 @@ public class ProposedMatchDialogViewModel : ViewModelBase, IDialog<ProposedMatch
     {
         AudioFile af = _uow.AudioFiles.GetByIdAsync(audioFileId).Result!;
         _audioFileId = audioFileId;
-        AudioFilePath = af.Path;
+        AudioFilePath = af.GetFullPath(_appSettings);
     }
 }

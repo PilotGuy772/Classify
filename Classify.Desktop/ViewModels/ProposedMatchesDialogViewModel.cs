@@ -17,6 +17,7 @@ namespace Classify.Desktop.ViewModels;
 public class ProposedMatchesDialogViewModel : ViewModelBase, IDialog<int>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppSettings _appSettings;
     private int _audioFileId;
     private readonly IDialogService _dialogService;
 
@@ -30,10 +31,11 @@ public class ProposedMatchesDialogViewModel : ViewModelBase, IDialog<int>
     public ICommand NonGenericAcceptMatchCommand { get; }
     public ICommand AddAndAcceptMatchCommand { get; }
 
-    public ProposedMatchesDialogViewModel(IUnitOfWork unitOfWork, IIngestionOrchestrationService ingestionOrchestrationService, IDialogService dialogService)
+    public ProposedMatchesDialogViewModel(IUnitOfWork unitOfWork, IIngestionOrchestrationService ingestionOrchestrationService, IDialogService dialogService, IAppSettings appSettings)
     {
         _unitOfWork = unitOfWork;
         _dialogService = dialogService;
+        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
 
         AddMatchCommand = new AsyncRelayCommand(AddProposedMatchAsync);
         EditMatchCommand = new AsyncRelayCommand<ProposedMatch>(async match => await EditProposedMatchAsync(match));
@@ -104,7 +106,7 @@ public class ProposedMatchesDialogViewModel : ViewModelBase, IDialog<int>
     {
         _audioFileId = afId;
         AudioFile file = _unitOfWork.AudioFiles.GetByIdAsync(afId).Result!;
-        AudioFilePath = file.Path;
+        AudioFilePath = file.GetFullPath(_appSettings);
         foreach (ProposedMatch match in _unitOfWork.ProposedMatches.GetByAudioFileIdAsync(afId).Result)
         {
             ProposedMatches.Add(match);

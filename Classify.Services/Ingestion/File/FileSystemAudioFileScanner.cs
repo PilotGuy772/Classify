@@ -9,15 +9,18 @@ public class FileSystemAudioFileScanner : IAudioFileScanner
 {
     public async Task<IEnumerable<AudioFile>> ScanAudioFilesAsync(string path, string extensions)
     {
-        IEnumerable<string> files = Directory.GetFiles(path).Where(f => extensions.Contains(Path.GetExtension(f)));
+        string[] acceptedExtensions = extensions.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        IEnumerable<string> files = Directory.GetFiles(path)
+            .Where(f => acceptedExtensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase));
         List<AudioFile> audioFiles = [];
-        
-        foreach (string f in files)
+
+        foreach (string file in files)
         {
-            ulong hash = await ComputeHash(f);
+            ulong hash = await ComputeHash(file);
+            string relativePath = file.ToRelativeLibraryPath(path);
             audioFiles.Add(new AudioFile
             {
-                Path = f,
+                Path = relativePath,
                 Hash = hash,
                 Status = IngestionStatus.Seen
             });
@@ -25,7 +28,7 @@ public class FileSystemAudioFileScanner : IAudioFileScanner
 
         return audioFiles;
     }
-    
+
     private static async Task<ulong> ComputeHash(string filePath)
     {
         byte[] stream = await System.IO.File.ReadAllBytesAsync(filePath);

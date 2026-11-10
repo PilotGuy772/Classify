@@ -94,10 +94,13 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
     /// <param name="unitOfWork">The database unit of work.</param>
     /// <param name="queueService">The queue service.</param>
     /// <param name="nibbleBuilder">The nibble builder service.</param>
-    public MovementRecordingInfoPanelViewModel(IUnitOfWork unitOfWork, IQueueService queueService, INibbleBuilderService nibbleBuilder) : base(unitOfWork)
+    private readonly IAppSettings _appSettings;
+
+    public MovementRecordingInfoPanelViewModel(IUnitOfWork unitOfWork, IQueueService queueService, INibbleBuilderService nibbleBuilder, IAppSettings appSettings) : base(unitOfWork)
     {
         _queueService = queueService ?? throw new ArgumentNullException(nameof(queueService));
         _nibbleBuilder = nibbleBuilder ?? throw new ArgumentNullException(nameof(nibbleBuilder));
+        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
 
         PlayRecordingCommand = new AsyncRelayCommand(PlayRecordingAsync);
         PlayNextRecordingCommand = new AsyncRelayCommand(PlayRecordingNextStubAsync);
@@ -209,7 +212,14 @@ public sealed class MovementRecordingInfoPanelViewModel : InfoPanelViewModelBase
         }
 
         AudioFile? audioFile = await unitOfWork.AudioFiles.GetByIdAsync(pm.AudioFileId);
-        AudioFilePath = audioFile?.Path ?? "—";
+        if (audioFile is not null && !string.IsNullOrWhiteSpace(_appSettings.CurrentLibraryPath))
+        {
+            AudioFilePath = audioFile.GetFullPath(_appSettings);
+        }
+        else
+        {
+            AudioFilePath = audioFile?.Path ?? "—";
+        }
     }
 
     private Task PlayRecordingAsync()

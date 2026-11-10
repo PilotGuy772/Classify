@@ -12,7 +12,10 @@ public class LibraryIngestionService(IAudioFileScanner audioFileScanner, IUnitOf
         IEnumerable<AudioFile> audioFiles = await audioFileScanner.ScanAudioFilesAsync(path, appSettings.AcceptedFileExtensions);
         foreach (AudioFile af in audioFiles)
         {
-            if (await unitOfWork.AudioFiles.GetAudioFileByPath(af.Path) is null)
+            string relativePath = af.Path.ToRelativeLibraryPath(appSettings.CurrentLibraryPath);
+            af.Path = relativePath;
+
+            if (await unitOfWork.AudioFiles.GetAudioFileByPath(relativePath) is null)
                 await unitOfWork.AudioFiles.AddAsync(af);
         }
 

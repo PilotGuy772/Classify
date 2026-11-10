@@ -20,8 +20,8 @@ public class LibraryIngestion
         // Arrange
         AudioFile[] fakeFiles =
         [
-            new() { Path = "/music/a.flac", Hash = 1, Status = IngestionStatus.Seen },
-            new() { Path = "/music/b.flac", Hash = 2, Status = IngestionStatus.Seen }
+            new() { Path = "a.flac", Hash = 1, Status = IngestionStatus.Seen },
+            new() { Path = "b.flac", Hash = 2, Status = IngestionStatus.Seen }
         ];
 
         Mock<IAudioFileScanner> scanner = new();
@@ -40,9 +40,9 @@ public class LibraryIngestion
 
         // Assert
         IEnumerable<AudioFile> allFiles = (await unitOfWork.AudioFiles.GetAllAsync()).ToArray();
-        
+
         allFiles.Should().HaveCount(2);
-        allFiles.Select(f => f.Path).Should().Contain("/music/a.flac", "/music/b.flac");
+        allFiles.Select(f => f.Path).Should().Contain("a.flac", "b.flac");
     }
 
     [Fact]
@@ -51,8 +51,8 @@ public class LibraryIngestion
         // Arrange
         AudioFile[] fakeFiles =
         [
-            new() { Path = "/music/a.flac", Hash = 1, Status = IngestionStatus.Seen },
-            new() { Path = "/music/b.flac", Hash = 2, Status = IngestionStatus.Seen }
+            new() { Path = "a.flac", Hash = 1, Status = IngestionStatus.Seen },
+            new() { Path = "b.flac", Hash = 2, Status = IngestionStatus.Seen }
         ];
         
         Mock<IAudioFileScanner> scanner = new();
@@ -75,8 +75,8 @@ public class LibraryIngestion
 
         // Assert
         IEnumerable<AudioFile> allFiles = (await unitOfWork.AudioFiles.GetAllAsync()).ToArray();
-        
+
         allFiles.Should().HaveCount(2);
-        allFiles.Select(f => f.Path).Should().Contain("/music/a.flac", "/music/b.flac");
+        allFiles.Select(f => f.Path).Should().Contain("a.flac", "b.flac");
     }
 }

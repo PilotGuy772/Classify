@@ -179,7 +179,7 @@ public class SettingsViewModelTests
         vm.CurrentLibraryPathField.Value = "/music/classical_collection";
         vm.CurrentLibraryPathField.SaveCommand.Execute(null);
 
-        string expectedDbPath = System.IO.Path.Combine("/music/classical_collection", "library.db");
+        string expectedDbPath = System.IO.Path.Combine(System.IO.Path.Combine("/music/classical_collection", ".classify"), "library.db");
         settings.CurrentLibraryPath.Should().Be("/music/classical_collection");
         settings.DatabasePath.Should().Be(expectedDbPath);
         vm.DatabasePathField.SavedValue.Should().Be(expectedDbPath);

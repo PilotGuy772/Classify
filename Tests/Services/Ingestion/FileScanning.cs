@@ -19,8 +19,7 @@ public class FileScanning
         [
             "beethoven_5th_symphony_mvmt_1.mp3",
             "Sibelius Violin_Concerto Hilary Hahn.flac",
-            "VivaldiFourSeasonsWinterMvmt1ApollosFire.wav",
-            "library.db" // should ignore this file
+            "VivaldiFourSeasonsWinterMvmt1ApollosFire.wav"
         ];
 
         IAudioFileScanner scanner = new FileSystemAudioFileScanner();
