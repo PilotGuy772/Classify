@@ -11,5 +11,5 @@ public interface IAudioFileScanner
     /// Finds audio and video files in the given directory non-recursively.
     /// </summary>
     /// <returns>A list of AudioFiles found in the directory.</returns>
-    public Task<IEnumerable<AudioFile>> ScanAudioFilesAsync(string path);
+    public Task<IEnumerable<AudioFile>> ScanAudioFilesAsync(string path, string extensions);
 }

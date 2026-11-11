@@ -24,6 +24,7 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
     private readonly IIngestionOrchestrationService _orchestration;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDialogService _dialogService;
+    private readonly IAppSettings _appSettings;
     private CancellationTokenSource? _cts;
 
     public ObservableCollection<ScannedFileViewModel> ScannedFiles { get; } = [];
@@ -41,11 +42,12 @@ public class LibraryScanViewModel : ViewModelBase, IDisposable
         }
     } = "Idle";
 
-    public LibraryScanViewModel(IIngestionOrchestrationService orchestration, IUnitOfWork unitOfWork, IDialogService dialogService)
+    public LibraryScanViewModel(IIngestionOrchestrationService orchestration, IUnitOfWork unitOfWork, IDialogService dialogService, IAppSettings appSettings)
     {
         _orchestration = orchestration;
         _unitOfWork = unitOfWork;
         _dialogService = dialogService;
+        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
 
         ScanLibraryCommand = new RelayCommand(o => _ = ScanLibraryAsync());
 

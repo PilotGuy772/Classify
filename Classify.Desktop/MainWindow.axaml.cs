@@ -69,6 +69,12 @@ public partial class MainWindow : Window
         UpdateSelection();
     }
 
+    private void SettingsClicked(object? sender, RoutedEventArgs e)
+    {
+        Vm.ShowSettings();
+        UpdateSelection();
+    }
+
     private void FavoritesClicked(object? sender, RoutedEventArgs e)
     {
         Vm.ShowFavorites();
@@ -160,6 +166,7 @@ public partial class MainWindow : Window
             Button? home = this.FindControl<Button>("HomeButton");
             Button? browse = this.FindControl<Button>("BrowseButton");
             Button? scan = this.FindControl<Button>("ScanButton");
+            Button? settings = this.FindControl<Button>("SettingsButton");
             Button? favorites = this.FindControl<Button>("FavoritesButton");
             Button? explore = this.FindControl<Button>("ExploreButton");
             Button? radio = this.FindControl<Button>("RadioButton");
@@ -167,6 +174,7 @@ public partial class MainWindow : Window
             SetSelected(home, Vm.CurrentPage is HomeViewModel);
             SetSelected(browse, Vm.CurrentPage is LibraryViewModel);
             SetSelected(scan, Vm.CurrentPage is LibraryScanViewModel);
+            SetSelected(settings, Vm.CurrentPage is SettingsViewModel);
             SetSelected(favorites, Vm.CurrentPage is FavoritesViewModel);
             SetSelected(explore, Vm.CurrentPage is ExploreViewModel);
             SetSelected(radio, Vm.CurrentPage is RadioViewModel);

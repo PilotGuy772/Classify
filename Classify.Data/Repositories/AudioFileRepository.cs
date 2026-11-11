@@ -23,7 +23,8 @@ public class AudioFileRepository(ClassifyContext context) : Repository<AudioFile
 
     public async Task<AudioFile?> GetAudioFileByPath(string path)
     {
-        return await DbSet.FirstOrDefaultAsync(a => a.Path.Equals(path));
+        string normalizedPath = path.Replace('\\', '/');
+        return await DbSet.FirstOrDefaultAsync(a => a.Path.Replace('\\', '/') == normalizedPath);
     }
 
     public async Task<IReadOnlyList<AudioFile>> GetByIdsOrderedAsync(IReadOnlyList<int> ids, CancellationToken ct = default)

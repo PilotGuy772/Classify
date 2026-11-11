@@ -139,7 +139,7 @@ public sealed class DemoLibrarySeeder(IUnitOfWork uow) : IDatabaseSeeder
                 {
                     AudioFile audioFile = new()
                     {
-                        Path = $"/music/{composer.Name.Replace(" ", "_")}/{work.Name.Replace(" ", "_")}/track_{_audioFileCount++:D3}.flac",
+                        Path = $"{composer.Name.Replace(" ", "_")}/{work.Name.Replace(" ", "_")}/track_{_audioFileCount++:D3}.flac",
                         Hash = (ulong)_audioFileCount * 123456789UL,
                         Status = IngestionStatus.Complete
                     };
@@ -192,7 +192,7 @@ public sealed class DemoLibrarySeeder(IUnitOfWork uow) : IDatabaseSeeder
             {
                 AudioFile audioFile = new()
                 {
-                    Path = $"/music/Beethoven/Symphony_5_Kleiber/track_{_audioFileCount++:D3}.flac",
+                    Path = $"Beethoven/Symphony_5_Kleiber/track_{_audioFileCount++:D3}.flac",
                     Hash = (ulong)_audioFileCount * 987654321UL,
                     Status = IngestionStatus.Complete
                 };
@@ -228,7 +228,7 @@ public sealed class DemoLibrarySeeder(IUnitOfWork uow) : IDatabaseSeeder
             {
                 AudioFile audioFile = new()
                 {
-                    Path = $"/music/Bach/Goldberg_Gould_1955/track_{_audioFileCount++:D3}.flac",
+                    Path = $"Bach/Goldberg_Gould_1955/track_{_audioFileCount++:D3}.flac",
                     Hash = (ulong)_audioFileCount * 987654321UL,
                     Status = IngestionStatus.Complete
                 };
@@ -281,7 +281,7 @@ public sealed class DemoLibrarySeeder(IUnitOfWork uow) : IDatabaseSeeder
                 {
                     AudioFile audioFile = new()
                     {
-                        Path = $"/music/Vivaldi/Four_Seasons_Marriner/track_{_audioFileCount++:D3}.flac",
+                        Path = $"Vivaldi/Four_Seasons_Marriner/track_{_audioFileCount++:D3}.flac",
                         Hash = (ulong)_audioFileCount * 1122334455UL,
                         Status = IngestionStatus.Complete
                     };
@@ -325,7 +325,7 @@ public sealed class DemoLibrarySeeder(IUnitOfWork uow) : IDatabaseSeeder
                 {
                     AudioFile audioFile = new()
                     {
-                        Path = $"/music/Concertos/Heifetz_Violin_Concertos/track_{_audioFileCount++:D3}.flac",
+                        Path = $"Concertos/Heifetz_Violin_Concertos/track_{_audioFileCount++:D3}.flac",
                         Hash = (ulong)_audioFileCount * 9988776655UL,
                         Status = IngestionStatus.Complete
                     };

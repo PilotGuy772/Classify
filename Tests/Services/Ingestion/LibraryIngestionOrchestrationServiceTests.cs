@@ -1,13 +1,11 @@
-using System.Threading;
 using Classify.Core.Domain;
-using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Enums;
 using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Service;
 using Classify.Services.Ingestion;
+using Config.Net;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Tests.Services.Ingestion;
@@ -31,7 +29,9 @@ public class LibraryIngestionOrchestrationServiceTests
         IIngestionOrchestrationService orchestration = new LibraryIngestionOrchestrationService(
             ingestionMock.Object,
             uow,
-            Options.Create(new AppSettings { LibraryPath = "/music" })
+            new ConfigurationBuilder<IAppSettings>()
+                .UseJsonString("{\"CurrentLibraryPath\": \"/music\"}")
+                .Build()
         );
 
         LibraryScanState? observedState = null;
@@ -63,7 +63,9 @@ public class LibraryIngestionOrchestrationServiceTests
         IIngestionOrchestrationService orchestration = new LibraryIngestionOrchestrationService(
             ingestionMock.Object,
             uow,
-            Options.Create(new AppSettings { LibraryPath = "/music" })
+            new ConfigurationBuilder<IAppSettings>()
+                .UseJsonString("{\"CurrentLibraryPath\": \"/music\"}")
+                .Build()
         );
 
         LibraryScanState? observedState = null;
@@ -93,7 +95,9 @@ public class LibraryIngestionOrchestrationServiceTests
         IIngestionOrchestrationService orchestration = new LibraryIngestionOrchestrationService(
             ingestionMock.Object,
             uow,
-            Options.Create(new AppSettings { LibraryPath = "/music" })
+            new ConfigurationBuilder<IAppSettings>()
+                .UseJsonString("{\"CurrentLibraryPath\": \"/music\"}")
+                .Build()
         );
 
         // Act / Assert
@@ -139,7 +143,9 @@ public class LibraryIngestionOrchestrationServiceTests
         IIngestionOrchestrationService orchestration = new LibraryIngestionOrchestrationService(
             Mock.Of<IIngestionService>(),
             uow,
-            Options.Create(new AppSettings { LibraryPath = "/music" })
+            new ConfigurationBuilder<IAppSettings>()
+                .UseJsonString("{\"CurrentLibraryPath\": \"/music\"}")
+                .Build()
         );
 
         // Act
@@ -215,7 +221,9 @@ public class LibraryIngestionOrchestrationServiceTests
         IIngestionOrchestrationService orchestration = new LibraryIngestionOrchestrationService(
             Mock.Of<IIngestionService>(),
             uow,
-            Options.Create(new AppSettings { LibraryPath = "/music" })
+            new ConfigurationBuilder<IAppSettings>()
+                .UseJsonString("{\"CurrentLibraryPath\": \"/music\"}")
+                .Build()
         );
 
         // Act

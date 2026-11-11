@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Repository;
 using Classify.Core.Interfaces.Service;
@@ -15,12 +14,14 @@ using Classify.Data.Seeders;
 using Classify.Desktop.Services;
 using Classify.Desktop.ViewModels;
 using Classify.Desktop.Views;
+using Classify.Data.Services;
+using Classify.Infrastructure;
 using Classify.Services;
 using Classify.Services.Ingestion;
 using Classify.Services.Ingestion.File;
 using Classify.Services.Queue;
+using Config.Net;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Classify.Desktop;
@@ -42,9 +43,12 @@ public class App : Application
 
         Services = services.BuildServiceProvider();
 
+        IAppSettings appSettings = Services.GetRequiredService<IAppSettings>();
+        Classify.Desktop.Services.AppThemeService.Apply(appSettings);
+
         try
         {
-            await SeedIfEmptyAsync();
+            await InitializeDatabaseAsync();
         }
         catch (Exception e)
         {
@@ -93,14 +97,27 @@ public class App : Application
     }
 
     /// <summary>
+    /// Initializes the database by applying all pending EF Core migrations and ensuring all tables exist, leaving the database empty without seeding demo data.
+    /// </summary>
+    /// <returns>A task representing the initialization operation.</returns>
+    private static async Task InitializeDatabaseAsync()
+    {
+        Console.WriteLine("Initializing database schema...");
+        IDatabaseConnectionService dbConnectionService = Services.GetRequiredService<IDatabaseConnectionService>();
+        await dbConnectionService.ConnectAsync();
+        Console.WriteLine("Database schema initialized.");
+    }
+
+    /// <summary>
     /// Seed the database if all repositories are empty.
     /// </summary>
     private static async Task SeedIfEmptyAsync()
     {
         Console.WriteLine("Seeding database...");
+        IDatabaseConnectionService dbConnectionService = Services.GetRequiredService<IDatabaseConnectionService>();
+        await dbConnectionService.ConnectAsync();
+
         IUnitOfWork uow = Services.GetRequiredService<IUnitOfWork>();
-        ClassifyContext context = Services.GetRequiredService<ClassifyContext>();
-        await context.Database.MigrateAsync();
         
         if (await uow.AudioFiles.AnyAsync() ||
             await uow.PerformedMovements.AnyAsync() ||
@@ -111,6 +128,7 @@ public class App : Application
             await uow.Works.AnyAsync())
         {
             Console.WriteLine("Seed not necessary.");
+            return;
         }
         
         IDatabaseSeeder seed = Services.GetRequiredService<IDatabaseSeeder>();
@@ -120,13 +138,28 @@ public class App : Application
     
     private static void ConfigureServices(IServiceCollection services)
     {
-        // EF Core
-        services.AddDbContextFactory<ClassifyContext>(options =>
-        {
-            options.UseSqlite("Data Source=library.db");
-        });
+        // App Configuration
+        string settingsPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "classify",
+            "settings.json");
 
-        //services.AddDbContext<ClassifyContext>(options => options.UseSqlite("DataSource=library.db"));
+        IAppSettings rawSettings = new ConfigurationBuilder<IAppSettings>()
+            .UseCommandLineArgs()
+            .UseJsonFile(settingsPath)
+            .Build();
+
+        ObservableAppSettings settings = new(rawSettings);
+
+        services.AddSingleton<IPlatformService, PlatformService>();
+        services.AddSingleton<IFileSystemService, FileSystemService>();
+        services.AddSingleton<IAppSettings>(settings);
+        services.AddSingleton(settings);
+
+        // EF Core and Database Connection
+        services.AddSingleton<IDbContextFactory<ClassifyContext>, ClassifyDbContextFactory>();
+        services.AddScoped<ClassifyContext>(sp => sp.GetRequiredService<IDbContextFactory<ClassifyContext>>().CreateDbContext());
+        services.AddSingleton<IDatabaseConnectionService, DatabaseConnectionService>();
         
         // Repositories
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
@@ -182,24 +215,6 @@ public class App : Application
         services.AddTransient<ProposedMatchDialogViewModel>();
         services.AddTransient<ProposedMatchDialog>();
         services.AddTransient<ProposedMatchesDialog>();
-        
-        // App Configuration
-        string settingsPath =
-            Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "Classify",
-                "settings.json");
-
-        ConfigurationBuilder builder = new();
-        builder.SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile(settingsPath, optional: true);
-
-        IConfiguration config = builder.Build();
-
-        services.AddSingleton(config);
-        services.Configure<AppSettings>(config.GetSection("AppSettings"));
-
 
 #if (DEBUG)
         // DEV only

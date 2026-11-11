@@ -59,6 +59,15 @@
                                         </StackPanel>
                                 </Button>
 
+                                <Button x:Name="SettingsButton"
+                                        Classes="sidebar-nav-button"
+                                        Click="SettingsClicked">
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                                <ti:TablerIcon Classes="sidebar-nav-icon" Icon="IconSettings" VerticalAlignment="Center" HorizontalAlignment="Center" Width="21" Height="21" Brush="{DynamicResource AccentBrush}"/>
+                                                <TextBlock Classes="sidebar-nav-label" Text="Settings"/>
+                                        </StackPanel>
+                                </Button>
+
                                 <TextBlock Classes="sidebar-category-title" Text="Listen"/>
 
                                 <Button x:Name="FavoritesButton"

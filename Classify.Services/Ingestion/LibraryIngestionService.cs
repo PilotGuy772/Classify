@@ -5,21 +5,21 @@ using Classify.Core.Interfaces.Service;
 
 namespace Classify.Services.Ingestion;
 
-public class LibraryIngestionService(IAudioFileScanner audioFileScanner, IUnitOfWork unitOfWork) : IIngestionService
+public class LibraryIngestionService(IAudioFileScanner audioFileScanner, IUnitOfWork unitOfWork, IAppSettings appSettings) : IIngestionService
 {
-    private readonly IAudioFileScanner _audioFileScanner = audioFileScanner;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-
     public async Task ScanLibraryAsync(string path)
     {
-        IEnumerable<AudioFile> audioFiles = await _audioFileScanner.ScanAudioFilesAsync(path);
+        IEnumerable<AudioFile> audioFiles = await audioFileScanner.ScanAudioFilesAsync(path, appSettings.AcceptedFileExtensions);
         foreach (AudioFile af in audioFiles)
         {
-            if (await _unitOfWork.AudioFiles.GetAudioFileByPath(af.Path) is null)
-                await _unitOfWork.AudioFiles.AddAsync(af);
+            string relativePath = af.Path.ToRelativeLibraryPath(appSettings.CurrentLibraryPath);
+            af.Path = relativePath;
+
+            if (await unitOfWork.AudioFiles.GetAudioFileByPath(relativePath) is null)
+                await unitOfWork.AudioFiles.AddAsync(af);
         }
 
-        await _unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync();
         // transaction complete
     }
 }

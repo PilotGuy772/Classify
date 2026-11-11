@@ -7,6 +7,7 @@ using Classify.Data.Context;
 using Classify.Data.Repositories;
 using Classify.Services.Ingestion;
 using Classify.Services.Ingestion.File;
+using Config.Net;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,6 +64,9 @@ public static class SqliteInMemory
         // Application services / use cases
         services.AddScoped<IIngestionService, LibraryIngestionService>();
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
+        services.AddSingleton<IAppSettings>(new ConfigurationBuilder<IAppSettings>()
+            .UseJsonString("{\"CurrentLibraryPath\": \"/music\"}")
+            .Build());
 
         ServiceProvider provider = services.BuildServiceProvider();
 

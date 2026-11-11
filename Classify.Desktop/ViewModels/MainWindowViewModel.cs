@@ -93,6 +93,11 @@ public class MainWindowViewModel : ViewModelBase
     public System.Windows.Input.ICommand ShowRadioCommand { get; }
 
     /// <summary>
+    /// Gets the command to display the settings page.
+    /// </summary>
+    public System.Windows.Input.ICommand ShowSettingsCommand { get; }
+
+    /// <summary>
     /// Gets the command to open or focus the standalone player window.
     /// </summary>
     public System.Windows.Input.ICommand ShowPlayerWindowCommand { get; }
@@ -126,6 +131,7 @@ public class MainWindowViewModel : ViewModelBase
         ShowFavoritesCommand = new RelayCommand(_ => ShowFavorites());
         ShowExploreCommand = new RelayCommand(_ => ShowExplore());
         ShowRadioCommand = new RelayCommand(_ => ShowRadio());
+        ShowSettingsCommand = new RelayCommand(_ => ShowSettings());
         ShowPlayerWindowCommand = new RelayCommand(_ => ShowPlayerWindow());
     }
 

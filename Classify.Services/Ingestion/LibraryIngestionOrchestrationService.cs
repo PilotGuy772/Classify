@@ -10,10 +10,10 @@ namespace Classify.Services.Ingestion;
 public class LibraryIngestionOrchestrationService(
     IIngestionService ingestionService,
     IUnitOfWork uow,
-    IOptions<AppSettings> settings)
+    IAppSettings settings)
     : IIngestionOrchestrationService
 {
-    private readonly AppSettings _settings = settings.Value;
+    private readonly IAppSettings _settings = settings;
 
     public LibraryScanState State
     {
@@ -48,7 +48,9 @@ public class LibraryIngestionOrchestrationService(
     private async Task ScanAsync(CancellationToken ct)
     {
         // scan library files
-        await ingestionService.ScanLibraryAsync(_settings.LibraryPath);
+        if (string.IsNullOrEmpty(_settings.CurrentLibraryPath)) return;
+        // TODO: Make above throw an exception and verify that exception handling actually... yknow.. works
+        await ingestionService.ScanLibraryAsync(_settings.CurrentLibraryPath);
         ct.ThrowIfCancellationRequested();
 
         // After scanning, stop. ProposedMatch review/acceptance will be handled separately by callers

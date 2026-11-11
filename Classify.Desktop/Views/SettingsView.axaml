@@ -3,11 +3,158 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Classify.Desktop.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:ti="using:TablerIcons"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
              x:Class="Classify.Desktop.Views.SettingsView"
              x:DataType="viewModels:SettingsViewModel">
-    <TextBlock Text="{Binding Text}"
-               VerticalAlignment="Center"
-               HorizontalAlignment="Center"
-               FontSize="24"/>
+
+    <UserControl.Styles>
+        <Style Selector="Button.setting-save-button">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource OnAccentGlyphBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="16,0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style Selector="Button.setting-save-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Opacity" Value="0.9" />
+        </Style>
+        <Style Selector="Button.setting-save-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+
+        <Style Selector="Button.setting-reset-button">
+            <Setter Property="Background" Value="{DynamicResource MainBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource OutlineBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style Selector="Button.setting-reset-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SelectedBackgroundBrush}" />
+        </Style>
+        <Style Selector="Button.setting-reset-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SelectedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+        </Style>
+
+        <Style Selector="TextBox.setting-input">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="32,24" Spacing="24" MaxWidth="800" HorizontalAlignment="Left">
+            <!-- Header -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Settings"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextBrush}" />
+                <TextBlock Text="Configure library sources, database connections, and application preferences."
+                           FontSize="13"
+                           Foreground="{DynamicResource SecondaryTextBrush}" />
+            </StackPanel>
+
+            <!-- Settings Fields List -->
+            <ItemsControl ItemsSource="{Binding Fields}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:SettingFieldViewModel">
+                        <Border Background="{DynamicResource SecondaryBackgroundBrush}"
+                                BorderBrush="{DynamicResource OutlineBrush}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="18,16"
+                                Margin="0,0,0,16">
+                            <StackPanel Spacing="10">
+                                <!-- Title and Description -->
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding Label}"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextBrush}" />
+                                    <TextBlock Text="{Binding Description}"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <!-- Input row with TextBox and action buttons -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Grid Grid.Column="0" ColumnDefinitions="*">
+                                        <ComboBox ItemsSource="{Binding Options}"
+                                                  SelectedItem="{Binding Value, Mode=TwoWay}"
+                                                  IsVisible="{Binding Options.Count}"
+                                                  HorizontalAlignment="Stretch" />
+
+                                        <TextBox Classes="setting-input"
+                                                 Text="{Binding Value, Mode=TwoWay}"
+                                                 HorizontalAlignment="Stretch"
+                                                 IsVisible="{Binding !Options.Count}" />
+                                    </Grid>
+
+                                    <StackPanel Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                Spacing="8"
+                                                Margin="10,0,0,0">
+                                        <Button Classes="setting-reset-button"
+                                                Command="{Binding RevealInFileManagerCommand}"
+                                                ToolTip.Tip="Reveal in file manager"
+                                                IsVisible="{Binding PathValue}">
+                                            <ti:TablerIcon Icon="IconFolderOpen"
+                                                           Width="18"
+                                                           Height="18"
+                                                           Brush="{DynamicResource SecondaryTextBrush}" />
+                                        </Button>
+                                        <Button Classes="setting-reset-button"
+                                                Command="{Binding PickValueCommand}"
+                                                ToolTip.Tip="Choose a new value"
+                                                IsVisible="{Binding PickerSupported}">
+                                            <ti:TablerIcon Icon="IconFolderPlus"
+                                                           Width="18"
+                                                           Height="18"
+                                                           Brush="{DynamicResource SecondaryTextBrush}" />
+                                        </Button>
+
+                                        <StackPanel Orientation="Horizontal"
+                                                    Spacing="8"
+                                                    IsVisible="{Binding IsModified}">
+                                            <Button Classes="setting-save-button"
+                                                    Command="{Binding SaveCommand}"
+                                                    Content="Save" />
+                                            <Button Classes="setting-reset-button"
+                                                    Command="{Binding ResetCommand}"
+                                                    ToolTip.Tip="Reset to saved value">
+                                                <ti:TablerIcon Icon="IconRotate"
+                                                               Width="18"
+                                                               Height="18"
+                                                               Brush="{DynamicResource SecondaryTextBrush}" />
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
