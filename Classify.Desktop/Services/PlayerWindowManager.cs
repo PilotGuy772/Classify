@@ -67,7 +67,7 @@ public sealed class PlayerWindowManager : IPlayerWindowManager
         }
 
         IUnitOfWork uow = _serviceProvider.GetRequiredService<IUnitOfWork>();
-        PlayerWindowViewModel vm = new PlayerWindowViewModel(_queueService, uow);
+        PlayerWindowViewModel vm = new(_queueService, uow);
 
         _playerWindow = new PlayerWindow
         {

@@ -91,9 +91,22 @@ public class App : Application
 
             IPlayerWindowManager playerWindowManager = Services.GetRequiredService<IPlayerWindowManager>();
             playerWindowManager.Initialize();
+
+            desktop.Exit += OnDesktopExit;
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>
+    /// Releases created services, including the audio player, when the desktop application exits.
+    /// </summary>
+    private static void OnDesktopExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
+    {
+        if (Services is IDisposable services)
+        {
+            services.Dispose();
+        }
     }
 
     /// <summary>
@@ -153,6 +166,7 @@ public class App : Application
 
         services.AddSingleton<IPlatformService, PlatformService>();
         services.AddSingleton<IFileSystemService, FileSystemService>();
+        services.AddSingleton<IAudioPlaybackService, AudioPlaybackService>();
         services.AddSingleton<IAppSettings>(settings);
         services.AddSingleton(settings);
 

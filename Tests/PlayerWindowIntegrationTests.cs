@@ -21,34 +21,34 @@ public class PlayerWindowIntegrationTests
     public async Task RefreshAsync_UpdatesQueueItemsAndActiveMovementHighlight()
     {
         using ClassifyContext context = SqliteInMemory.CreateDbContext();
-        UnitOfWork uow = new UnitOfWork(new DbContextFactoryMock(context));
+        UnitOfWork uow = new(new DbContextFactoryMock(context));
 
-        Composer composer = new Composer { Name = "Ludwig van Beethoven" };
+        Composer composer = new() { Name = "Ludwig van Beethoven" };
         await uow.Composers.AddAsync(composer);
         await uow.SaveChangesAsync();
 
-        Work work = new Work { ComposerId = composer.Id, Name = "Symphony No. 7", CatalogNumber = "Op. 92" };
+        Work work = new() { ComposerId = composer.Id, Name = "Symphony No. 7", CatalogNumber = "Op. 92" };
         await uow.Works.AddAsync(work);
         await uow.SaveChangesAsync();
 
-        Recording recording = new Recording { WorkId = work.Id, Conductor = "Carlos Kleiber", Ensemble = "Bayerisches Staatsorchester", Year = 1982 };
+        Recording recording = new() { WorkId = work.Id, Conductor = "Carlos Kleiber", Ensemble = "Bayerisches Staatsorchester", Year = 1982 };
         await uow.Recordings.AddAsync(recording);
         await uow.SaveChangesAsync();
 
-        Movement m1 = new Movement { WorkId = work.Id, Name = "Poco sostenuto - Vivace", Order = 1 };
-        Movement m2 = new Movement { WorkId = work.Id, Name = "Allegretto", Order = 2 };
+        Movement m1 = new() { WorkId = work.Id, Name = "Poco sostenuto - Vivace", Order = 1 };
+        Movement m2 = new() { WorkId = work.Id, Name = "Allegretto", Order = 2 };
         await uow.Movements.AddAsync(m1);
         await uow.Movements.AddAsync(m2);
         await uow.SaveChangesAsync();
 
-        QueueService queueService = new QueueService();
+        QueueService queueService = new();
         queueService.Clear();
 
-        PlayerWindowViewModel vm = new PlayerWindowViewModel(queueService, uow);
+        PlayerWindowViewModel vm = new(queueService, uow);
 
-        Nibble nibble = new Nibble { Id = 1, WorkId = work.Id, RecordingId = recording.Id };
-        NibbleMovement nm1 = new NibbleMovement { Id = 1, NibbleId = 1, MovementId = m1.Id, Order = 1 };
-        NibbleMovement nm2 = new NibbleMovement { Id = 2, NibbleId = 1, MovementId = m2.Id, Order = 2 };
+        Nibble nibble = new() { Id = 1, WorkId = work.Id, RecordingId = recording.Id };
+        NibbleMovement nm1 = new() { Id = 1, NibbleId = 1, MovementId = m1.Id, Order = 1 };
+        NibbleMovement nm2 = new() { Id = 2, NibbleId = 1, MovementId = m2.Id, Order = 2 };
 
         queueService.Enqueue(nibble, new List<NibbleMovement> { nm1, nm2 });
         await vm.RefreshAsync();
@@ -84,34 +84,34 @@ public class PlayerWindowIntegrationTests
     public async Task SelectingMovement_UpdatesQueueServiceCurrentPosition()
     {
         using ClassifyContext context = SqliteInMemory.CreateDbContext();
-        UnitOfWork uow = new UnitOfWork(new DbContextFactoryMock(context));
+        UnitOfWork uow = new(new DbContextFactoryMock(context));
 
-        Composer composer = new Composer { Name = "Mozart" };
+        Composer composer = new() { Name = "Mozart" };
         await uow.Composers.AddAsync(composer);
         await uow.SaveChangesAsync();
 
-        Work work = new Work { ComposerId = composer.Id, Name = "Work 1" };
+        Work work = new() { ComposerId = composer.Id, Name = "Work 1" };
         await uow.Works.AddAsync(work);
         await uow.SaveChangesAsync();
 
-        Recording recording = new Recording { WorkId = work.Id, Conductor = "Rec 1" };
+        Recording recording = new() { WorkId = work.Id, Conductor = "Rec 1" };
         await uow.Recordings.AddAsync(recording);
         await uow.SaveChangesAsync();
 
-        Movement m1 = new Movement { WorkId = work.Id, Name = "Mv 1", Order = 1 };
-        Movement m2 = new Movement { WorkId = work.Id, Name = "Mv 2", Order = 2 };
+        Movement m1 = new() { WorkId = work.Id, Name = "Mv 1", Order = 1 };
+        Movement m2 = new() { WorkId = work.Id, Name = "Mv 2", Order = 2 };
         await uow.Movements.AddAsync(m1);
         await uow.Movements.AddAsync(m2);
         await uow.SaveChangesAsync();
 
-        QueueService queueService = new QueueService();
+        QueueService queueService = new();
         queueService.Clear();
 
-        PlayerWindowViewModel vm = new PlayerWindowViewModel(queueService, uow);
+        PlayerWindowViewModel vm = new(queueService, uow);
 
-        Nibble nibble = new Nibble { Id = 1, WorkId = work.Id, RecordingId = recording.Id };
-        NibbleMovement nm1 = new NibbleMovement { Id = 1, NibbleId = 1, MovementId = m1.Id, Order = 1 };
-        NibbleMovement nm2 = new NibbleMovement { Id = 2, NibbleId = 1, MovementId = m2.Id, Order = 2 };
+        Nibble nibble = new() { Id = 1, WorkId = work.Id, RecordingId = recording.Id };
+        NibbleMovement nm1 = new() { Id = 1, NibbleId = 1, MovementId = m1.Id, Order = 1 };
+        NibbleMovement nm2 = new() { Id = 2, NibbleId = 1, MovementId = m2.Id, Order = 2 };
 
         queueService.Enqueue(nibble, new List<NibbleMovement> { nm1, nm2 });
         await vm.RefreshAsync();
@@ -131,32 +131,32 @@ public class PlayerWindowIntegrationTests
     public async Task RefreshAsync_SingleMovementNibble_UsesOverallMovementOrderForRomanOrdinal()
     {
         using ClassifyContext context = SqliteInMemory.CreateDbContext();
-        UnitOfWork uow = new UnitOfWork(new DbContextFactoryMock(context));
+        UnitOfWork uow = new(new DbContextFactoryMock(context));
 
-        Composer composer = new Composer { Name = "Mahler" };
+        Composer composer = new() { Name = "Mahler" };
         await uow.Composers.AddAsync(composer);
         await uow.SaveChangesAsync();
 
-        Work work = new Work { ComposerId = composer.Id, Name = "Symphony No. 5" };
+        Work work = new() { ComposerId = composer.Id, Name = "Symphony No. 5" };
         await uow.Works.AddAsync(work);
         await uow.SaveChangesAsync();
 
-        Recording recording = new Recording { WorkId = work.Id, Conductor = "Bernstein" };
+        Recording recording = new() { WorkId = work.Id, Conductor = "Bernstein" };
         await uow.Recordings.AddAsync(recording);
         await uow.SaveChangesAsync();
 
-        Movement m3 = new Movement { WorkId = work.Id, Name = "Scherzo", Order = 3 };
+        Movement m3 = new() { WorkId = work.Id, Name = "Scherzo", Order = 3 };
         await uow.Movements.AddAsync(m3);
         await uow.SaveChangesAsync();
 
-        NibbleBuilderService builder = new NibbleBuilderService(uow);
+        NibbleBuilderService builder = new(uow);
         QueueItem? item = await builder.BuildForMovementAsync(m3.Id, recording.Id);
         Assert.NotNull(item);
 
-        QueueService queueService = new QueueService();
+        QueueService queueService = new();
         queueService.Clear();
 
-        PlayerWindowViewModel vm = new PlayerWindowViewModel(queueService, uow);
+        PlayerWindowViewModel vm = new(queueService, uow);
         queueService.Enqueue(item.Nibble, item.Movements);
         await vm.RefreshAsync();
 

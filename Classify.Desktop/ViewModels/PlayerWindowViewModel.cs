@@ -248,7 +248,7 @@ public sealed class PlayerWindowViewModel : ViewModelBase
         IsEmptyQueue = rawItems.Count == 0;
 
         // Build queue item view models
-        List<PlayerQueueItemViewModel> newQueueVms = new List<PlayerQueueItemViewModel>();
+        List<PlayerQueueItemViewModel> newQueueVms = new();
 
         for (int nibbleIdx = 0; nibbleIdx < rawItems.Count; nibbleIdx++)
         {
@@ -259,7 +259,7 @@ public sealed class PlayerWindowViewModel : ViewModelBase
             string workTitle = work?.Name ?? $"Work #{item.Nibble.WorkId}";
             string subtitle = FormatConductorAndEnsemble(recording);
 
-            PlayerQueueItemViewModel queueVm = new PlayerQueueItemViewModel(
+            PlayerQueueItemViewModel queueVm = new(
                 nibbleIdx,
                 workTitle,
                 subtitle,
@@ -275,7 +275,7 @@ public sealed class PlayerWindowViewModel : ViewModelBase
                 string mvName = mv?.Name ?? $"Movement #{nm.MovementId}";
                 bool isPlaying = (nibbleIdx == activeNibbleIdx && movementIdx == activeMovementIdx);
 
-                PlayerMovementItemViewModel movementVm = new PlayerMovementItemViewModel(
+                PlayerMovementItemViewModel movementVm = new(
                     nibbleIdx,
                     movementIndex: movementIdx,
                     ordinalLabel: ordinalLabel,

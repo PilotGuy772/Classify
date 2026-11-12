@@ -144,7 +144,7 @@ public class NibbleBuilderService(IUnitOfWork unitOfWork) : INibbleBuilderServic
 
         List<NibbleMovement> nibbleMovements =
         [
-            new NibbleMovement
+            new()
             {
                 NibbleId = 0,
                 MovementId = movement.Id,
