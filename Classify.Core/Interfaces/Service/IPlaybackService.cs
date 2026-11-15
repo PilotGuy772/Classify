@@ -11,9 +11,24 @@ public interface IPlaybackService
     event EventHandler? PlaybackStateChanged;
 
     /// <summary>
+    /// Occurs when the playback position or duration changes by at least one second, including after a seek.
+    /// </summary>
+    event EventHandler? PlaybackPositionChanged;
+
+    /// <summary>
     /// Gets a value indicating whether audio is currently playing.
     /// </summary>
     bool IsPlaying { get; }
+
+    /// <summary>
+    /// Gets the current playback position reported by the audio player.
+    /// </summary>
+    TimeSpan Position { get; }
+
+    /// <summary>
+    /// Gets the duration reported by the audio player.
+    /// </summary>
+    TimeSpan Duration { get; }
 
     /// <summary>
     /// Plays the loaded audio file. When nothing is loaded, loads the current nibble movement and plays it.
@@ -38,6 +53,15 @@ public interface IPlaybackService
     /// </summary>
     /// <param name="cancellationToken">Token used to cancel loading the next audio file.</param>
     Task SkipForwardAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Moves the queue to the given movement and plays it.
+    /// When that movement is already playing, playback continues.
+    /// </summary>
+    /// <param name="nibbleIndex">Zero-based index of the nibble in the queue.</param>
+    /// <param name="movementIndex">Zero-based index of the movement within the nibble.</param>
+    /// <param name="cancellationToken">Token used to cancel loading the audio file.</param>
+    Task PlayAtAsync(int nibbleIndex, int movementIndex, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Seeks to the start of the current audio file.

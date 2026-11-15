@@ -16,6 +16,7 @@ public sealed class PlaybackService : IPlaybackService
     private readonly IAppSettings _appSettings;
     private readonly Func<IUnitOfWork> _unitOfWorkFactory;
     private readonly SemaphoreSlim _gate = new(1, 1);
+    private int _handlingPlaybackCompleted;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaybackService"/> class.
@@ -35,13 +36,24 @@ public sealed class PlaybackService : IPlaybackService
         _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         _unitOfWorkFactory = unitOfWorkFactory ?? throw new ArgumentNullException(nameof(unitOfWorkFactory));
         _audioPlaybackService.PlaybackStateChanged += OnAudioPlaybackStateChanged;
+        _audioPlaybackService.PlaybackPositionChanged += OnAudioPlaybackPositionChanged;
+        _audioPlaybackService.PlaybackCompleted += OnPlaybackCompleted;
     }
 
     /// <inheritdoc />
     public event EventHandler? PlaybackStateChanged;
 
     /// <inheritdoc />
+    public event EventHandler? PlaybackPositionChanged;
+
+    /// <inheritdoc />
     public bool IsPlaying => _audioPlaybackService.IsPlaying;
+
+    /// <inheritdoc />
+    public TimeSpan Position => _audioPlaybackService.Position;
+
+    /// <inheritdoc />
+    public TimeSpan Duration => _audioPlaybackService.Duration;
 
     /// <inheritdoc />
     public async Task PlayAsync(CancellationToken cancellationToken = default)
@@ -114,6 +126,38 @@ public sealed class PlaybackService : IPlaybackService
                     return;
                 }
             }
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task PlayAtAsync(int nibbleIndex, int movementIndex, CancellationToken cancellationToken = default)
+    {
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            bool samePosition = _queueService.CurrentNibbleIndex == nibbleIndex
+                && _queueService.CurrentMovementIndex == movementIndex;
+            if (!samePosition)
+            {
+                if (!_queueService.SkipToNibble(nibbleIndex, movementIndex))
+                {
+                    return;
+                }
+
+                _audioPlaybackService.Stop();
+            }
+
+            if (!_audioPlaybackService.HasMedia)
+            {
+                await TryPlayCurrentAsync(cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            _audioPlaybackService.Play();
         }
         finally
         {
@@ -216,6 +260,34 @@ public sealed class PlaybackService : IPlaybackService
     private void OnAudioPlaybackStateChanged(object? sender, EventArgs e)
     {
         PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Forwards a playback-position change from the audio player.
+    /// </summary>
+    private void OnAudioPlaybackPositionChanged(object? sender, EventArgs e)
+    {
+        PlaybackPositionChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Skips to the next queued audio file when the current file reaches its end.
+    /// </summary>
+    private void OnPlaybackCompleted(object? sender, EventArgs e)
+    {
+        if (Interlocked.Exchange(ref _handlingPlaybackCompleted, 1) == 1)
+        {
+            return;
+        }
+
+        try
+        {
+            SkipForwardAsync().GetAwaiter().GetResult();
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _handlingPlaybackCompleted, 0);
+        }
     }
 
     /// <summary>

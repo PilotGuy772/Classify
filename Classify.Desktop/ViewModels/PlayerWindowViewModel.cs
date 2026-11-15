@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Threading;
@@ -16,7 +17,7 @@ namespace Classify.Desktop.ViewModels;
 /// <summary>
 /// View model for the standalone <see cref="Views.PlayerWindow"/> providing playback metadata, sidebar state, and queue list synchronization.
 /// </summary>
-public sealed class PlayerWindowViewModel : ViewModelBase
+public sealed class PlayerWindowViewModel : ViewModelBase, IDisposable
 {
     private readonly IQueueService _queueService;
     private readonly IUnitOfWork _unitOfWork;
@@ -34,6 +35,9 @@ public sealed class PlayerWindowViewModel : ViewModelBase
     private string _totalDurationText = "0:00";
     private bool _isEmptyQueue = true;
     private bool _isPlaying;
+    private double _playbackProgress;
+    private readonly DispatcherTimer _playbackClock;
+    private readonly SemaphoreSlim _refreshGate = new(1, 1);
 
     /// <summary>
     /// Gets or sets a value indicating whether the queue sidebar is expanded.
@@ -170,6 +174,25 @@ public sealed class PlayerWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Gets the display fill of the progress bar, from 0 to 100.
+    /// This is a readout of the audio player's position and duration, not a clock owned by the window.
+    /// </summary>
+    public double PlaybackProgress
+    {
+        get => _playbackProgress;
+        private set
+        {
+            if (Math.Abs(_playbackProgress - value) < 0.0001)
+            {
+                return;
+            }
+
+            _playbackProgress = value;
+            RaisePropertyChanged();
+        }
+    }
+
+    /// <summary>
     /// Gets the formatted total track duration string.
     /// </summary>
     public string TotalDurationText
@@ -296,12 +319,31 @@ public sealed class PlayerWindowViewModel : ViewModelBase
         SeekBackwardCommand = new RelayCommand(() => _playbackService.Seek(-15));
         SeekForwardCommand = new RelayCommand(() => _playbackService.Seek(15));
 
+        _playbackClock = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _playbackClock.Tick += OnPlaybackClockTick;
+
         _queueService.QueueChanged += OnQueueStateChanged;
         _queueService.CurrentItemChanged += OnQueueStateChanged;
         _playbackService.PlaybackStateChanged += OnPlaybackStateChanged;
+        _playbackService.PlaybackPositionChanged += OnPlaybackPositionChanged;
         OnPlaybackStateChanged(this, EventArgs.Empty);
+        RefreshPlaybackProgress();
+        _playbackClock.Start();
 
         _ = RefreshAsync();
+    }
+
+    /// <summary>
+    /// Stops the display refresh and detaches playback notifications.
+    /// </summary>
+    public void Dispose()
+    {
+        _playbackClock.Stop();
+        _playbackClock.Tick -= OnPlaybackClockTick;
+        _playbackService.PlaybackStateChanged -= OnPlaybackStateChanged;
+        _playbackService.PlaybackPositionChanged -= OnPlaybackPositionChanged;
+        _queueService.QueueChanged -= OnQueueStateChanged;
+        _queueService.CurrentItemChanged -= OnQueueStateChanged;
     }
 
     /// <summary>
@@ -334,32 +376,110 @@ public sealed class PlayerWindowViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Re-reads the player's position and duration after the player reports a timeline change.
+    /// The read is posted so it does not run inside a player callback.
+    /// </summary>
+    private void OnPlaybackPositionChanged(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Post(RefreshPlaybackProgress);
+    }
+
+    /// <summary>
+    /// Re-reads the player's position and duration. The window does not advance the time itself.
+    /// </summary>
+    private void OnPlaybackClockTick(object? sender, EventArgs e)
+    {
+        RefreshPlaybackProgress();
+    }
+
+    /// <summary>
+    /// Copies the current playback position and duration into the display strings and progress fill.
+    /// </summary>
+    private void RefreshPlaybackProgress()
+    {
+        TimeSpan position = _playbackService.Position;
+        TimeSpan duration = _playbackService.Duration;
+        CurrentPositionText = FormatPlaybackTime(position);
+        TotalDurationText = FormatPlaybackTime(duration);
+
+        double progress = duration <= TimeSpan.Zero
+            ? 0d
+            : position.TotalSeconds / duration.TotalSeconds * 100d;
+        PlaybackProgress = Math.Clamp(progress, 0d, 100d);
+    }
+
+    /// <summary>
+    /// Formats a playback time in whole seconds as m:ss, or h:mm:ss once an hour has passed.
+    /// </summary>
+    /// <param name="time">Time reported by the audio player.</param>
+    private static string FormatPlaybackTime(TimeSpan time)
+    {
+        if (time < TimeSpan.Zero)
+        {
+            time = TimeSpan.Zero;
+        }
+
+        long totalSeconds = (long)time.TotalSeconds;
+        long hours = totalSeconds / 3600;
+        long minutes = totalSeconds % 3600 / 60;
+        long seconds = totalSeconds % 60;
+        if (hours > 0)
+        {
+            return $"{hours}:{minutes:00}:{seconds:00}";
+        }
+
+        return $"{minutes}:{seconds:00}";
+    }
+
+    /// <summary>
     /// Handles updates to the queue service state.
+    /// Automatic skip raises this off the UI thread, so the refresh is posted before it touches the list.
     /// </summary>
     private void OnQueueStateChanged(object? sender, EventArgs e)
     {
-        _ = RefreshAsync();
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            _ = RefreshAsync();
+            return;
+        }
+
+        Dispatcher.UIThread.Post(() => _ = RefreshAsync());
     }
 
     /// <summary>
     /// Asynchronously refreshes queue sidebar items and active track metadata from the database.
+    /// Overlapping refreshes run one at a time.
     /// </summary>
     public async Task RefreshAsync()
+    {
+        await _refreshGate.WaitAsync().ConfigureAwait(true);
+        try
+        {
+            await RefreshCoreAsync().ConfigureAwait(true);
+        }
+        finally
+        {
+            _refreshGate.Release();
+        }
+    }
+
+    /// <summary>
+    /// Loads queue labels from the database and applies them on the UI thread.
+    /// </summary>
+    private async Task RefreshCoreAsync()
     {
         IReadOnlyList<QueueItem> rawItems = _queueService.Items;
         int activeNibbleIdx = _queueService.CurrentNibbleIndex;
         int activeMovementIdx = _queueService.CurrentMovementIndex;
+        bool isEmptyQueue = rawItems.Count == 0;
 
-        IsEmptyQueue = rawItems.Count == 0;
-
-        // Build queue item view models
         List<PlayerQueueItemViewModel> newQueueVms = new();
 
         for (int nibbleIdx = 0; nibbleIdx < rawItems.Count; nibbleIdx++)
         {
             QueueItem item = rawItems[nibbleIdx];
-            Work? work = await _unitOfWork.Works.GetByIdAsync(item.Nibble.WorkId);
-            Recording? recording = await _unitOfWork.Recordings.GetByIdAsync(item.Nibble.RecordingId);
+            Work? work = await _unitOfWork.Works.GetByIdAsync(item.Nibble.WorkId).ConfigureAwait(true);
+            Recording? recording = await _unitOfWork.Recordings.GetByIdAsync(item.Nibble.RecordingId).ConfigureAwait(true);
 
             string workTitle = work?.Name ?? $"Work #{item.Nibble.WorkId}";
             string subtitle = FormatConductorAndEnsemble(recording);
@@ -373,12 +493,12 @@ public sealed class PlayerWindowViewModel : ViewModelBase
             for (int movementIdx = 0; movementIdx < item.Movements.Count; movementIdx++)
             {
                 NibbleMovement nm = item.Movements[movementIdx];
-                Movement? mv = await _unitOfWork.Movements.GetByIdAsync(nm.MovementId);
+                Movement? mv = await _unitOfWork.Movements.GetByIdAsync(nm.MovementId).ConfigureAwait(true);
 
                 int displayOrder = mv?.Order ?? nm.Order;
                 string ordinalLabel = FormatRomanOrdinal(displayOrder);
                 string mvName = mv?.Name ?? $"Movement #{nm.MovementId}";
-                bool isPlaying = (nibbleIdx == activeNibbleIdx && movementIdx == activeMovementIdx);
+                bool isPlaying = nibbleIdx == activeNibbleIdx && movementIdx == activeMovementIdx;
 
                 PlayerMovementItemViewModel movementVm = new(
                     nibbleIdx,
@@ -394,39 +514,60 @@ public sealed class PlayerWindowViewModel : ViewModelBase
             newQueueVms.Add(queueVm);
         }
 
-        QueueItems.Clear();
-        foreach (PlayerQueueItemViewModel vm in newQueueVms)
-        {
-            QueueItems.Add(vm);
-        }
-
-        // Update current track details for main player display
         QueueItem? activeItem = _queueService.CurrentItem;
         NibbleMovement? activeMovement = _queueService.CurrentMovement;
+        string currentWorkTitle = "No Track Queued";
+        string currentMovementOrdinal = "";
+        string currentMovementName = "Add items to queue to begin";
+        string currentComposerName = "—";
+        string currentPerformersLine = "—";
+        string currentRecordingDetailsLine = "—";
 
         if (activeItem != null)
         {
-            Work? activeWork = await _unitOfWork.Works.GetByIdAsync(activeItem.Nibble.WorkId);
-            Recording? activeRec = await _unitOfWork.Recordings.GetByIdAsync(activeItem.Nibble.RecordingId);
-            Composer? activeComposer = activeWork != null ? await _unitOfWork.Composers.GetByIdAsync(activeWork.ComposerId) : null;
-            Movement? activeMv = activeMovement != null ? await _unitOfWork.Movements.GetByIdAsync(activeMovement.MovementId) : null;
+            Work? activeWork = await _unitOfWork.Works.GetByIdAsync(activeItem.Nibble.WorkId).ConfigureAwait(true);
+            Recording? activeRec = await _unitOfWork.Recordings.GetByIdAsync(activeItem.Nibble.RecordingId).ConfigureAwait(true);
+            Composer? activeComposer = activeWork != null
+                ? await _unitOfWork.Composers.GetByIdAsync(activeWork.ComposerId).ConfigureAwait(true)
+                : null;
+            Movement? activeMv = activeMovement != null
+                ? await _unitOfWork.Movements.GetByIdAsync(activeMovement.MovementId).ConfigureAwait(true)
+                : null;
 
-            CurrentWorkTitle = activeWork?.Name ?? "—";
-            CurrentMovementOrdinal = activeMv != null ? FormatRomanOrdinal(activeMv.Order) : (activeMovement != null ? FormatRomanOrdinal(activeMovement.Order) : "");
-            CurrentMovementName = activeMv?.Name ?? "—";
-            CurrentComposerName = activeComposer?.Name ?? "—";
-            CurrentPerformersLine = FormatPerformersLine(activeRec);
-            CurrentRecordingDetailsLine = FormatRecordingDetails(activeRec);
+            currentWorkTitle = activeWork?.Name ?? "—";
+            currentMovementOrdinal = activeMv != null
+                ? FormatRomanOrdinal(activeMv.Order)
+                : (activeMovement != null ? FormatRomanOrdinal(activeMovement.Order) : "");
+            currentMovementName = activeMv?.Name ?? "—";
+            currentComposerName = activeComposer?.Name ?? "—";
+            currentPerformersLine = FormatPerformersLine(activeRec);
+            currentRecordingDetailsLine = FormatRecordingDetails(activeRec);
         }
-        else
+
+        Action apply = () =>
         {
-            CurrentWorkTitle = "No Track Queued";
-            CurrentMovementOrdinal = "";
-            CurrentMovementName = "Add items to queue to begin";
-            CurrentComposerName = "—";
-            CurrentPerformersLine = "—";
-            CurrentRecordingDetailsLine = "—";
+            IsEmptyQueue = isEmptyQueue;
+            QueueItems.Clear();
+            foreach (PlayerQueueItemViewModel vm in newQueueVms)
+            {
+                QueueItems.Add(vm);
+            }
+
+            CurrentWorkTitle = currentWorkTitle;
+            CurrentMovementOrdinal = currentMovementOrdinal;
+            CurrentMovementName = currentMovementName;
+            CurrentComposerName = currentComposerName;
+            CurrentPerformersLine = currentPerformersLine;
+            CurrentRecordingDetailsLine = currentRecordingDetailsLine;
+        };
+
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            apply();
+            return;
         }
+
+        await Dispatcher.UIThread.InvokeAsync(apply);
     }
 
     /// <summary>
@@ -434,7 +575,7 @@ public sealed class PlayerWindowViewModel : ViewModelBase
     /// </summary>
     private void OnSelectNibble(int nibbleIndex)
     {
-        _queueService.SkipToNibble(nibbleIndex, 0);
+        _ = _playbackService.PlayAtAsync(nibbleIndex, 0);
     }
 
     /// <summary>
@@ -442,7 +583,7 @@ public sealed class PlayerWindowViewModel : ViewModelBase
     /// </summary>
     private void OnSelectMovement(int nibbleIndex, int movementIndex)
     {
-        _queueService.SkipToNibble(nibbleIndex, movementIndex);
+        _ = _playbackService.PlayAtAsync(nibbleIndex, movementIndex);
     }
 
     /// <summary>

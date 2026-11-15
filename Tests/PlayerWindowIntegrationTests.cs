@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Classify.Core.Domain;
 using Classify.Data;
@@ -110,7 +111,11 @@ public class PlayerWindowIntegrationTests
         QueueService queueService = new();
         queueService.Clear();
 
-        PlayerWindowViewModel vm = new(queueService, uow, new Mock<IPlaybackService>().Object);
+        Mock<IPlaybackService> playback = new();
+        playback.Setup(service => service.PlayAtAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Callback((int nibbleIndex, int movementIndex, CancellationToken _) => queueService.SkipToNibble(nibbleIndex, movementIndex))
+            .Returns(Task.CompletedTask);
+        PlayerWindowViewModel vm = new(queueService, uow, playback.Object);
 
         Nibble nibble = new() { Id = 1, WorkId = work.Id, RecordingId = recording.Id };
         NibbleMovement nm1 = new() { Id = 1, NibbleId = 1, MovementId = m1.Id, Order = 1 };

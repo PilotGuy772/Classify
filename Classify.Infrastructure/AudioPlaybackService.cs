@@ -42,11 +42,18 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
     private string? _loadedPath;
     private TimeSpan? _pendingSeek;
     private int _isPlaying;
+    private long _publishedPositionSecond = -1;
+    private long _publishedDurationSecond = -1;
+    private int _suppressPlaybackCompleted;
+    private int _mediaGeneration;
+    private long _knownLengthMs = -1;
+    private long _lastTimeMs = -1;
     private bool _disposed;
 
     /// <summary>
     /// Initializes LibVLC and a single media player for audio output.
-    /// When a file reaches its end, LibVLC stops playback and leaves the file loaded.
+    /// When playback time reaches the reported duration, the service raises <see cref="PlaybackCompleted"/>.
+    /// LibVLC can keep the clock running past that duration, so the end is not taken from <c>EndReached</c> alone.
     /// </summary>
     public AudioPlaybackService()
     {
@@ -56,12 +63,20 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
         _mediaPlayer.Playing += OnPlaying;
         _mediaPlayer.Paused += OnPaused;
         _mediaPlayer.Stopped += OnStopped;
-        _mediaPlayer.EndReached += OnStopped;
+        _mediaPlayer.EndReached += OnEndReached;
         _mediaPlayer.EncounteredError += OnStopped;
+        _mediaPlayer.TimeChanged += OnTimeChanged;
+        _mediaPlayer.LengthChanged += OnLengthChanged;
     }
 
     /// <inheritdoc />
     public event EventHandler? PlaybackStateChanged;
+
+    /// <inheritdoc />
+    public event EventHandler? PlaybackPositionChanged;
+
+    /// <inheritdoc />
+    public event EventHandler? PlaybackCompleted;
 
     /// <inheritdoc />
     public bool IsPlaying => Volatile.Read(ref _isPlaying) != 0;
@@ -213,6 +228,7 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
             }
 
             ApplyPendingSeek();
+            Interlocked.Exchange(ref _suppressPlaybackCompleted, 0);
         }
     }
 
@@ -278,8 +294,10 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
             _mediaPlayer.Playing -= OnPlaying;
             _mediaPlayer.Paused -= OnPaused;
             _mediaPlayer.Stopped -= OnStopped;
-            _mediaPlayer.EndReached -= OnStopped;
+            _mediaPlayer.EndReached -= OnEndReached;
             _mediaPlayer.EncounteredError -= OnStopped;
+            _mediaPlayer.TimeChanged -= OnTimeChanged;
+            _mediaPlayer.LengthChanged -= OnLengthChanged;
             Unload();
             _mediaPlayer.Dispose();
             _libVlc.Dispose();
@@ -300,6 +318,59 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
     private void OnStopped(object? sender, EventArgs e)
     {
         PublishPlaying(false);
+    }
+
+    /// <summary>
+    /// Notifies listeners that LibVLC reached the end of its input.
+    /// Some files keep playing past the reported duration before this event, so the time check also completes playback.
+    /// </summary>
+    private void OnEndReached(object? sender, EventArgs e)
+    {
+        SignalPlaybackCompleted(Volatile.Read(ref _mediaGeneration));
+    }
+
+    /// <summary>
+    /// Completes playback once the clock reaches the duration shown to the listener.
+    /// </summary>
+    private void TryCompleteAtReportedDuration()
+    {
+        long lengthMs = Volatile.Read(ref _knownLengthMs);
+        long timeMs = Volatile.Read(ref _lastTimeMs);
+        if (lengthMs <= 0 || timeMs < lengthMs)
+        {
+            return;
+        }
+
+        SignalPlaybackCompleted(Volatile.Read(ref _mediaGeneration));
+    }
+
+    /// <summary>
+    /// Raises <see cref="PlaybackCompleted"/> on a worker thread so the listener can load another file.
+    /// A completion for a file that has since been unloaded is ignored.
+    /// </summary>
+    /// <param name="generation">Media generation captured when the end was detected.</param>
+    private void SignalPlaybackCompleted(int generation)
+    {
+        if (generation != Volatile.Read(ref _mediaGeneration))
+        {
+            return;
+        }
+
+        if (Interlocked.CompareExchange(ref _suppressPlaybackCompleted, 1, 0) != 0)
+        {
+            return;
+        }
+
+        ThreadPool.QueueUserWorkItem(_ =>
+        {
+            if (generation != Volatile.Read(ref _mediaGeneration))
+            {
+                return;
+            }
+
+            PublishPlaying(false);
+            PlaybackCompleted?.Invoke(this, EventArgs.Empty);
+        });
     }
 
     /// <summary>
@@ -324,7 +395,55 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
             return;
         }
 
+        Interlocked.Exchange(ref _publishedPositionSecond, -1);
+        Interlocked.Exchange(ref _publishedDurationSecond, -1);
         PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
+        PlaybackPositionChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Raises <see cref="PlaybackPositionChanged"/> when the whole second of the playback position changes.
+    /// </summary>
+    private void OnTimeChanged(object? sender, MediaPlayerTimeChangedEventArgs e)
+    {
+        if (e.Time >= 0)
+        {
+            Volatile.Write(ref _lastTimeMs, e.Time);
+        }
+
+        PublishSecond(ref _publishedPositionSecond, e.Time);
+        TryCompleteAtReportedDuration();
+    }
+
+    /// <summary>
+    /// Raises <see cref="PlaybackPositionChanged"/> when the whole second of the duration changes.
+    /// </summary>
+    private void OnLengthChanged(object? sender, MediaPlayerLengthChangedEventArgs e)
+    {
+        if (e.Length > 0)
+        {
+            Volatile.Write(ref _knownLengthMs, e.Length);
+        }
+
+        PublishSecond(ref _publishedDurationSecond, e.Length);
+        TryCompleteAtReportedDuration();
+    }
+
+    /// <summary>
+    /// Publishes a timeline change when <paramref name="milliseconds"/> falls in a different whole second than last time.
+    /// </summary>
+    /// <param name="publishedSecond">Last second that was published for this value.</param>
+    /// <param name="milliseconds">New time in milliseconds, or a negative value when the player has no time.</param>
+    private void PublishSecond(ref long publishedSecond, long milliseconds)
+    {
+        long second = milliseconds < 0 ? 0 : milliseconds / 1000;
+        long previous = Interlocked.Exchange(ref publishedSecond, second);
+        if (previous == second)
+        {
+            return;
+        }
+
+        PlaybackPositionChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -332,6 +451,10 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
     /// </summary>
     private void Unload()
     {
+        Interlocked.Exchange(ref _suppressPlaybackCompleted, 1);
+        Interlocked.Increment(ref _mediaGeneration);
+        Volatile.Write(ref _knownLengthMs, -1);
+        Volatile.Write(ref _lastTimeMs, -1);
         _pendingSeek = null;
         _mediaPlayer.Stop();
 

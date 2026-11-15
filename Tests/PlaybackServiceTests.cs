@@ -106,6 +106,62 @@ public class PlaybackServiceTests
     }
 
     /// <summary>
+    /// Verifies that choosing a queue movement unloads the current file and plays the selected one.
+    /// </summary>
+    [Fact]
+    public async Task PlayAtAsync_PlaysTheSelectedMovement()
+    {
+        await using PlaybackFixture fixture = await PlaybackFixture.CreateAsync();
+        FakeAudioPlaybackService audio = new();
+        PlaybackService playback = fixture.CreatePlayback(fixture.Queue, audio);
+        await playback.PlayAsync();
+        audio.Actions.Clear();
+
+        await playback.PlayAtAsync(0, 2);
+
+        Assert.Equal(0, fixture.Queue.CurrentNibbleIndex);
+        Assert.Equal(2, fixture.Queue.CurrentMovementIndex);
+        Assert.Equal(new[] { "stop", "load:" + fixture.SecondPath, "play" }, audio.Actions);
+
+        audio.Actions.Clear();
+        await playback.PlayAtAsync(1, 0);
+
+        Assert.Equal(1, fixture.Queue.CurrentNibbleIndex);
+        Assert.Equal(0, fixture.Queue.CurrentMovementIndex);
+        Assert.Equal(fixture.ThirdPath, audio.LoadedPath);
+        Assert.Equal(new[] { "stop", "load:" + fixture.ThirdPath, "play" }, audio.Actions);
+    }
+
+    /// <summary>
+    /// Verifies that reaching the end of a file skips to the next playable movement, and stops on the last one.
+    /// </summary>
+    [Fact]
+    public async Task PlaybackCompleted_SkipsForwardOrStopsAtEnd()
+    {
+        await using PlaybackFixture fixture = await PlaybackFixture.CreateAsync();
+        FakeAudioPlaybackService audio = new();
+        PlaybackService playback = fixture.CreatePlayback(fixture.Queue, audio);
+        await playback.PlayAsync();
+        audio.Actions.Clear();
+
+        audio.CompletePlayback();
+
+        Assert.Equal(0, fixture.Queue.CurrentNibbleIndex);
+        Assert.Equal(2, fixture.Queue.CurrentMovementIndex);
+        Assert.Equal(fixture.SecondPath, audio.LoadedPath);
+        Assert.Equal(new[] { "stop", "load:" + fixture.SecondPath, "play" }, audio.Actions);
+
+        audio.CompletePlayback();
+        audio.Actions.Clear();
+        audio.CompletePlayback();
+
+        Assert.Equal(1, fixture.Queue.CurrentNibbleIndex);
+        Assert.Equal(0, fixture.Queue.CurrentMovementIndex);
+        Assert.False(audio.HasMedia);
+        Assert.Equal(new[] { "stop" }, audio.Actions);
+    }
+
+    /// <summary>
     /// Verifies that skip back restarts the current file after five seconds, and plays the previous file before that.
     /// </summary>
     [Fact]
@@ -155,6 +211,29 @@ public class PlaybackServiceTests
 
         Assert.False(playback.IsPlaying);
         Assert.Equal(2, notifications);
+    }
+
+    /// <summary>
+    /// Verifies that a position change is forwarded and the service reports the player's position and duration.
+    /// </summary>
+    [Fact]
+    public async Task PlaybackPositionChanged_ForwardsPlayerPosition()
+    {
+        await using PlaybackFixture fixture = await PlaybackFixture.CreateAsync();
+        FakeAudioPlaybackService audio = new()
+        {
+            Duration = TimeSpan.FromSeconds(90),
+        };
+        PlaybackService playback = fixture.CreatePlayback(fixture.Queue, audio);
+        int notifications = 0;
+        playback.PlaybackPositionChanged += (object? sender, EventArgs e) => notifications++;
+        await playback.PlayAsync();
+
+        playback.Seek(12);
+
+        Assert.Equal(TimeSpan.FromSeconds(12), playback.Position);
+        Assert.Equal(TimeSpan.FromSeconds(90), playback.Duration);
+        Assert.Equal(1, notifications);
     }
 
     /// <summary>
@@ -357,6 +436,18 @@ public class PlaybackServiceTests
 
         public event EventHandler? PlaybackStateChanged;
 
+        public event EventHandler? PlaybackCompleted;
+
+        /// <summary>
+        /// Raises <see cref="PlaybackCompleted"/> as the audio player does at the end of a file.
+        /// </summary>
+        public void CompletePlayback()
+        {
+            PlaybackCompleted?.Invoke(this, EventArgs.Empty);
+        }
+
+        public event EventHandler? PlaybackPositionChanged;
+
         public bool IsPlaying { get; private set; }
 
         public bool HasMedia { get; private set; }
@@ -400,6 +491,7 @@ public class PlaybackServiceTests
         {
             Position = position;
             Actions.Add("seek:" + position.TotalSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            PlaybackPositionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void Pause()

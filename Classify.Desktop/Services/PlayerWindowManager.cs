@@ -79,6 +79,11 @@ public sealed class PlayerWindowManager : IPlayerWindowManager
         {
             _playerWindow = null;
             playbackService.Stop();
+            if (vm is IDisposable playbackView)
+            {
+                playbackView.Dispose();
+            }
+
             _queueService.Clear();
         };
 

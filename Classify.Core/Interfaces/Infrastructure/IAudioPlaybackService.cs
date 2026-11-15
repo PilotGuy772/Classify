@@ -13,6 +13,17 @@ public interface IAudioPlaybackService
     event EventHandler? PlaybackStateChanged;
 
     /// <summary>
+    /// Occurs when the playback position or duration changes by at least one second, including after a seek.
+    /// </summary>
+    event EventHandler? PlaybackPositionChanged;
+
+    /// <summary>
+    /// Occurs when playback reaches the end of the loaded audio file.
+    /// Raised off the player thread so listeners can load another file.
+    /// </summary>
+    event EventHandler? PlaybackCompleted;
+
+    /// <summary>
     /// Gets a value indicating whether audio is currently playing.
     /// </summary>
     bool IsPlaying { get; }
