@@ -40,6 +40,19 @@
         <Style Selector="Border.movement-row.active TextBlock.ordinal">
             <Setter Property="Foreground" Value="White" />
         </Style>
+
+        <Style Selector="Border.seek-hint">
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource OutlineBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="BoxShadow" Value="0 1 4 0 #66000000" />
+        </Style>
+
+        <Style Selector="ProgressBar.seek-bar /template/ Border#PART_Indicator">
+            <Setter Property="Transitions" Value="{x:Null}" />
+        </Style>
     </Window.Styles>
 
     <Grid ColumnDefinitions="*,Auto" Margin="10,28,10,10">
@@ -124,13 +137,41 @@
 
             <!-- Row 4: Player Controls Bar (Fixed 140px height) -->
             <Grid Grid.Row="4" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4,0,0">
-                <!-- Seek Bar Track -->
-                <ProgressBar Grid.Row="0"
-                             Value="{Binding PlaybackProgress}" Minimum="0" Maximum="100"
-                             Height="6" CornerRadius="3"
-                             Foreground="{DynamicResource AccentBrush}"
-                             Background="{DynamicResource OutlineBrush}"
-                             Margin="0,4" />
+                <!-- Seek bar. The grid is the hit target; the bar itself only draws the fill. -->
+                <Grid Grid.Row="0"
+                      x:Name="SeekBar"
+                      Height="20"
+                      Margin="0,2"
+                      Background="Transparent"
+                      Cursor="Hand"
+                      PointerEntered="OnSeekBarPointerEntered"
+                      PointerMoved="OnSeekBarPointerMoved"
+                      PointerPressed="OnSeekBarPointerPressed"
+                      PointerReleased="OnSeekBarPointerReleased"
+                      PointerExited="OnSeekBarPointerExited"
+                      PointerCaptureLost="OnSeekBarPointerCaptureLost">
+                    <ProgressBar Classes="seek-bar"
+                                 IsHitTestVisible="False"
+                                 Value="{Binding PlaybackProgress}" Minimum="0" Maximum="100"
+                                 Height="6" CornerRadius="3"
+                                 VerticalAlignment="Center"
+                                 Foreground="{DynamicResource AccentBrush}"
+                                 Background="{DynamicResource OutlineBrush}" />
+                    <Popup x:Name="SeekHintPopup"
+                           Placement="AnchorAndGravity"
+                           PlacementAnchor="TopLeft"
+                           PlacementGravity="TopRight"
+                           PlacementConstraintAdjustment="FlipX,FlipY,SlideX,SlideY"
+                           HorizontalOffset="12"
+                           VerticalOffset="-6"
+                           IsOpen="{Binding IsSeekHintVisible}"
+                           IsHitTestVisible="False"
+                           Focusable="False">
+                        <Border Classes="seek-hint">
+                            <TextBlock Text="{Binding SeekHintText}" FontSize="12" />
+                        </Border>
+                    </Popup>
+                </Grid>
 
                 <!-- Time Counters -->
                 <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="0,2">

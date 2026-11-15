@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Classify.Core.Domain;
+using Classify.Core.Interfaces.Infrastructure;
 using Classify.Data;
 using Classify.Data.Context;
 using Classify.Core.Interfaces.Service;
@@ -171,6 +172,113 @@ public class PlayerWindowIntegrationTests
         Assert.Equal("III.", vm.CurrentMovementOrdinal);
         Assert.Equal("Scherzo", vm.CurrentMovementName);
         Assert.Equal("III.", vm.QueueItems[0].Movements[0].OrdinalLabel);
+    }
+
+    /// <summary>
+    /// Verifies that a progress-bar drag pauses playback, previews the pointer time, and seeks and resumes on release.
+    /// </summary>
+    [Fact]
+    public void SeekDrag_PausesUntilReleaseThenSeeksAndResumes()
+    {
+        List<string> calls = new();
+        bool playing = true;
+        Mock<IPlaybackService> playback = new();
+        playback.SetupGet(service => service.IsPlaying).Returns(() => playing);
+        playback.SetupGet(service => service.Position).Returns(TimeSpan.FromSeconds(10));
+        playback.SetupGet(service => service.Duration).Returns(TimeSpan.FromSeconds(200));
+        playback.Setup(service => service.Pause()).Callback(() =>
+        {
+            playing = false;
+            calls.Add("pause");
+        });
+        playback.Setup(service => service.SeekToPercentage(It.IsAny<float>())).Callback(() => calls.Add("seek"));
+        playback.Setup(service => service.PlayAsync(It.IsAny<CancellationToken>()))
+            .Callback(() =>
+            {
+                playing = true;
+                calls.Add("play");
+            })
+            .Returns(Task.CompletedTask);
+
+        using PlayerWindowViewModel viewModel = CreateSeekViewModel(playback.Object);
+        viewModel.BeginSeekDrag(0.5d);
+        viewModel.HideSeekHint();
+        viewModel.UpdateSeekDrag(0.25d);
+
+        Assert.Equal(25d, viewModel.PlaybackProgress);
+        Assert.Equal("0:50", viewModel.CurrentPositionText);
+        Assert.Equal("0:50", viewModel.SeekHintText);
+        Assert.True(viewModel.IsSeekHintVisible);
+        Assert.Equal(new[] { "pause" }, calls);
+
+        viewModel.EndSeekDrag(0.25d, keepHintVisible: true);
+
+        playback.Verify(service => service.SeekToPercentage(0.25f), Times.Once);
+        Assert.Equal(new[] { "pause", "seek", "play" }, calls);
+        Assert.Equal(25d, viewModel.PlaybackProgress);
+        Assert.Equal("0:50", viewModel.CurrentPositionText);
+        Assert.True(viewModel.IsSeekHintVisible);
+        Assert.True(playing);
+    }
+
+    /// <summary>
+    /// Verifies that dragging while playback is already paused seeks without starting playback.
+    /// </summary>
+    [Fact]
+    public void SeekDrag_WhenPaused_SeeksWithoutPlaying()
+    {
+        Mock<IPlaybackService> playback = new();
+        playback.SetupGet(service => service.IsPlaying).Returns(false);
+        playback.SetupGet(service => service.Position).Returns(TimeSpan.FromSeconds(10));
+        playback.SetupGet(service => service.Duration).Returns(TimeSpan.FromSeconds(200));
+        playback.Setup(service => service.PlayAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+        using PlayerWindowViewModel viewModel = CreateSeekViewModel(playback.Object);
+        viewModel.EndSeekDrag(0.5d, keepHintVisible: false);
+        viewModel.BeginSeekDrag(1.4d);
+        viewModel.EndSeekDrag(-0.2d, keepHintVisible: false);
+
+        playback.Verify(service => service.Pause(), Times.Never);
+        playback.Verify(service => service.PlayAsync(It.IsAny<CancellationToken>()), Times.Never);
+        playback.Verify(service => service.SeekToPercentage(0f), Times.Once);
+        Assert.Equal(0d, viewModel.PlaybackProgress);
+        Assert.False(viewModel.IsSeekHintVisible);
+    }
+
+    /// <summary>
+    /// Verifies that the hover hint shows the time under the pointer without moving the progress bar.
+    /// </summary>
+    [Fact]
+    public void ShowSeekHint_ShowsTimeWithoutChangingProgress()
+    {
+        Mock<IPlaybackService> playback = new();
+        playback.SetupGet(service => service.Position).Returns(TimeSpan.FromSeconds(10));
+        playback.SetupGet(service => service.Duration).Returns(TimeSpan.FromSeconds(200));
+
+        using PlayerWindowViewModel viewModel = CreateSeekViewModel(playback.Object);
+        double progress = viewModel.PlaybackProgress;
+
+        viewModel.ShowSeekHint(0.5d);
+
+        Assert.Equal("1:40", viewModel.SeekHintText);
+        Assert.True(viewModel.IsSeekHintVisible);
+        Assert.Equal(progress, viewModel.PlaybackProgress);
+        Assert.Equal("0:10", viewModel.CurrentPositionText);
+
+        viewModel.HideSeekHint();
+
+        Assert.False(viewModel.IsSeekHintVisible);
+        playback.Verify(service => service.SeekToPercentage(It.IsAny<float>()), Times.Never);
+    }
+
+    /// <summary>
+    /// Builds a player view model whose queue is empty so refresh does not touch the database.
+    /// </summary>
+    private static PlayerWindowViewModel CreateSeekViewModel(IPlaybackService playback)
+    {
+        QueueService queueService = new();
+        queueService.Clear();
+        return new PlayerWindowViewModel(queueService, new Mock<IUnitOfWork>().Object, playback);
     }
 
     /// <summary>

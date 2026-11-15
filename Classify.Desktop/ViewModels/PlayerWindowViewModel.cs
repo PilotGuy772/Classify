@@ -36,7 +36,23 @@ public sealed class PlayerWindowViewModel : ViewModelBase, IDisposable
     private bool _isEmptyQueue = true;
     private bool _isPlaying;
     private double _playbackProgress;
+    private bool _isSeekDragging;
+    private bool _resumeAfterSeekDrag;
+    private TimeSpan? _heldSeekPosition;
+    private long _heldSeekUntilTicks;
+    private bool _isSeekHintVisible;
+    private string _seekHintText = "0:00";
     private readonly DispatcherTimer _playbackClock;
+
+    /// <summary>
+    /// How long a released seek keeps its preview when the player has not reported the new position yet.
+    /// </summary>
+    private const int SeekDisplayHoldMilliseconds = 1500;
+
+    /// <summary>
+    /// How close the reported position must be to the seek target, in seconds, before the preview is dropped.
+    /// </summary>
+    private const double SeekDisplayHoldToleranceSeconds = 1.5;
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
 
     /// <summary>
@@ -175,7 +191,7 @@ public sealed class PlayerWindowViewModel : ViewModelBase, IDisposable
 
     /// <summary>
     /// Gets the display fill of the progress bar, from 0 to 100.
-    /// This is a readout of the audio player's position and duration, not a clock owned by the window.
+    /// While the pointer is held on the bar, this previews the dragged point instead of the player position.
     /// </summary>
     public double PlaybackProgress
     {
@@ -188,6 +204,42 @@ public sealed class PlayerWindowViewModel : ViewModelBase, IDisposable
             }
 
             _playbackProgress = value;
+            RaisePropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Gets the time shown beside the pointer for the progress-bar point under it.
+    /// </summary>
+    public string SeekHintText
+    {
+        get => _seekHintText;
+        private set
+        {
+            if (_seekHintText == value)
+            {
+                return;
+            }
+
+            _seekHintText = value;
+            RaisePropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the progress-bar time hint is visible.
+    /// </summary>
+    public bool IsSeekHintVisible
+    {
+        get => _isSeekHintVisible;
+        private set
+        {
+            if (_isSeekHintVisible == value)
+            {
+                return;
+            }
+
+            _isSeekHintVisible = value;
             RaisePropertyChanged();
         }
     }
@@ -393,11 +445,108 @@ public sealed class PlayerWindowViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>
+    /// Shows the time at <paramref name="fraction"/> of the current duration beside the pointer.
+    /// Does not move playback.
+    /// </summary>
+    /// <param name="fraction">Point on the progress bar, where zero is the start and one is the end.</param>
+    public void ShowSeekHint(double fraction)
+    {
+        SeekHintText = FormatPlaybackTime(PositionAtFraction(fraction));
+        IsSeekHintVisible = true;
+    }
+
+    /// <summary>
+    /// Hides the time hint. A drag in progress keeps the hint visible.
+    /// </summary>
+    public void HideSeekHint()
+    {
+        if (_isSeekDragging)
+        {
+            return;
+        }
+
+        IsSeekHintVisible = false;
+    }
+
+    /// <summary>
+    /// Pauses playback and previews <paramref name="fraction"/> on the progress bar.
+    /// </summary>
+    /// <param name="fraction">Point on the progress bar, where zero is the start and one is the end.</param>
+    public void BeginSeekDrag(double fraction)
+    {
+        if (!_isSeekDragging)
+        {
+            _resumeAfterSeekDrag = _playbackService.IsPlaying;
+            _isSeekDragging = true;
+            if (_resumeAfterSeekDrag)
+            {
+                _playbackService.Pause();
+            }
+        }
+
+        ApplyDraggedProgress(fraction);
+    }
+
+    /// <summary>
+    /// Moves the progress-bar preview and time hint to <paramref name="fraction"/>.
+    /// </summary>
+    /// <param name="fraction">Point on the progress bar, where zero is the start and one is the end.</param>
+    public void UpdateSeekDrag(double fraction)
+    {
+        if (!_isSeekDragging)
+        {
+            return;
+        }
+
+        ApplyDraggedProgress(fraction);
+    }
+
+    /// <summary>
+    /// Seeks to <paramref name="fraction"/> and resumes playback when it was playing before the drag.
+    /// </summary>
+    /// <param name="fraction">Point on the progress bar, where zero is the start and one is the end.</param>
+    /// <param name="keepHintVisible">When true, the time hint stays visible after the seek.</param>
+    public void EndSeekDrag(double fraction, bool keepHintVisible)
+    {
+        if (!_isSeekDragging)
+        {
+            return;
+        }
+
+        fraction = ClampUnit(fraction);
+        bool resume = _resumeAfterSeekDrag;
+        _isSeekDragging = false;
+        _resumeAfterSeekDrag = false;
+        _playbackService.SeekToPercentage((float)fraction);
+        HoldDisplayedSeek(fraction);
+        RefreshPlaybackProgress();
+        if (keepHintVisible)
+        {
+            ShowSeekHint(fraction);
+        }
+        else
+        {
+            IsSeekHintVisible = false;
+        }
+
+        if (resume)
+        {
+            _ = _playbackService.PlayAsync();
+        }
+    }
+
+    /// <summary>
     /// Copies the current playback position and duration into the display strings and progress fill.
+    /// A drag in progress keeps the preview, and a just-released seek keeps its target until the player reports it.
     /// </summary>
     private void RefreshPlaybackProgress()
     {
-        TimeSpan position = _playbackService.Position;
+        if (_isSeekDragging)
+        {
+            return;
+        }
+
+        TimeSpan position = ResolveDisplayedPosition(_playbackService.Position);
         TimeSpan duration = _playbackService.Duration;
         CurrentPositionText = FormatPlaybackTime(position);
         TotalDurationText = FormatPlaybackTime(duration);
@@ -406,6 +555,83 @@ public sealed class PlayerWindowViewModel : ViewModelBase, IDisposable
             ? 0d
             : position.TotalSeconds / duration.TotalSeconds * 100d;
         PlaybackProgress = Math.Clamp(progress, 0d, 100d);
+    }
+
+    /// <summary>
+    /// Writes the dragged fraction into the progress bar, the position label, and the time hint.
+    /// </summary>
+    /// <param name="fraction">Point on the progress bar, where zero is the start and one is the end.</param>
+    private void ApplyDraggedProgress(double fraction)
+    {
+        fraction = ClampUnit(fraction);
+        TimeSpan position = PositionAtFraction(fraction);
+        CurrentPositionText = FormatPlaybackTime(position);
+        PlaybackProgress = fraction * 100d;
+        SeekHintText = FormatPlaybackTime(position);
+        IsSeekHintVisible = true;
+    }
+
+    /// <summary>
+    /// Remembers <paramref name="fraction"/> so the bar does not snap back before the player reports the seek.
+    /// </summary>
+    /// <param name="fraction">Point on the progress bar that was just requested.</param>
+    private void HoldDisplayedSeek(double fraction)
+    {
+        TimeSpan duration = _playbackService.Duration;
+        if (duration <= TimeSpan.Zero)
+        {
+            _heldSeekPosition = null;
+            return;
+        }
+
+        _heldSeekPosition = TimeSpan.FromTicks((long)Math.Round(duration.Ticks * ClampUnit(fraction)));
+        _heldSeekUntilTicks = Environment.TickCount64 + SeekDisplayHoldMilliseconds;
+    }
+
+    /// <summary>
+    /// Returns the seek preview while the player position is still far from the requested point.
+    /// </summary>
+    /// <param name="reportedPosition">Position currently reported by the audio player.</param>
+    private TimeSpan ResolveDisplayedPosition(TimeSpan reportedPosition)
+    {
+        if (_heldSeekPosition is not TimeSpan held)
+        {
+            return reportedPosition;
+        }
+
+        bool holdExpired = Environment.TickCount64 >= _heldSeekUntilTicks;
+        bool playerCaughtUp = Math.Abs((reportedPosition - held).TotalSeconds) <= SeekDisplayHoldToleranceSeconds;
+        if (holdExpired || playerCaughtUp)
+        {
+            _heldSeekPosition = null;
+            return reportedPosition;
+        }
+
+        return held;
+    }
+
+    /// <summary>
+    /// Returns the playback time at <paramref name="fraction"/> of the current duration.
+    /// </summary>
+    /// <param name="fraction">Point on the progress bar, where zero is the start and one is the end.</param>
+    private TimeSpan PositionAtFraction(double fraction)
+    {
+        TimeSpan duration = _playbackService.Duration;
+        if (duration <= TimeSpan.Zero)
+        {
+            return TimeSpan.Zero;
+        }
+
+        return TimeSpan.FromTicks((long)Math.Round(duration.Ticks * ClampUnit(fraction)));
+    }
+
+    /// <summary>
+    /// Clamps <paramref name="fraction"/> to the progress bar.
+    /// </summary>
+    /// <param name="fraction">Unclamped pointer fraction.</param>
+    private static double ClampUnit(double fraction)
+    {
+        return Math.Clamp(fraction, 0d, 1d);
     }
 
     /// <summary>
