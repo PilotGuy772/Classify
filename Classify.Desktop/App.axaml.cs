@@ -19,6 +19,7 @@ using Classify.Infrastructure;
 using Classify.Services;
 using Classify.Services.Ingestion;
 using Classify.Services.Ingestion.File;
+using Classify.Services.Playback;
 using Classify.Services.Queue;
 using Config.Net;
 using Microsoft.EntityFrameworkCore;
@@ -193,6 +194,11 @@ public class App : Application
         services.AddScoped<IAudioFileScanner, FileSystemAudioFileScanner>();
         services.AddScoped<IIngestionOrchestrationService, LibraryIngestionOrchestrationService>();
         services.AddSingleton<IQueueService, QueueService>();
+        services.AddSingleton<IPlaybackService>(serviceProvider => new PlaybackService(
+            serviceProvider.GetRequiredService<IQueueService>(),
+            serviceProvider.GetRequiredService<IAudioPlaybackService>(),
+            serviceProvider.GetRequiredService<IAppSettings>(),
+            () => serviceProvider.GetRequiredService<IUnitOfWork>()));
         services.AddScoped<INibbleBuilderService, NibbleBuilderService>();
         services.AddSingleton<IPlayerWindowManager, PlayerWindowManager>();
 

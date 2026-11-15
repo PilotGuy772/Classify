@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Avalonia.Threading;
 using Classify.Core.Domain;
 using Classify.Core.Domain.Infrastructure;
 using Classify.Core.Interfaces.Infrastructure;
@@ -19,6 +20,7 @@ public sealed class PlayerWindowViewModel : ViewModelBase
 {
     private readonly IQueueService _queueService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPlaybackService _playbackService;
 
     private bool _isSidebarExpanded = true;
     private double _windowWidth = 899;
@@ -31,6 +33,7 @@ public sealed class PlayerWindowViewModel : ViewModelBase
     private string _currentPositionText = "0:00";
     private string _totalDurationText = "0:00";
     private bool _isEmptyQueue = true;
+    private bool _isPlaying;
 
     /// <summary>
     /// Gets or sets a value indicating whether the queue sidebar is expanded.
@@ -210,22 +213,124 @@ public sealed class PlayerWindowViewModel : ViewModelBase
     public ICommand ClearQueueCommand { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the player button is showing the playing state.
+    /// The value changes only when <see cref="IPlaybackService.PlaybackStateChanged"/> is raised.
+    /// </summary>
+    public bool IsPlaying
+    {
+        get => _isPlaying;
+        private set
+        {
+            if (_isPlaying == value)
+            {
+                return;
+            }
+
+            _isPlaying = value;
+            RaisePropertyChanged();
+            RaisePropertyChanged(nameof(PlayPauseIcon));
+        }
+    }
+
+    /// <summary>
+    /// Gets the play icon while paused and the pause icon while playing.
+    /// </summary>
+    public TablerIcons.Icons PlayPauseIcon => IsPlaying
+        ? TablerIcons.Icons.IconPlayerPause
+        : TablerIcons.Icons.IconPlayerPlay;
+
+    /// <summary>
+    /// Gets the command that plays when the button shows play, and pauses when it shows pause.
+    /// </summary>
+    public ICommand PlayPauseCommand { get; }
+
+    /// <summary>
+    /// Gets the command that pauses playback without unloading the audio file.
+    /// </summary>
+    public ICommand PauseCommand { get; }
+
+    /// <summary>
+    /// Gets the command that stops playback and unloads the audio file.
+    /// </summary>
+    public ICommand StopCommand { get; }
+
+    /// <summary>
+    /// Gets the command that plays the previous movement, or restarts the current one.
+    /// </summary>
+    public ICommand SkipBackwardCommand { get; }
+
+    /// <summary>
+    /// Gets the command that plays the next movement.
+    /// </summary>
+    public ICommand SkipForwardCommand { get; }
+
+    /// <summary>
+    /// Gets the command that seeks backward fifteen seconds.
+    /// </summary>
+    public ICommand SeekBackwardCommand { get; }
+
+    /// <summary>
+    /// Gets the command that seeks forward fifteen seconds.
+    /// </summary>
+    public ICommand SeekForwardCommand { get; }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="PlayerWindowViewModel"/>.
     /// </summary>
     /// <param name="queueService">The queue service instance.</param>
     /// <param name="unitOfWork">The database unit of work instance.</param>
-    public PlayerWindowViewModel(IQueueService queueService, IUnitOfWork unitOfWork)
+    /// <param name="playbackService">The playback service that drives the transport controls.</param>
+    public PlayerWindowViewModel(IQueueService queueService, IUnitOfWork unitOfWork, IPlaybackService playbackService)
     {
         _queueService = queueService ?? throw new ArgumentNullException(nameof(queueService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _playbackService = playbackService ?? throw new ArgumentNullException(nameof(playbackService));
 
         ToggleSidebarCommand = new RelayCommand(() => IsSidebarExpanded = !IsSidebarExpanded);
         ClearQueueCommand = new RelayCommand(_queueService.Clear);
+        PlayPauseCommand = new AsyncRelayCommand(SendPlayOrPauseAsync);
+        PauseCommand = new RelayCommand(_playbackService.Pause);
+        StopCommand = new RelayCommand(_playbackService.Stop);
+        SkipBackwardCommand = new AsyncRelayCommand(() => _playbackService.SkipBackwardAsync());
+        SkipForwardCommand = new AsyncRelayCommand(() => _playbackService.SkipForwardAsync());
+        SeekBackwardCommand = new RelayCommand(() => _playbackService.Seek(-15));
+        SeekForwardCommand = new RelayCommand(() => _playbackService.Seek(15));
 
         _queueService.QueueChanged += OnQueueStateChanged;
         _queueService.CurrentItemChanged += OnQueueStateChanged;
+        _playbackService.PlaybackStateChanged += OnPlaybackStateChanged;
+        OnPlaybackStateChanged(this, EventArgs.Empty);
 
         _ = RefreshAsync();
+    }
+
+    /// <summary>
+    /// Sends play or pause based on the button state. The icon changes only after the playback service reports the new state.
+    /// </summary>
+    private Task SendPlayOrPauseAsync()
+    {
+        if (IsPlaying)
+        {
+            _playbackService.Pause();
+            return Task.CompletedTask;
+        }
+
+        return _playbackService.PlayAsync();
+    }
+
+    /// <summary>
+    /// Applies the playback service's current playing flag on the UI thread.
+    /// </summary>
+    private void OnPlaybackStateChanged(object? sender, EventArgs e)
+    {
+        bool isPlaying = _playbackService.IsPlaying;
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            IsPlaying = isPlaying;
+            return;
+        }
+
+        Dispatcher.UIThread.Post(() => IsPlaying = isPlaying);
     }
 
     /// <summary>

@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using Classify.Core.Domain;
 using Classify.Data;
 using Classify.Data.Context;
+using Classify.Core.Interfaces.Service;
 using Classify.Desktop.ViewModels;
 using Classify.Services.Queue;
+using Moq;
 using Xunit;
 
 namespace Tests;
@@ -12,6 +14,7 @@ namespace Tests;
 /// <summary>
 /// Unit tests for <see cref="PlayerWindowViewModel"/> verifying queue synchronization, metadata resolution, and selection handling.
 /// </summary>
+[Collection("QueueService")]
 public class PlayerWindowIntegrationTests
 {
     /// <summary>
@@ -44,7 +47,7 @@ public class PlayerWindowIntegrationTests
         QueueService queueService = new();
         queueService.Clear();
 
-        PlayerWindowViewModel vm = new(queueService, uow);
+        PlayerWindowViewModel vm = new(queueService, uow, new Mock<IPlaybackService>().Object);
 
         Nibble nibble = new() { Id = 1, WorkId = work.Id, RecordingId = recording.Id };
         NibbleMovement nm1 = new() { Id = 1, NibbleId = 1, MovementId = m1.Id, Order = 1 };
@@ -107,7 +110,7 @@ public class PlayerWindowIntegrationTests
         QueueService queueService = new();
         queueService.Clear();
 
-        PlayerWindowViewModel vm = new(queueService, uow);
+        PlayerWindowViewModel vm = new(queueService, uow, new Mock<IPlaybackService>().Object);
 
         Nibble nibble = new() { Id = 1, WorkId = work.Id, RecordingId = recording.Id };
         NibbleMovement nm1 = new() { Id = 1, NibbleId = 1, MovementId = m1.Id, Order = 1 };
@@ -156,7 +159,7 @@ public class PlayerWindowIntegrationTests
         QueueService queueService = new();
         queueService.Clear();
 
-        PlayerWindowViewModel vm = new(queueService, uow);
+        PlayerWindowViewModel vm = new(queueService, uow, new Mock<IPlaybackService>().Object);
         queueService.Enqueue(item.Nibble, item.Movements);
         await vm.RefreshAsync();
 

@@ -67,7 +67,8 @@ public sealed class PlayerWindowManager : IPlayerWindowManager
         }
 
         IUnitOfWork uow = _serviceProvider.GetRequiredService<IUnitOfWork>();
-        PlayerWindowViewModel vm = new(_queueService, uow);
+        IPlaybackService playbackService = _serviceProvider.GetRequiredService<IPlaybackService>();
+        PlayerWindowViewModel vm = new(_queueService, uow, playbackService);
 
         _playerWindow = new PlayerWindow
         {
@@ -77,6 +78,7 @@ public sealed class PlayerWindowManager : IPlayerWindowManager
         _playerWindow.Closed += (object? sender, EventArgs args) =>
         {
             _playerWindow = null;
+            playbackService.Stop();
             _queueService.Clear();
         };
 

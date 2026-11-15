@@ -11,6 +11,7 @@ namespace Tests;
 /// <summary>
 /// Unit tests for <see cref="QueueService"/> verifying queue manipulation, playback position tracking, events, and cross-instance state persistence.
 /// </summary>
+[Collection("QueueService")]
 public class QueueServiceTests
 {
     /// <summary>

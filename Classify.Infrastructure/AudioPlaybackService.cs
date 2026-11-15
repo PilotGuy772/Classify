@@ -41,18 +41,77 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
     private readonly MediaPlayer _mediaPlayer;
     private string? _loadedPath;
     private TimeSpan? _pendingSeek;
-    private int _playbackGeneration;
+    private int _isPlaying;
     private bool _disposed;
 
     /// <summary>
     /// Initializes LibVLC and a single media player for audio output.
+    /// When a file reaches its end, LibVLC stops playback and leaves the file loaded.
     /// </summary>
     public AudioPlaybackService()
     {
         LibVLCSharp.Shared.Core.Initialize();
         _libVlc = new LibVLC("--no-video");
         _mediaPlayer = new MediaPlayer(_libVlc);
-        _mediaPlayer.EndReached += OnEndReached;
+        _mediaPlayer.Playing += OnPlaying;
+        _mediaPlayer.Paused += OnPaused;
+        _mediaPlayer.Stopped += OnStopped;
+        _mediaPlayer.EndReached += OnStopped;
+        _mediaPlayer.EncounteredError += OnStopped;
+    }
+
+    /// <inheritdoc />
+    public event EventHandler? PlaybackStateChanged;
+
+    /// <inheritdoc />
+    public bool IsPlaying => Volatile.Read(ref _isPlaying) != 0;
+
+    /// <inheritdoc />
+    public bool HasMedia
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return _loadedPath is not null;
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public TimeSpan Position
+    {
+        get
+        {
+            lock (_gate)
+            {
+                if (_loadedPath is null)
+                {
+                    return TimeSpan.Zero;
+                }
+
+                long time = _mediaPlayer.Time;
+                return time < 0 ? TimeSpan.Zero : TimeSpan.FromMilliseconds(time);
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public TimeSpan Duration
+    {
+        get
+        {
+            lock (_gate)
+            {
+                if (_loadedPath is null)
+                {
+                    return TimeSpan.Zero;
+                }
+
+                long length = _mediaPlayer.Length;
+                return length < 0 ? TimeSpan.Zero : TimeSpan.FromMilliseconds(length);
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -216,7 +275,11 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
             }
 
             _disposed = true;
-            _mediaPlayer.EndReached -= OnEndReached;
+            _mediaPlayer.Playing -= OnPlaying;
+            _mediaPlayer.Paused -= OnPaused;
+            _mediaPlayer.Stopped -= OnStopped;
+            _mediaPlayer.EndReached -= OnStopped;
+            _mediaPlayer.EncounteredError -= OnStopped;
             Unload();
             _mediaPlayer.Dispose();
             _libVlc.Dispose();
@@ -224,32 +287,44 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
     }
 
     /// <summary>
-    /// Pauses and unloads the file when playback reaches the end.
-    /// LibVLC raises this on a player thread, so the player is released on another thread.
-    /// The callback itself does not call back into LibVLC or take the playback lock, which would deadlock <see cref="MediaPlayer.Stop"/>.
+    /// Records that LibVLC has started playback and notifies listeners when that is a change.
     /// </summary>
-    private void OnEndReached(object? sender, EventArgs e)
+    private void OnPlaying(object? sender, EventArgs e)
     {
-        int generation = Volatile.Read(ref _playbackGeneration);
-        ThreadPool.QueueUserWorkItem(_ => FinishPlayback(generation));
+        PublishPlaying(true);
     }
 
     /// <summary>
-    /// Pauses and unloads the file that reached its end, ignoring the callback when a newer file is loaded.
+    /// Records that LibVLC has stopped playback and notifies listeners when that is a change.
     /// </summary>
-    /// <param name="generation">Playback generation captured when the file ended.</param>
-    private void FinishPlayback(int generation)
+    private void OnStopped(object? sender, EventArgs e)
     {
-        lock (_gate)
-        {
-            if (_disposed || generation != _playbackGeneration)
-            {
-                return;
-            }
+        PublishPlaying(false);
+    }
 
-            _mediaPlayer.SetPause(true);
-            Unload();
+    /// <summary>
+    /// Records that LibVLC has paused playback and notifies listeners when that is a change.
+    /// </summary>
+    private void OnPaused(object? sender, EventArgs e)
+    {
+        PublishPlaying(false);
+    }
+
+    /// <summary>
+    /// Updates the cached playing flag and raises <see cref="PlaybackStateChanged"/> when it changes.
+    /// LibVLC invokes this from its own thread, so the method does not call back into the player.
+    /// </summary>
+    /// <param name="isPlaying">Whether audio is now playing.</param>
+    private void PublishPlaying(bool isPlaying)
+    {
+        int updated = isPlaying ? 1 : 0;
+        int previous = Interlocked.Exchange(ref _isPlaying, updated);
+        if (previous == updated)
+        {
+            return;
         }
+
+        PlaybackStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -257,7 +332,6 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
     /// </summary>
     private void Unload()
     {
-        Interlocked.Increment(ref _playbackGeneration);
         _pendingSeek = null;
         _mediaPlayer.Stop();
 

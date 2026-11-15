@@ -140,19 +140,19 @@
 
                 <!-- Control Buttons -->
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,6">
-                    <Button Classes="info-close" Width="36" Height="36">
+                    <Button Classes="info-close" Width="36" Height="36" Command="{Binding SeekBackwardCommand}">
                         <ti:TablerIcon Icon="IconRewindBackward15" Width="20" Height="20" />
                     </Button>
-                    <Button Classes="info-close" Width="40" Height="40">
+                    <Button Classes="info-close" Width="40" Height="40" Command="{Binding SkipBackwardCommand}">
                         <ti:TablerIcon Icon="IconPlayerSkipBack" Width="24" Height="24" />
                     </Button>
-                    <Button Classes="info-play-button" Width="48" Height="48">
-                        <ti:TablerIcon Icon="IconPlayerPlay" Width="26" Height="26" />
+                    <Button Classes="info-play-button" Width="48" Height="48" Command="{Binding PlayPauseCommand}">
+                        <ti:TablerIcon Icon="{Binding PlayPauseIcon}" Width="26" Height="26" />
                     </Button>
-                    <Button Classes="info-close" Width="40" Height="40">
+                    <Button Classes="info-close" Width="40" Height="40" Command="{Binding SkipForwardCommand}">
                         <ti:TablerIcon Icon="IconPlayerSkipForward" Width="24" Height="24" />
                     </Button>
-                    <Button Classes="info-close" Width="36" Height="36">
+                    <Button Classes="info-close" Width="36" Height="36" Command="{Binding SeekForwardCommand}">
                         <ti:TablerIcon Icon="IconRewindForward15" Width="20" Height="20" />
                     </Button>
                 </StackPanel>

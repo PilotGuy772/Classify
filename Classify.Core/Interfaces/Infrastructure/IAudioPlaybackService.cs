@@ -8,6 +8,31 @@ namespace Classify.Core.Interfaces.Infrastructure;
 public interface IAudioPlaybackService
 {
     /// <summary>
+    /// Occurs when playback starts or stops.
+    /// </summary>
+    event EventHandler? PlaybackStateChanged;
+
+    /// <summary>
+    /// Gets a value indicating whether audio is currently playing.
+    /// </summary>
+    bool IsPlaying { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether a file is loaded.
+    /// </summary>
+    bool HasMedia { get; }
+
+    /// <summary>
+    /// Gets the current playback position. Returns <see cref="TimeSpan.Zero"/> when no file is loaded.
+    /// </summary>
+    TimeSpan Position { get; }
+
+    /// <summary>
+    /// Gets the duration of the loaded file. Returns <see cref="TimeSpan.Zero"/> when no file is loaded or the duration is unknown.
+    /// </summary>
+    TimeSpan Duration { get; }
+
+    /// <summary>
     /// Determines whether the file exists and contains a playable audio track.
     /// </summary>
     /// <param name="path">Full path of the file to inspect.</param>
