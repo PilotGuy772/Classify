@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Repository;
 using Classify.Core.Interfaces.Service;
@@ -94,16 +95,20 @@ public class App : Application
             playerWindowManager.Initialize();
 
             desktop.Exit += OnDesktopExit;
+
+            // The main loop is not running yet. Post so LibVLC loads after the UI can service the macOS main queue.
+            Dispatcher.UIThread.Post(() => AudioPlaybackLifetime.Start(Services), DispatcherPriority.Background);
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
     /// <summary>
-    /// Releases created services, including the audio player, when the desktop application exits.
+    /// Releases LibVLC off the UI thread, then releases the remaining services.
     /// </summary>
     private static void OnDesktopExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
     {
+        AudioPlaybackLifetime.ReleaseOnExit(Services);
         if (Services is IDisposable services)
         {
             services.Dispose();

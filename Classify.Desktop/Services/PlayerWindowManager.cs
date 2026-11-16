@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using Classify.Core.Interfaces.Infrastructure;
 using Classify.Core.Interfaces.Service;
@@ -17,6 +18,7 @@ public sealed class PlayerWindowManager : IPlayerWindowManager
     private readonly IServiceProvider _serviceProvider;
     private PlayerWindow? _playerWindow;
     private int _previousCount;
+    private volatile bool _showInProgress;
 
     /// <summary>
     /// Initializes a new instance of <see cref="PlayerWindowManager"/>.
@@ -53,16 +55,87 @@ public sealed class PlayerWindowManager : IPlayerWindowManager
 
     /// <summary>
     /// Displays or focuses the standalone <see cref="PlayerWindow"/>.
+    /// The first call waits for LibVLC without blocking the UI thread.
     /// </summary>
     public void ShowPlayerWindow()
     {
-        if (_playerWindow != null)
+        if (!Dispatcher.UIThread.CheckAccess())
         {
-            if (_playerWindow.WindowState == Avalonia.Controls.WindowState.Minimized)
+            Dispatcher.UIThread.Post(ShowPlayerWindow);
+            return;
+        }
+
+        if (ActivateExistingWindow())
+        {
+            return;
+        }
+
+        if (_showInProgress)
+        {
+            return;
+        }
+
+        _showInProgress = true;
+        _ = ShowPlayerWindowAsync();
+    }
+
+    /// <summary>
+    /// Focuses the player window when it is already open.
+    /// </summary>
+    /// <returns><see langword="true"/> when an existing window was focused.</returns>
+    private bool ActivateExistingWindow()
+    {
+        if (_playerWindow is null)
+        {
+            return false;
+        }
+
+        if (_playerWindow.WindowState == Avalonia.Controls.WindowState.Minimized)
+        {
+            _playerWindow.WindowState = Avalonia.Controls.WindowState.Normal;
+        }
+
+        _playerWindow.Activate();
+        return true;
+    }
+
+    /// <summary>
+    /// Waits for the audio engine, then creates the player window on the UI thread.
+    /// </summary>
+    private async Task ShowPlayerWindowAsync()
+    {
+        try
+        {
+            await AudioPlaybackLifetime.EnsureStartedAsync(_serviceProvider);
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                _playerWindow.WindowState = Avalonia.Controls.WindowState.Normal;
+                try
+                {
+                    CreatePlayerWindow();
+                }
+                finally
+                {
+                    _showInProgress = false;
+                }
+            });
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            if (_showInProgress)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() => _showInProgress = false);
             }
-            _playerWindow.Activate();
+        }
+    }
+
+    /// <summary>
+    /// Creates and shows the player window after the audio engine is ready.
+    /// </summary>
+    private void CreatePlayerWindow()
+    {
+        if (ActivateExistingWindow())
+        {
             return;
         }
 

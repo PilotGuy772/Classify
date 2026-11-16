@@ -50,15 +50,21 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
     private long _lastTimeMs = -1;
     private bool _disposed;
 
+    private static int _deferNativeRelease;
+    private int _disposeStarted;
+
     /// <summary>
     /// Initializes LibVLC and a single media player for audio output.
     /// When playback time reaches the reported duration, the service raises <see cref="PlaybackCompleted"/>.
     /// LibVLC can keep the clock running past that duration, so the end is not taken from <c>EndReached</c> alone.
+    /// Construct this on a background thread. Loading LibVLC on the UI thread stalls that thread until every plugin is mapped.
     /// </summary>
     public AudioPlaybackService()
     {
         LibVLCSharp.Shared.Core.Initialize();
-        _libVlc = new LibVLC("--no-video");
+        // dummy interface: the macOS interface module initializes AppKit and makes both startup and libvlc_release wait on the main queue.
+        // ignore-config: do not scan a desktop VLC install or its preferences.
+        _libVlc = new LibVLC("--no-video", "--intf=dummy", "--ignore-config");
         _mediaPlayer = new MediaPlayer(_libVlc);
         _mediaPlayer.Playing += OnPlaying;
         _mediaPlayer.Paused += OnPaused;
@@ -279,17 +285,41 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
     }
 
     /// <summary>
-    /// Stops playback and releases LibVLC.
+    /// Tells <see cref="Dispose"/> not to release LibVLC.
+    /// Process exit calls <see cref="ReleaseNativeForProcessExit"/> on a background thread instead,
+    /// because releasing LibVLC on the UI thread deadlocks the macOS audio output waiting for the main queue.
+    /// </summary>
+    public static void DeferNativeRelease()
+    {
+        Interlocked.Exchange(ref _deferNativeRelease, 1);
+    }
+
+    /// <summary>
+    /// Stops playback and releases LibVLC when process exit has not taken over native teardown.
     /// </summary>
     public void Dispose()
     {
+        if (Volatile.Read(ref _deferNativeRelease) != 0)
+        {
+            return;
+        }
+
+        ReleaseNativeForProcessExit();
+    }
+
+    /// <summary>
+    /// Stops playback and releases LibVLC.
+    /// Call this from a background thread during process exit, while the UI thread is still dispatching.
+    /// </summary>
+    public void ReleaseNativeForProcessExit()
+    {
+        if (Interlocked.Exchange(ref _disposeStarted, 1) != 0)
+        {
+            return;
+        }
+
         lock (_gate)
         {
-            if (_disposed)
-            {
-                return;
-            }
-
             _disposed = true;
             _mediaPlayer.Playing -= OnPlaying;
             _mediaPlayer.Paused -= OnPaused;
@@ -298,9 +328,24 @@ public sealed class AudioPlaybackService : IAudioPlaybackService, IDisposable
             _mediaPlayer.EncounteredError -= OnStopped;
             _mediaPlayer.TimeChanged -= OnTimeChanged;
             _mediaPlayer.LengthChanged -= OnLengthChanged;
+        }
+
+        // Stop and libvlc_release synchronize with the main queue on macOS.
+        // Holding _gate across that wait deadlocks a UI thread that reads the player while pumping that queue.
+        try
+        {
             Unload();
-            _mediaPlayer.Dispose();
-            _libVlc.Dispose();
+        }
+        finally
+        {
+            try
+            {
+                _mediaPlayer.Dispose();
+            }
+            finally
+            {
+                _libVlc.Dispose();
+            }
         }
     }
 
